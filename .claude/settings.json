@@ -1,10 +1,10 @@
 {
   "mcpServers": {
     "exa": {
-      "command": "python3",
-      "args": ["exa_mcp_server.py"],
+      "command": "npx",
+      "args": ["-y", "@exa-labs/exa-mcp-server"],
       "env": {
-        "EXA_API_KEY": "${EXA_API_KEY}"
+        "EXA_API_KEY": "812d61ef-070d-4266-9be6-412f64b8a2ea"
       }
     }
   }
