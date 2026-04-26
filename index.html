@@ -139,6 +139,279 @@
       color: #222;
       transform: rotate(-1deg);
     }
+
+    /* コンテキストメニュー */
+    .context-menu {
+      position: fixed;
+      background: rgba(30, 30, 30, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 4px 0;
+      min-width: 180px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      z-index: 2000;
+      display: none;
+    }
+
+    .context-menu-item {
+      padding: 8px 16px;
+      color: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .context-menu-item:hover {
+      background: rgba(100,160,255,0.35);
+    }
+
+    .context-menu-separator {
+      height: 1px;
+      background: rgba(255,255,255,0.1);
+      margin: 4px 0;
+    }
+
+    /* 保存ダイアログ */
+    .dialog-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dialog-overlay.active {
+      display: flex;
+    }
+
+    .save-dialog {
+      background: #2b2b2b;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      width: 480px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+      overflow: hidden;
+    }
+
+    .dialog-titlebar {
+      background: rgba(255,255,255,0.07);
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dialog-body {
+      padding: 16px;
+    }
+
+    .dialog-location-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .dialog-location-label {
+      color: #aaa;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .location-selector {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .location-btn {
+      padding: 5px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.06);
+      color: #ccc;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .location-btn:hover {
+      background: rgba(100,160,255,0.2);
+      border-color: rgba(100,160,255,0.4);
+      color: #fff;
+    }
+
+    .location-btn.selected {
+      background: rgba(100,160,255,0.35);
+      border-color: rgba(100,160,255,0.7);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .dialog-preview {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px;
+      height: 120px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #555;
+      font-size: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .preview-desktop {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1a3a5c 0%, #2d6a9f 40%, #0d2b45 100%);
+      display: flex;
+      align-items: flex-start;
+      padding: 8px;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .preview-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 18px;
+      width: 44px;
+    }
+
+    .preview-icon span {
+      font-size: 9px;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+      text-align: center;
+      word-break: break-all;
+      margin-top: 2px;
+    }
+
+    .preview-icon.new-file {
+      opacity: 0.4;
+      border: 1px dashed rgba(255,255,255,0.4);
+      border-radius: 4px;
+      padding: 2px;
+    }
+
+    .dialog-filename-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .dialog-filename-label {
+      color: #aaa;
+      font-size: 12px;
+      white-space: nowrap;
+      min-width: 64px;
+    }
+
+    .dialog-input {
+      flex: 1;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 5px;
+      padding: 7px 10px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .dialog-input:focus {
+      border-color: rgba(100,160,255,0.6);
+      box-shadow: 0 0 0 2px rgba(100,160,255,0.15);
+    }
+
+    .filetype-select {
+      flex: 1;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 5px;
+      padding: 6px 10px;
+      color: #ccc;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .btn {
+      padding: 7px 20px;
+      border-radius: 6px;
+      border: none;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-cancel {
+      background: rgba(255,255,255,0.1);
+      color: #ccc;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .btn-cancel:hover {
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+    }
+
+    .btn-save {
+      background: #2d6a9f;
+      color: #fff;
+      border: 1px solid rgba(100,160,255,0.4);
+    }
+
+    .btn-save:hover {
+      background: #3a82c4;
+    }
+
+    /* 保存完了トースト */
+    .toast {
+      position: fixed;
+      bottom: 56px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(30,30,30,0.95);
+      border: 1px solid rgba(100,160,255,0.4);
+      border-radius: 8px;
+      padding: 10px 20px;
+      color: #fff;
+      font-size: 13px;
+      z-index: 4000;
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
   </style>
 </head>
 <body>
@@ -320,6 +593,59 @@
 
 </div>
 
+<!-- 右クリックメニュー -->
+<div class="context-menu" id="contextMenu">
+  <div class="context-menu-item" id="menuSave">💾 名前を付けて保存...</div>
+  <div class="context-menu-separator"></div>
+  <div class="context-menu-item" id="menuNewFolder">📁 新しいフォルダー</div>
+  <div class="context-menu-item" id="menuRefresh">🔄 更新</div>
+</div>
+
+<!-- 保存ダイアログ -->
+<div class="dialog-overlay" id="dialogOverlay">
+  <div class="save-dialog">
+    <div class="dialog-titlebar">💾 名前を付けて保存</div>
+    <div class="dialog-body">
+      <div class="dialog-location-bar">
+        <span class="dialog-location-label">保存場所:</span>
+        <div class="location-selector">
+          <button class="location-btn" data-loc="documents">📄 ドキュメント</button>
+          <button class="location-btn" data-loc="downloads">📂 ダウンロード</button>
+          <button class="location-btn selected" data-loc="desktop">🖥️ デスクトップ</button>
+          <button class="location-btn" data-loc="pictures">🖼️ ピクチャ</button>
+        </div>
+      </div>
+      <div class="dialog-preview" id="dialogPreview">
+        <div class="preview-desktop" id="previewDesktop"></div>
+      </div>
+      <div class="dialog-filename-row">
+        <span class="dialog-filename-label">ファイル名:</span>
+        <input class="dialog-input" type="text" id="filenameInput" value="新しいファイル" />
+      </div>
+      <div class="dialog-filename-row">
+        <span class="dialog-filename-label">ファイルの種類:</span>
+        <select class="filetype-select" id="filetypeSelect">
+          <option value="📄 .txt">テキスト文書 (.txt)</option>
+          <option value="📝 .docx">Word文書 (.docx)</option>
+          <option value="📊 .xlsx">Excelブック (.xlsx)</option>
+          <option value="📑 .pptx">PowerPointプレゼン (.pptx)</option>
+          <option value="📄 .pdf">PDF文書 (.pdf)</option>
+          <option value="🐍 .py">Pythonスクリプト (.py)</option>
+          <option value="🌐 .html">HTMLファイル (.html)</option>
+          <option value="🖼️ .png">PNG画像 (.png)</option>
+        </select>
+      </div>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn btn-cancel" id="btnCancel">キャンセル</button>
+      <button class="btn btn-save" id="btnSave">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 保存完了トースト -->
+<div class="toast" id="toast"></div>
+
 <!-- タスクバー -->
 <div class="taskbar">
   <div class="start-btn">⊞</div>
@@ -337,8 +663,148 @@
   updateClock();
   setInterval(updateClock, 1000);
 
-  // ドラッグで動かせるようにする
-  document.querySelectorAll('.file-icon, .sticky-note').forEach(el => {
+  // ---- 右クリックメニュー ----
+  const contextMenu = document.getElementById('contextMenu');
+
+  document.getElementById('desktop').addEventListener('contextmenu', e => {
+    if (e.target.closest('.file-icon') || e.target.closest('.sticky-note')) return;
+    e.preventDefault();
+    const x = Math.min(e.clientX, window.innerWidth - 200);
+    const y = Math.min(e.clientY, window.innerHeight - 120);
+    contextMenu.style.left = x + 'px';
+    contextMenu.style.top  = y + 'px';
+    contextMenu.style.display = 'block';
+  });
+
+  document.addEventListener('click', () => { contextMenu.style.display = 'none'; });
+  document.addEventListener('contextmenu', () => { contextMenu.style.display = 'none'; }, true);
+
+  document.getElementById('menuSave').addEventListener('click', openSaveDialog);
+
+  // ---- 保存ダイアログ ----
+  const overlay       = document.getElementById('dialogOverlay');
+  const filenameInput = document.getElementById('filenameInput');
+  const filetypeSelect = document.getElementById('filetypeSelect');
+  const previewDesktop = document.getElementById('previewDesktop');
+  let selectedLocation = 'desktop';
+
+  // 場所ボタン切り替え
+  document.querySelectorAll('.location-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.location-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedLocation = btn.dataset.loc;
+      updatePreview();
+    });
+  });
+
+  // デスクトッププレビュー描画
+  function updatePreview() {
+    previewDesktop.innerHTML = '';
+    if (selectedLocation !== 'desktop') {
+      previewDesktop.style.background = '#1e1e1e';
+      const msg = document.createElement('div');
+      msg.style.cssText = 'color:#555;font-size:12px;width:100%;text-align:center;padding-top:40px;';
+      msg.textContent = selectedLocation === 'documents' ? '📄 ドキュメントフォルダ' :
+                        selectedLocation === 'downloads' ? '📂 ダウンロードフォルダ' :
+                        '🖼️ ピクチャフォルダ';
+      previewDesktop.appendChild(msg);
+      return;
+    }
+    previewDesktop.style.background = 'linear-gradient(135deg,#1a3a5c 0%,#2d6a9f 40%,#0d2b45 100%)';
+    // 既存アイコン（サンプル表示）
+    const samples = [
+      ['📄','report.docx'], ['📊','予算.xlsx'], ['🖼️','photo.jpg'],
+      ['📑','slide.pptx'], ['🐍','main.py'],
+    ];
+    samples.forEach(([icon, name]) => {
+      const el = document.createElement('div');
+      el.className = 'preview-icon';
+      el.innerHTML = `<span style="font-size:18px">${icon}</span><span>${name}</span>`;
+      previewDesktop.appendChild(el);
+    });
+    // 保存予定ファイル（点線）
+    const newEl = document.createElement('div');
+    newEl.className = 'preview-icon new-file';
+    const ext = filetypeSelect.value.split(' ')[0];
+    const fname = (filenameInput.value || '新しいファイル').slice(0, 8);
+    newEl.innerHTML = `<span style="font-size:18px">${ext}</span><span>${fname}</span>`;
+    previewDesktop.appendChild(newEl);
+  }
+
+  filenameInput.addEventListener('input', updatePreview);
+  filetypeSelect.addEventListener('change', updatePreview);
+
+  function openSaveDialog() {
+    selectedLocation = 'desktop';
+    document.querySelectorAll('.location-btn').forEach(b => {
+      b.classList.toggle('selected', b.dataset.loc === 'desktop');
+    });
+    filenameInput.value = '新しいファイル';
+    updatePreview();
+    overlay.classList.add('active');
+    setTimeout(() => filenameInput.select(), 50);
+  }
+
+  document.getElementById('btnCancel').addEventListener('click', () => {
+    overlay.classList.remove('active');
+  });
+
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('active');
+  });
+
+  // ---- 保存実行 ----
+  document.getElementById('btnSave').addEventListener('click', () => {
+    const name = filenameInput.value.trim() || '新しいファイル';
+    const typeVal = filetypeSelect.value;           // e.g. "📄 .txt"
+    const [icon, ext] = typeVal.split(' ');
+    const fullName = name + ext;
+
+    if (selectedLocation === 'desktop') {
+      addDesktopIcon(icon, fullName);
+      showToast(`🖥️ デスクトップに「${fullName}」を保存しました`);
+    } else {
+      const locName = selectedLocation === 'documents' ? 'ドキュメント' :
+                      selectedLocation === 'downloads' ? 'ダウンロード' : 'ピクチャ';
+      showToast(`📁 ${locName}に「${fullName}」を保存しました`);
+    }
+    overlay.classList.remove('active');
+  });
+
+  // デスクトップにアイコン追加
+  function addDesktopIcon(icon, label) {
+    const desktop = document.getElementById('desktop');
+    const el = document.createElement('div');
+    el.className = 'file-icon';
+
+    // 空きスペースを探す（右端エリアに配置）
+    const x = 65 + Math.random() * 15;
+    const y = 4 + (document.querySelectorAll('.file-icon').length % 8) * 11;
+
+    el.style.left = x + '%';
+    el.style.top  = y + '%';
+    el.innerHTML = `<div class="icon-img">${icon}</div><div class="icon-label">${label}</div>`;
+
+    // ドラッグ対応
+    makeDraggable(el);
+    desktop.appendChild(el);
+
+    // ハイライトアニメーション
+    el.style.background = 'rgba(100,160,255,0.35)';
+    setTimeout(() => { el.style.background = ''; }, 1500);
+  }
+
+  // トースト表示
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  // ---- ドラッグ処理（関数化して再利用） ----
+  function makeDraggable(el) {
     let isDragging = false;
     let startX, startY, origLeft, origTop;
 
@@ -355,19 +821,17 @@
 
     document.addEventListener('mousemove', e => {
       if (!isDragging) return;
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
-      el.style.left = (origLeft + dx) + 'px';
-      el.style.top  = (origTop  + dy) + 'px';
+      el.style.left = (origLeft + e.clientX - startX) + 'px';
+      el.style.top  = (origTop  + e.clientY - startY) + 'px';
     });
 
     document.addEventListener('mouseup', () => {
-      if (isDragging) {
-        isDragging = false;
-        el.style.zIndex = '';
-      }
+      if (isDragging) { isDragging = false; el.style.zIndex = ''; }
     });
-  });
+  }
+
+  // 既存アイコン・付箋をドラッグ可能に
+  document.querySelectorAll('.file-icon, .sticky-note').forEach(makeDraggable);
 </script>
 </body>
 </html>
