@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>アラーム</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #111;
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+    }
+    .app { text-align: center; }
+    #clock {
+      font-size: 80px;
+      font-weight: 200;
+      letter-spacing: 4px;
+      margin-bottom: 40px;
+    }
+    input[type="time"] {
+      font-size: 36px;
+      padding: 10px 20px;
+      background: #222;
+      border: 2px solid #444;
+      border-radius: 12px;
+      color: #fff;
+      outline: none;
+      margin-bottom: 20px;
+      display: block;
+      width: 100%;
+    }
+    input[type="time"]:focus { border-color: #0af; }
+    button {
+      font-size: 18px;
+      padding: 12px 40px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: 600;
+      transition: opacity 0.15s;
+    }
+    button:hover { opacity: 0.85; }
+    #btn-set   { background: #0af; color: #000; }
+    #btn-stop  { background: #f44; color: #fff; display: none; margin-top: 12px; }
+    #status {
+      margin-top: 24px;
+      font-size: 15px;
+      color: #888;
+      min-height: 22px;
+    }
+    body.ringing { animation: flash 0.5s infinite alternate; }
+    @keyframes flash { from { background: #111; } to { background: #300; } }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div id="clock">00:00:00</div>
+  <input type="time" id="time-input" />
+  <button id="btn-set">セット</button>
+  <button id="btn-stop">止める</button>
+  <div id="status"></div>
+</div>
+
+<script>
+  let alarmTime = null;
+  let ctx = null;
+  let ringing = false;
+
+  // 時計
+  function tick() {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mm = String(now.getMinutes()).padStart(2,'0');
+    const ss = String(now.getSeconds()).padStart(2,'0');
+    document.getElementById('clock').textContent = `${hh}:${mm}:${ss}`;
+
+    if (alarmTime && !ringing) {
+      const current = `${hh}:${mm}`;
+      if (current === alarmTime && now.getSeconds() === 0) ring();
+    }
+  }
+  setInterval(tick, 500);
+  tick();
+
+  document.getElementById('btn-set').addEventListener('click', () => {
+    const val = document.getElementById('time-input').value;
+    if (!val) return;
+    alarmTime = val;
+    document.getElementById('status').textContent = `⏰ ${val} にアラームをセットしました`;
+  });
+
+  document.getElementById('btn-stop').addEventListener('click', stop);
+
+  function ring() {
+    ringing = true;
+    document.body.classList.add('ringing');
+    document.getElementById('btn-stop').style.display = 'block';
+    document.getElementById('status').textContent = '🔔 アラーム！';
+    beep();
+  }
+
+  function stop() {
+    ringing = false;
+    alarmTime = null;
+    document.body.classList.remove('ringing');
+    document.getElementById('btn-stop').style.display = 'none';
+    document.getElementById('status').textContent = '止めました';
+    if (ctx) { ctx.close(); ctx = null; }
+  }
+
+  function beep() {
+    if (!ringing) return;
+    ctx = new AudioContext();
+    const freqs = [880, 1100, 880, 1100];
+    let t = ctx.currentTime;
+    freqs.forEach(f => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = f;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0.3, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+      osc.start(t); osc.stop(t + 0.4);
+      t += 0.45;
+    });
+    setTimeout(() => { if (ringing) beep(); }, 2000);
+  }
+</script>
+</body>
+</html>
