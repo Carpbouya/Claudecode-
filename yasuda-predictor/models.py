@@ -74,6 +74,11 @@ class Horse:
     win_odds: float        # 単勝オッズ
     place_odds: tuple[float, float] | None = None  # 複勝オッズ (下限, 上限)
 
+    # netkeiba 詳細ページ取得用 ID（出馬表/馬ページのリンクから抽出）
+    horse_id: str = ""
+    jockey_id: str = ""
+    sire_id: str = ""
+
     sire: str = ""              # 父
     broodmare_sire: str = ""    # 母父
     past_results: list[PastResult] = field(default_factory=list)

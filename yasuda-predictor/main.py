@@ -34,6 +34,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--output", choices=["html", "text", "both"], default="both",
                    help="出力形式（デフォルト: both）")
     p.add_argument("--no-cache", action="store_true", help="キャッシュを使わず再取得")
+    p.add_argument("--no-enrich", action="store_true",
+                   help="馬・騎手・種牡馬の詳細ページ取得を省略（出馬表+オッズのみ・高速）")
     p.add_argument("--sample", action="store_true",
                    help="サンプルデータで実行（ネット接続不要・デモ用）")
     p.add_argument("--open", action="store_true", help="生成した HTML をブラウザで開く")
@@ -63,6 +65,7 @@ def main(argv: list[str] | None = None) -> int:
     race = netkeiba.get_race_data(
         profile, args.year, url=args.url,
         use_cache=not args.no_cache, use_sample=args.sample,
+        enrich=not args.no_enrich,
     )
     if not race.horses:
         print("エラー: 出走馬データを取得できませんでした。", file=sys.stderr)
