@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ race.name }} {{ race.year }} 予想レポート</title>
+  <style>
+    :root { --ink:#1f2933; --muted:#7b8794; --line:#e4e7eb; --accent:#1d6fb8; --hot:#d64545; }
+    * { box-sizing: border-box; }
+    body { font-family: "Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+           color: var(--ink); margin: 0; background:#f7f9fb; }
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 28px 20px 64px; }
+    h1 { font-size: 1.5rem; margin: 0 0 4px; }
+    .sub { color: var(--muted); font-size: .85rem; margin-bottom: 24px; }
+    .badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:.72rem;
+             background:#eef4fb; color:var(--accent); margin-left:6px; }
+    .card { background:#fff; border:1px solid var(--line); border-radius:12px;
+            padding:20px 22px; margin-bottom:22px; }
+    h2 { font-size:1.05rem; margin:0 0 14px; border-left:4px solid var(--accent);
+         padding-left:10px; }
+    table { width:100%; border-collapse:collapse; font-size:.86rem; }
+    th,td { padding:8px 10px; border-bottom:1px solid var(--line); text-align:center; }
+    th { background:#f0f4f8; color:var(--muted); font-weight:600; }
+    td.name { text-align:left; font-weight:600; }
+    tr.mark-honmei { background:#fff7f7; }
+    .mark { font-weight:700; }
+    .mark-◎ { color:var(--hot); }
+    .bar { background:#eef2f6; border-radius:4px; height:9px; position:relative; min-width:80px; }
+    .bar > span { position:absolute; left:0; top:0; bottom:0; border-radius:4px;
+                  background:linear-gradient(90deg,#5aa1d8,#1d6fb8); }
+    .total { font-weight:700; color:var(--accent); }
+    .buy-head { font-size:1.2rem; font-weight:700; }
+    .buy-grid { display:grid; grid-template-columns:130px 1fr; gap:8px 16px; margin:12px 0; }
+    .buy-grid dt { color:var(--muted); }
+    .combos { font-family:ui-monospace,Menlo,monospace; }
+    .ev { color:{{ 'var(--hot)' if proposal.expected_value >= 1.0 else 'var(--muted)' }}; font-weight:700; }
+    .rationale li { margin-bottom:10px; line-height:1.6; }
+    .legend { font-size:.78rem; color:var(--muted); }
+    @media print { body{background:#fff;} .card{break-inside:avoid;} }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>{{ race.name }} {{ race.year }} 予想レポート
+    <span class="badge">{{ race.course }}{{ race.surface }}{{ race.distance }}m</span>
+    <span class="badge">データ: {{ race.source }}</span>
+  </h1>
+  <div class="sub">生成日時: {{ generated_at }} ／ 予算: {{ "{:,}".format(proposal.total_amount) }}円</div>
+
+  <!-- 買い目提案 -->
+  <div class="card">
+    <h2>買い目提案</h2>
+    <div class="buy-head">{{ proposal.bet_type }}　<span class="combos">{{ proposal.combo_label }}</span></div>
+    <dl class="buy-grid">
+      <dt>買い目</dt><dd class="combos">{{ proposal.combos | map('join', '-') | join(' / ') }}</dd>
+      <dt>金額配分</dt><dd>各 {{ "{:,}".format(proposal.per_amount) }}円（合計 {{ "{:,}".format(proposal.total_amount) }}円・{{ proposal.combos|length }}点）</dd>
+      <dt>推定的中配当</dt><dd>約 {{ "{:,}".format(proposal.payout_low) }}〜{{ "{:,}".format(proposal.payout_high) }}円</dd>
+      <dt>推定期待値</dt><dd><span class="ev">{{ proposal.expected_value }} 倍</span></dd>
+    </dl>
+    <p class="legend">{{ proposal.rationale }}</p>
+  </div>
+
+  <!-- 根拠サマリー -->
+  <div class="card">
+    <h2>根拠サマリー</h2>
+    <ul class="rationale">
+      {% for r in summaries %}
+      <li><span class="mark mark-{{ r.mark }}">{{ r.mark }}</span>
+          <strong>{{ r.number }}番 {{ r.name }}</strong>（スコア: {{ r.total }}点）<br>
+          → {{ r.text }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- 全馬スコア一覧 -->
+  <div class="card">
+    <h2>全出走馬スコア一覧</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>印</th><th>馬番</th><th>馬名</th><th>騎手</th><th>単勝</th>
+          <th>過去</th><th>騎手</th><th>調教</th><th>血統</th><th>期待値</th>
+          <th>推定勝率</th><th>総合</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for h in race.horses %}
+        <tr class="{{ 'mark-honmei' if h.mark=='◎' else '' }}">
+          <td class="mark mark-{{ h.mark }}">{{ h.mark }}</td>
+          <td>{{ h.number }}</td>
+          <td class="name">{{ h.name }}</td>
+          <td>{{ h.jockey }}</td>
+          <td>{{ "%.1f"|format(h.win_odds) }}</td>
+          <td>{{ h.scores.past_results }}</td>
+          <td>{{ h.scores.jockey }}</td>
+          <td>{{ h.scores.training }}</td>
+          <td>{{ h.scores.bloodline }}</td>
+          <td>{{ h.scores.odds_value }}</td>
+          <td>{{ "%.1f"|format(h.estimated_win_prob * 100) }}%</td>
+          <td class="total">{{ h.total_score }}</td>
+          <td><div class="bar"><span style="width: {{ h.total_score }}%"></span></div></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p class="legend">※ 各要素は 0〜100 点。総合 = Σ(要素 × 重み)。推定配当・期待値は市場オッズ由来の概算です。</p>
+  </div>
+</div>
+</body>
+</html>
