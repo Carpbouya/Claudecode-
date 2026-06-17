@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>求人市場分析ダッシュボード</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: white;
+            padding: 24px 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .header h1 { font-size: 24px; font-weight: 600; }
+        .header p { font-size: 14px; opacity: 0.85; margin-top: 4px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        .card h3 { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .card .value { font-size: 32px; font-weight: 700; color: #1a237e; margin-top: 8px; }
+        .card .sub { font-size: 13px; color: #666; margin-top: 4px; }
+
+        .search-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        .search-panel h2 { font-size: 16px; margin-bottom: 12px; }
+        .search-form {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .form-group { display: flex; flex-direction: column; gap: 4px; }
+        .form-group label { font-size: 12px; color: #666; }
+        .form-group input, .form-group select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .btn {
+            padding: 8px 20px;
+            background: #1a237e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn:hover { background: #283593; }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        .chart-card .chart { width: 100%; }
+
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+        .data-table h2 { font-size: 16px; margin-bottom: 12px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: #f5f5f5; padding: 10px 12px; text-align: left; border-bottom: 2px solid #ddd; }
+        td { padding: 10px 12px; border-bottom: 1px solid #eee; }
+        tr:hover { background: #f8f9fa; }
+
+        .compare-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        .compare-panel h2 { font-size: 16px; margin-bottom: 12px; }
+
+        .tab-nav {
+            display: flex;
+            gap: 0;
+            margin-bottom: 24px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        .tab-nav button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.2s;
+        }
+        .tab-nav button.active { background: #1a237e; color: white; }
+        .tab-nav button:hover:not(.active) { background: #f5f5f5; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .no-data {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+            font-size: 16px;
+        }
+        .no-data h2 { color: #666; margin-bottom: 12px; }
+        .no-data code {
+            display: inline-block;
+            background: #f5f5f5;
+            padding: 8px 16px;
+            border-radius: 6px;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>求人市場分析ダッシュボード</h1>
+        <p>リクルートエージェント 競合求人票分析ツール</p>
+    </div>
+
+    <div class="container">
+        {% if total_jobs == 0 %}
+        <div class="no-data card">
+            <h2>データがまだありません</h2>
+            <p>まずスクレイパーを実行して求人データを収集してください。</p>
+            <code>python scraper.py --keyword "エンジニア" --prefecture "東京都" --pages 10</code>
+            <br>
+            <code>python scraper.py --all-prefectures --pages 5</code>
+        </div>
+        {% else %}
+
+        <div class="summary-cards">
+            <div class="card">
+                <h3>総求人数</h3>
+                <div class="value">{{ "{:,}".format(report.概要.総求人数) }}</div>
+            </div>
+            <div class="card">
+                <h3>掲載企業数</h3>
+                <div class="value">{{ "{:,}".format(report.概要.企業数) }}</div>
+            </div>
+            <div class="card">
+                <h3>対象地域</h3>
+                <div class="value">{{ report.概要.都道府県数 }}</div>
+                <div class="sub">都道府県</div>
+            </div>
+            <div class="card">
+                <h3>職種カテゴリ</h3>
+                <div class="value">{{ report.概要.職種カテゴリ数 }}</div>
+            </div>
+            {% if report.給与分析 and report.給与分析.全体 %}
+            <div class="card">
+                <h3>平均年収</h3>
+                <div class="value">{{ "{:,}".format(report.給与分析.全体.平均年収) }}</div>
+                <div class="sub">円</div>
+            </div>
+            <div class="card">
+                <h3>中央値年収</h3>
+                <div class="value">{{ "{:,}".format(report.給与分析.全体.中央値年収) }}</div>
+                <div class="sub">円</div>
+            </div>
+            {% endif %}
+            {% if report.地域分析 %}
+            <div class="card">
+                <h3>リモートワーク比率</h3>
+                <div class="value">{{ report.地域分析.リモートワーク比率 }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="tab-nav">
+            <button class="active" onclick="showTab('overview')">概要</button>
+            <button onclick="showTab('salary')">給与分析</button>
+            <button onclick="showTab('skills')">スキル分析</button>
+            <button onclick="showTab('companies')">企業分析</button>
+            <button onclick="showTab('search')">検索</button>
+            <button onclick="showTab('compare')">企業比較</button>
+        </div>
+
+        <div id="tab-overview" class="tab-content active">
+            <div class="chart-grid">
+                {% if charts.salary_distribution %}
+                <div class="chart-card">
+                    <div id="chart-salary-dist" class="chart"></div>
+                </div>
+                {% endif %}
+                {% if charts.location %}
+                <div class="chart-card">
+                    <div id="chart-location" class="chart"></div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="tab-salary" class="tab-content">
+            <div class="chart-grid">
+                {% if charts.salary_by_pref %}
+                <div class="chart-card">
+                    <div id="chart-salary-pref" class="chart"></div>
+                </div>
+                {% endif %}
+                {% if charts.salary_by_category %}
+                <div class="chart-card">
+                    <div id="chart-salary-cat" class="chart"></div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="tab-skills" class="tab-content">
+            <div class="chart-grid">
+                {% if charts.skills %}
+                <div class="chart-card">
+                    <div id="chart-skills" class="chart"></div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="tab-companies" class="tab-content">
+            <div class="chart-grid">
+                {% if charts.company %}
+                <div class="chart-card">
+                    <div id="chart-company" class="chart"></div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="tab-search" class="tab-content">
+            <div class="search-panel">
+                <h2>求人検索</h2>
+                <div class="search-form">
+                    <div class="form-group">
+                        <label>キーワード</label>
+                        <input type="text" id="search-keyword" placeholder="例: Python, マネージャー">
+                    </div>
+                    <div class="form-group">
+                        <label>都道府県</label>
+                        <select id="search-prefecture">
+                            <option value="">すべて</option>
+                            {% for pref in prefectures %}
+                            <option value="{{ pref }}">{{ pref }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>職種</label>
+                        <select id="search-category">
+                            <option value="">すべて</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat }}">{{ cat }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>最低年収</label>
+                        <input type="number" id="search-salary-min" placeholder="万円" step="50">
+                    </div>
+                    <div class="form-group">
+                        <label>最高年収</label>
+                        <input type="number" id="search-salary-max" placeholder="万円" step="50">
+                    </div>
+                    <button class="btn" onclick="searchJobs()">検索</button>
+                </div>
+            </div>
+            <div class="data-table">
+                <h2>検索結果 (<span id="result-count">0</span>件)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>求人タイトル</th>
+                            <th>企業名</th>
+                            <th>年収</th>
+                            <th>勤務地</th>
+                            <th>職種</th>
+                        </tr>
+                    </thead>
+                    <tbody id="search-results"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tab-compare" class="tab-content">
+            <div class="compare-panel">
+                <h2>企業比較</h2>
+                <p style="font-size:13px;color:#666;margin-bottom:12px;">
+                    カンマ区切りで企業名を入力してください（部分一致）
+                </p>
+                <div class="search-form">
+                    <div class="form-group" style="flex:1;">
+                        <input type="text" id="compare-companies"
+                               placeholder="例: トヨタ, ソニー, 楽天" style="width:100%;">
+                    </div>
+                    <button class="btn" onclick="compareCompanies()">比較</button>
+                </div>
+            </div>
+            <div id="compare-results"></div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function showTab(name) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-nav button').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        {% if charts %}
+        const chartConfigs = {
+            'chart-salary-dist': {{ charts.salary_distribution|safe }},
+            'chart-location': {{ charts.location|safe }},
+            'chart-salary-pref': {{ charts.salary_by_pref|safe }},
+            'chart-salary-cat': {{ charts.salary_by_category|safe }},
+            'chart-skills': {{ charts.skills|safe }},
+            'chart-company': {{ charts.company|safe }},
+        };
+
+        Object.entries(chartConfigs).forEach(([id, data]) => {
+            const el = document.getElementById(id);
+            if (el && data && data.data) {
+                Plotly.newPlot(id, data.data, data.layout, {responsive: true});
+            }
+        });
+        {% endif %}
+
+        function searchJobs() {
+            const params = new URLSearchParams();
+            const keyword = document.getElementById('search-keyword').value;
+            const prefecture = document.getElementById('search-prefecture').value;
+            const category = document.getElementById('search-category').value;
+            const salaryMin = document.getElementById('search-salary-min').value;
+            const salaryMax = document.getElementById('search-salary-max').value;
+
+            if (keyword) params.set('keyword', keyword);
+            if (prefecture) params.set('prefecture', prefecture);
+            if (category) params.set('category', category);
+            if (salaryMin) params.set('salary_min', salaryMin * 10000);
+            if (salaryMax) params.set('salary_max', salaryMax * 10000);
+
+            fetch('/api/search?' + params.toString())
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('result-count').textContent = data.count;
+                    const tbody = document.getElementById('search-results');
+                    tbody.innerHTML = '';
+                    data.jobs.forEach(job => {
+                        const tr = document.createElement('tr');
+                        const salaryText = job.salary_text || (
+                            job.salary_min && job.salary_max
+                            ? `${(job.salary_min/10000).toLocaleString()}万〜${(job.salary_max/10000).toLocaleString()}万`
+                            : '-'
+                        );
+                        tr.innerHTML = `
+                            <td>${job.source_url ? '<a href="'+job.source_url+'" target="_blank">'+escapeHtml(job.title || '-')+'</a>' : escapeHtml(job.title || '-')}</td>
+                            <td>${escapeHtml(job.company_name || '-')}</td>
+                            <td>${escapeHtml(salaryText)}</td>
+                            <td>${escapeHtml(job.prefecture || job.location || '-')}</td>
+                            <td>${escapeHtml(job.job_category || '-')}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function compareCompanies() {
+            const companies = document.getElementById('compare-companies').value;
+            if (!companies) return;
+
+            fetch('/api/compare?companies=' + encodeURIComponent(companies))
+                .then(r => r.json())
+                .then(data => {
+                    const container = document.getElementById('compare-results');
+                    if (data.error) {
+                        container.innerHTML = `<div class="card"><p>${escapeHtml(data.error)}</p></div>`;
+                        return;
+                    }
+                    let html = '<div class="summary-cards">';
+                    Object.entries(data).forEach(([company, info]) => {
+                        html += `
+                            <div class="card">
+                                <h3>${escapeHtml(company)}</h3>
+                                <div class="value">${info.求人数}</div>
+                                <div class="sub">求人数</div>
+                                <p style="margin-top:12px;font-size:14px;">
+                                    平均年収: ${info.平均年収 ? info.平均年収.toLocaleString() + '円' : '-'}
+                                </p>
+                                <p style="font-size:12px;color:#666;margin-top:8px;">
+                                    <strong>職種:</strong> ${Object.entries(info.職種 || {}).map(([k,v]) => escapeHtml(k)+'('+v+')').join(', ') || '-'}
+                                </p>
+                                <p style="font-size:12px;color:#666;margin-top:4px;">
+                                    <strong>勤務地:</strong> ${Object.entries(info.勤務地 || {}).map(([k,v]) => escapeHtml(k)+'('+v+')').join(', ') || '-'}
+                                </p>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    container.innerHTML = html;
+                });
+        }
+    </script>
+</body>
+</html>
