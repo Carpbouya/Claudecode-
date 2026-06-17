@@ -1,12 +1,10 @@
 import asyncio
 import random
 import logging
-from urllib.parse import urlencode
-
 import aiohttp
 
 from config import (
-    SEARCH_URL, HEADERS, REQUEST_TIMEOUT,
+    SEARCH_BASE, AREA_CODES, HEADERS, REQUEST_TIMEOUT,
     MAX_RETRIES, RETRY_BACKOFF,
     DEFAULT_DELAY_MIN, DEFAULT_DELAY_MAX,
 )
@@ -66,8 +64,11 @@ class Worker:
     async def crawl_prefecture(self, prefecture: str,
                                  max_pages: int = 500) -> int:
         logger.info(f"[W{self.worker_id}] {prefecture} 開始")
-        params = {"area": prefecture}
-        url = f"{SEARCH_URL}?{urlencode(params)}"
+        area_code = AREA_CODES.get(prefecture, "")
+        if not area_code:
+            logger.error(f"[W{self.worker_id}] 不明な都道府県: {prefecture}")
+            return 0
+        url = f"{SEARCH_BASE}area-{area_code}/"
         total_jobs = 0
 
         for page in range(1, max_pages + 1):
