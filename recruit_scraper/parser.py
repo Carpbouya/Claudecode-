@@ -51,13 +51,7 @@ def parse_listing_page(html: str, current_url: str,
     soup = BeautifulSoup(html, "lxml")
     jobs = []
 
-    cards = soup.select("[class*='jobCardContainer']")
-
-    if not cards:
-        cards = soup.select("[class*='jobCard___']")
-    if not cards:
-        cards = soup.select("a[href*='/viewjob/']")
-        cards = [c.parent for c in cards]
+    cards = soup.select("a[href*='/viewjob/']")
 
     for card in cards:
         job = _parse_card(card, current_url, fallback_prefecture)
@@ -69,11 +63,13 @@ def parse_listing_page(html: str, current_url: str,
 
 
 def _parse_card(card, current_url: str, fallback_pref: str) -> dict | None:
-    link_elem = card.select_one("a[href*='/viewjob/']")
-    if not link_elem:
-        return None
-
-    href = link_elem.get("href", "")
+    if card.name == "a" and "/viewjob/" in card.get("href", ""):
+        href = card.get("href", "")
+    else:
+        link_elem = card.select_one("a[href*='/viewjob/']")
+        if not link_elem:
+            return None
+        href = link_elem.get("href", "")
     if href and not href.startswith("http"):
         href = urljoin(BASE_URL, href)
 
