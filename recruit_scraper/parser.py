@@ -9,15 +9,22 @@ from config import BASE_URL, PREFECTURES
 def parse_salary(text: str) -> tuple[int | None, int | None]:
     if not text:
         return None, None
-    cleaned = text.replace(",", "").replace("，", "")
+    cleaned = text.replace(",", "").replace("，", "").replace(" ", "")
+
     numbers = re.findall(r"(\d+)", cleaned)
     if not numbers:
         return None, None
 
     if "万" in text:
-        if len(numbers) >= 2:
-            return int(numbers[0]) * 10000, int(numbers[1]) * 10000
-        return int(numbers[0]) * 10000, int(numbers[0]) * 10000
+        vals = []
+        for m in re.finditer(r"(\d+)万(\d+)?", cleaned):
+            man = int(m.group(1))
+            sub = int(m.group(2)) if m.group(2) else 0
+            vals.append(man * 10000 + sub)
+        if len(vals) >= 2:
+            return vals[0], vals[1]
+        elif len(vals) == 1:
+            return vals[0], vals[0]
 
     if len(numbers) >= 2:
         a, b = int(numbers[0]), int(numbers[1])
@@ -44,96 +51,68 @@ def parse_listing_page(html: str, current_url: str,
     soup = BeautifulSoup(html, "lxml")
     jobs = []
 
-    selectors = [
-        ".cassetteRecruit",
-        ".cassetteRecruit__content",
-        ".job-card",
-        ".search-result-item",
-        ".job-list-item",
-        "[class*='jobCard']",
-        "[class*='JobCard']",
-        "[class*='result-item']",
-        "article.job",
-    ]
-    cards = []
-    for sel in selectors:
-        cards = soup.select(sel)
-        if cards:
-            break
+    cards = soup.select("[class*='jobCardContainer']")
 
     if not cards:
-        cards = soup.select("article, .card")
-        cards = [c for c in cards if c.select_one("a[href]")]
+        cards = soup.select("[class*='jobCard___']")
+    if not cards:
+        cards = soup.select("a[href*='/viewjob/']")
+        cards = [c.parent for c in cards]
 
     for card in cards:
         job = _parse_card(card, current_url, fallback_prefecture)
         if job:
             jobs.append(job)
 
-    next_url = _find_next_page(soup)
+    next_url = _find_next_page(soup, current_url)
     return jobs, next_url
 
 
 def _parse_card(card, current_url: str, fallback_pref: str) -> dict | None:
-    title_selectors = [
-        "h2 a", "h3 a", ".job-title a", ".jobTitle a",
-        "[class*='title'] a", "[class*='Title'] a",
-        "h2", "h3", ".job-title", ".jobTitle",
-    ]
-    title_elem = None
-    for sel in title_selectors:
-        title_elem = card.select_one(sel)
-        if title_elem:
-            break
+    link_elem = card.select_one("a[href*='/viewjob/']")
+    if not link_elem:
+        return None
 
-    title = title_elem.get_text(strip=True) if title_elem else None
+    href = link_elem.get("href", "")
+    if href and not href.startswith("http"):
+        href = urljoin(BASE_URL, href)
+
+    company_elem = card.select_one("[class*='corpName']")
+    company = company_elem.get_text(strip=True) if company_elem else ""
+
+    title_elem = card.select_one("[class*='jobTitle']")
+    title = title_elem.get_text(strip=True) if title_elem else ""
     if not title:
         return None
 
-    link = None
-    if title_elem and title_elem.name == "a":
-        link = title_elem.get("href", "")
-    elif title_elem:
-        a = title_elem.find("a")
-        if a:
-            link = a.get("href", "")
-    if not link:
-        first_link = card.select_one("a[href]")
-        if first_link:
-            link = first_link.get("href", "")
+    desc_elem = card.select_one("[class*='subTitle']")
+    desc = desc_elem.get_text(strip=True) if desc_elem else ""
 
-    if link and not link.startswith("http"):
-        link = urljoin(BASE_URL, link)
+    emp_type_elem = card.select_one("[class*='jobType']")
+    emp_type = emp_type_elem.get_text(strip=True) if emp_type_elem else ""
 
-    company = _extract_text(card, [
-        ".company-name", ".companyName", "[class*='company']",
-        "[class*='Company']", ".corp-name",
-    ])
+    salary_title_elem = card.select_one("[class*='salaryTitle']")
+    salary_title = salary_title_elem.get_text(strip=True) if salary_title_elem else ""
 
-    salary_text = _extract_text(card, [
-        ".salary", ".income", "[class*='salary']", "[class*='Salary']",
-        "[class*='income']", "[class*='年収']",
-    ])
+    salary_elem = card.select_one("[class*='mainSalary']")
+    salary_text_raw = salary_elem.get_text(strip=True) if salary_elem else ""
+    salary_text = f"{salary_title}{salary_text_raw}" if salary_title else salary_text_raw
+
     salary_min, salary_max = parse_salary(salary_text)
 
-    location = _extract_text(card, [
-        ".location", ".area", "[class*='location']", "[class*='Location']",
-        "[class*='area']", "[class*='勤務地']",
-    ])
+    location_elem = card.select_one(
+        "[class*='jobLocation'], [class*='jobLocat'], [class*='address']"
+    )
+    location = location_elem.get_text(strip=True) if location_elem else ""
+    location = location.replace("勤務地", "").strip()
+
     prefecture = detect_prefecture(location) or fallback_pref
 
-    category = _extract_text(card, [
-        ".category", ".job-type", "[class*='category']",
-        "[class*='Category']", "[class*='職種']",
-    ])
-
-    desc = _extract_text(card, [
-        ".description", ".job-desc", "[class*='description']",
-        "[class*='Description']", ".summary",
-    ])
+    category_elem = card.select_one("[class*='jobCategory'], [class*='occupation']")
+    category = category_elem.get_text(strip=True) if category_elem else ""
 
     return {
-        "source_url": link or current_url,
+        "source_url": href,
         "title": title,
         "company_name": company,
         "salary_min": salary_min,
@@ -146,27 +125,49 @@ def _parse_card(card, current_url: str, fallback_pref: str) -> dict | None:
     }
 
 
-def _extract_text(element, selectors: list[str]) -> str:
-    for sel in selectors:
-        found = element.select_one(sel)
-        if found:
-            return found.get_text(strip=True)
-    return ""
+def _find_next_page(soup: BeautifulSoup, current_url: str) -> str | None:
+    # パターン1: rel="next"
+    next_link = soup.select_one("a[rel='next']")
+    if next_link and next_link.get("href"):
+        href = next_link["href"]
+        return href if href.startswith("http") else urljoin(BASE_URL, href)
 
-
-def _find_next_page(soup: BeautifulSoup) -> str | None:
-    for sel in ["a.next", "a[rel='next']", ".pagination .next a", ".pager .next a"]:
-        link = soup.select_one(sel)
-        if link and link.get("href"):
-            href = link["href"]
-            return href if href.startswith("http") else urljoin(BASE_URL, href)
-
-    for link in soup.select(".pagination a, .pager a, [class*='page'] a"):
+    # パターン2: "次へ" や ">" テキストのリンク
+    for link in soup.select("a[href]"):
         text = link.get_text(strip=True)
-        if text in ("次へ", "次", "＞", ">", "›", ">>"):
+        if text in ("次へ", "次", "＞", ">", "›", "次のページ"):
             href = link.get("href", "")
             if href:
                 return href if href.startswith("http") else urljoin(BASE_URL, href)
+
+    # パターン3: aria-label="次のページ" など
+    next_link = soup.select_one("a[aria-label*='次'], button[aria-label*='次']")
+    if next_link and next_link.get("href"):
+        href = next_link["href"]
+        return href if href.startswith("http") else urljoin(BASE_URL, href)
+
+    # パターン4: paginationコンテナ内の現在ページの次
+    for container in soup.select("[class*='paginat'], [class*='Paginat'], [class*='pager'], [class*='Pager']"):
+        current = container.select_one("[class*='current'], [class*='active'], [aria-current]")
+        if current:
+            next_sib = current.find_next_sibling("a")
+            if next_sib and next_sib.get("href"):
+                href = next_sib["href"]
+                return href if href.startswith("http") else urljoin(BASE_URL, href)
+
+    # パターン5: ?page=N のURL推測
+    import re
+    match = re.search(r'[?&]page=(\d+)', current_url)
+    if match:
+        current_page = int(match.group(1))
+        next_page = current_page + 1
+        return re.sub(r'([?&])page=\d+', f'\\1page={next_page}', current_url)
+
+    # 初回ページ（pageパラメータなし）→ ?page=2 を試す
+    if "page=" not in current_url:
+        separator = "&" if "?" in current_url else "?"
+        return f"{current_url}{separator}page=2"
+
     return None
 
 
@@ -174,10 +175,13 @@ def parse_detail_page(html: str) -> dict:
     soup = BeautifulSoup(html, "lxml")
     detail = {}
 
-    rows = soup.select("table tr, dl, .detail-section, .job-detail-section")
+    rows = soup.select(
+        "table tr, dl, [class*='detail'], [class*='Detail'], "
+        "[class*='tableRow'], [class*='infoItem']"
+    )
     for row in rows:
-        header = row.select_one("th, dt, .label, .item-label")
-        value = row.select_one("td, dd, .value, .item-value")
+        header = row.select_one("th, dt, [class*='label'], [class*='Label'], [class*='heading']")
+        value = row.select_one("td, dd, [class*='value'], [class*='Value'], [class*='content']")
         if not header or not value:
             continue
         h = header.get_text(strip=True)
@@ -209,13 +213,15 @@ def parse_detail_page(html: str) -> dict:
 
 def get_total_count(html: str) -> int | None:
     soup = BeautifulSoup(html, "lxml")
-    for el in soup.select("[class*='count'], [class*='Count'], [class*='total'], .result-num"):
-        text = el.get_text(strip=True)
-        nums = re.findall(r"[\d,]+", text)
+    result_info = soup.select_one("[class*='resultInfo'], [class*='ResultInfo']")
+    if result_info:
+        text = result_info.get_text(strip=True)
+        nums = re.findall(r'([\d,]+)', text)
         for n in nums:
             val = int(n.replace(",", ""))
             if val > 0:
                 return val
+
     text = soup.get_text()
     match = re.search(r"([\d,]+)\s*件", text)
     if match:
