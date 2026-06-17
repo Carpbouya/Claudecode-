@@ -11,6 +11,8 @@ def parse_salary(text: str) -> tuple[int | None, int | None]:
         return None, None
     cleaned = text.replace(",", "").replace("，", "").replace(" ", "")
 
+    multiplier = _detect_salary_multiplier(text)
+
     numbers = re.findall(r"(\d+)", cleaned)
     if not numbers:
         return None, None
@@ -20,21 +22,39 @@ def parse_salary(text: str) -> tuple[int | None, int | None]:
         for m in re.finditer(r"(\d+)万(\d+)?", cleaned):
             man = int(m.group(1))
             sub = int(m.group(2)) if m.group(2) else 0
-            vals.append(man * 10000 + sub)
+            vals.append((man * 10000 + sub) * multiplier)
         if len(vals) >= 2:
-            return vals[0], vals[1]
+            return int(vals[0]), int(vals[1])
         elif len(vals) == 1:
-            return vals[0], vals[0]
+            return int(vals[0]), int(vals[0])
 
     if len(numbers) >= 2:
         a, b = int(numbers[0]), int(numbers[1])
         if a > 10000:
-            return a, b
-        return a * 10000, b * 10000
+            return int(a * multiplier), int(b * multiplier)
+        return int(a * 10000 * multiplier), int(b * 10000 * multiplier)
     val = int(numbers[0])
     if val > 10000:
-        return val, val
-    return val * 10000, val * 10000
+        return int(val * multiplier), int(val * multiplier)
+    return int(val * 10000 * multiplier), int(val * 10000 * multiplier)
+
+
+def _detect_salary_multiplier(text: str) -> float:
+    if "年収" in text or "年俸" in text:
+        return 1
+    if "月給" in text or "月収" in text:
+        return 14
+    if "日給" in text:
+        return 260
+    if "時給" in text:
+        return 2080
+    # 金額が100万以上なら年収扱い、未満なら月給扱い
+    nums = re.findall(r"(\d+)万", text)
+    if nums and int(nums[0]) >= 100:
+        return 1
+    if nums:
+        return 14
+    return 1
 
 
 def detect_prefecture(text: str) -> str:
