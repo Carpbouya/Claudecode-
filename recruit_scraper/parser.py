@@ -121,48 +121,41 @@ def _parse_card(card, current_url: str, fallback_pref: str) -> dict | None:
     }
 
 
+def _is_valid_next_url(href: str) -> bool:
+    if not href:
+        return False
+    full = href if href.startswith("http") else urljoin(BASE_URL, href)
+    return "area-" in full or "cursor=" in full or "page=" in full
+
+
+def _to_full_url(href: str) -> str:
+    return href if href.startswith("http") else urljoin(BASE_URL, href)
+
+
 def _find_next_page(soup: BeautifulSoup, current_url: str) -> str | None:
     # パターン1: rel="next"
     next_link = soup.select_one("a[rel='next']")
-    if next_link and next_link.get("href"):
-        href = next_link["href"]
-        return href if href.startswith("http") else urljoin(BASE_URL, href)
+    if next_link and next_link.get("href") and _is_valid_next_url(next_link["href"]):
+        return _to_full_url(next_link["href"])
 
-    # パターン2: "次へ" や ">" テキストのリンク
+    # パターン2: "次へ" テキストのリンク
     for link in soup.select("a[href]"):
         text = link.get_text(strip=True)
         if text in ("次へ", "次", "＞", ">", "›", "次のページ"):
             href = link.get("href", "")
-            if href:
-                return href if href.startswith("http") else urljoin(BASE_URL, href)
+            if _is_valid_next_url(href):
+                return _to_full_url(href)
 
-    # パターン3: aria-label="次のページ" など
-    next_link = soup.select_one("a[aria-label*='次'], button[aria-label*='次']")
-    if next_link and next_link.get("href"):
-        href = next_link["href"]
-        return href if href.startswith("http") else urljoin(BASE_URL, href)
+    # パターン3: aria-label="次のページ"
+    next_link = soup.select_one("a[aria-label*='次']")
+    if next_link and next_link.get("href") and _is_valid_next_url(next_link["href"]):
+        return _to_full_url(next_link["href"])
 
-    # パターン4: paginationコンテナ内の現在ページの次
-    for container in soup.select("[class*='paginat'], [class*='Paginat'], [class*='pager'], [class*='Pager']"):
-        current = container.select_one("[class*='current'], [class*='active'], [aria-current]")
-        if current:
-            next_sib = current.find_next_sibling("a")
-            if next_sib and next_sib.get("href"):
-                href = next_sib["href"]
-                return href if href.startswith("http") else urljoin(BASE_URL, href)
-
-    # パターン5: ?page=N のURL推測
-    import re
-    match = re.search(r'[?&]page=(\d+)', current_url)
-    if match:
-        current_page = int(match.group(1))
-        next_page = current_page + 1
-        return re.sub(r'([?&])page=\d+', f'\\1page={next_page}', current_url)
-
-    # 初回ページ（pageパラメータなし）→ ?page=2 を試す
-    if "page=" not in current_url:
-        separator = "&" if "?" in current_url else "?"
-        return f"{current_url}{separator}page=2"
+    # パターン4: cursorリンクを探す（このサイトのページネーション方式）
+    for link in soup.select("a[href*='cursor=']"):
+        href = link.get("href", "")
+        if href and "area-" in href:
+            return _to_full_url(href)
 
     return None
 
