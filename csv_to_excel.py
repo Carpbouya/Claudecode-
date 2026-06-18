@@ -1,6 +1,6 @@
 """
-CSV → Excel 変換スクリプト
-対象: r-agentの求人CSVデータ
+Excel → Excel 変換スクリプト
+対象: r-agentの求人Excelデータ（生データ）
 出力: 建築営業_市場調査 / サマリー の2シート構成
 """
 
@@ -9,9 +9,9 @@ import re
 
 # ── 設定 ──────────────────────────────────────────────────────────────────────
 
-INPUT_CSV   = "input.csv"   # 変換元CSVファイルのパス ← ここを変更
+INPUT_XLSX  = "input.xlsx"  # 変換元Excelファイルのパス ← ここを変更
+INPUT_SHEET = 0             # 読み込むシート番号 or シート名（0 = 先頭シート）
 OUTPUT_XLSX = "output.xlsx" # 出力先Excelファイルのパス ← ここを変更
-ENCODING    = "utf-8"       # 文字化けする場合は "shift_jis" や "cp932" に変更
 
 # ── 給与パース ────────────────────────────────────────────────────────────────
 
@@ -136,7 +136,7 @@ def format_tags(keywords) -> str | None:
 
 # ── メイン処理 ────────────────────────────────────────────────────────────────
 
-df = pd.read_csv(INPUT_CSV, encoding=ENCODING, engine='python')
+df = pd.read_excel(INPUT_XLSX, sheet_name=INPUT_SHEET)
 
 records = []
 for _, row in df.iterrows():
