@@ -109,6 +109,6 @@ for sheet_name in xl.sheet_names:
             '必須要件':       extract_hissu(row.get('コンテンツ5')),
         })
 
-df_out = pd.DataFrame(all_records).T  # 転置（縦横逆）
-df_out.to_excel(OUTPUT_XLSX, sheet_name='データ', index=True, header=False, engine='openpyxl')
-print(f"\n完了: {len(all_records)}件 → {OUTPUT_XLSX}")
+df_out = pd.DataFrame(all_records)
+df_out.to_excel(OUTPUT_XLSX, sheet_name='データ', index=False, engine='openpyxl')
+print(f"\n完了: {len(df_out)}件 → {OUTPUT_XLSX}")
