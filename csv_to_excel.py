@@ -51,7 +51,7 @@ def parse_salary(kyuyo_type, kyuyo_amount):
         upper_man = lower_man
 
     if '月給' in kyuyo_type:
-        method, mult = '月給×14', 14
+        method, mult = '月給×15', 15
     elif '年俸' in kyuyo_type:
         method, mult = '年俸そのまま', 1
     else:
