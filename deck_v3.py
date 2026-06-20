@@ -92,6 +92,18 @@ def glst(row):
     if re.search(r'グロース市場|東証グロース',t): return 'グロース'
     if re.search(r'上場企業|上場G|一部上場',t): return '上場(区分不明)'
     return '非上場/不明'
+def gage(row):
+    at=' '.join(str(row.get(c) or '') for c in ('キーワード','コンテンツ','コンテンツ5'))
+    m=re.search(r'(\d{2})歳(?:以下|まで|未満)',at)
+    upper=int(m.group(1)) if m else None
+    m2=re.search(r'(\d{2})歳(?:以上|から)',at)
+    lower=int(m2.group(1)) if m2 else None
+    agefree=bool(re.search(r'年齢不問',at))
+    g20=bool(re.search(r'20代',at))
+    g30=bool(re.search(r'30代',at))
+    g40=bool(re.search(r'40代',at))
+    return upper,lower,agefree,g20,g30,g40
+
 BEN={'リモートワーク可':r'リモート|在宅勤務|テレワーク','フレックス制':r'フレックス',
      '転勤なし':r'転勤なし|転勤無し','社宅・住宅補助':r'社宅|住宅手当|住宅補助|家賃補助',
      '資格取得支援':r'資格取得|資格支援','育休・産休実績':r'育休|産休',
@@ -123,9 +135,11 @@ for cat,fp in FILES.items():
         for _,row in d.iterrows():
             at=' '.join(str(row.get(c) or '') for c in ('キーワード','コンテンツ','コンテンツ5'))
             lo,hi=psal(row.get('給与'),row.get('給与2'))
+            au,al,af,g20,g30,g40=gage(row)
             r={'カテゴリ':cat,'企業名':row.get('名前'),
                '下限':lo,'上限':hi,'下限帯':bnd(lo),'上限帯':bnd(hi),
-               '年間休日':gnk(row),'月残業':gzg(row),'上場':glst(row)}
+               '年間休日':gnk(row),'月残業':gzg(row),'上場':glst(row),
+               '年齢上限':au,'年齢下限':al,'年齢不問':af,'20代':g20,'30代':g30,'40代':g40}
             for k,p in BEN.items(): r[f'B_{k}']=bool(re.search(p,at))
             for k,p in LIC.items(): r[f'L_{k}']=bool(re.search(p,at))
             recs.append(r)
@@ -566,6 +580,75 @@ ax2.set_facecolor('white'); ax2.tick_params(bottom=False,left=False)
 ax2.set_ylabel('記載率（%）',fontproperties=JP,fontsize=10,color=cG)
 fig2.patch.set_facecolor('white'); plt.tight_layout(pad=0.5)
 addimg(sl,fig2img(fig2),6.0,2.05,7.1,5.05)
+
+# ── S11: 年齢条件 ───────────────────────────────────────────────────────────
+sl=addsl(prs)
+title_bar(sl,'年齢条件の記載状況（N=10,526件）：上限年齢・世代訴求・年齢不問の分布','🎂 Age Condition Analysis',11)
+
+age_with=df['年齢上限'].notna().sum()
+age_pct=round(age_with/len(df)*100,1)
+agefree_pct=round(df['年齢不問'].mean()*100,1)
+age_med=int(df['年齢上限'].dropna().median()) if age_with>0 else 0
+kpi_box(sl,'年齢上限 記載あり',f'{age_pct}','%',0.22,0.9,accent=BLUE)
+kpi_box(sl,'上限年齢 中央値',f'{age_med}','歳',4.27,0.9,accent=NAVY)
+kpi_box(sl,'年齢不問 記載率',f'{agefree_pct}','%',8.32,0.9,accent=TEAL)
+
+# 左: 年齢上限分布
+section_header(sl,'年齢上限 分布（記載あり求人のみ）',0.22,2.08,6.3,LBLUE,BLUE)
+age_bins=[0,25,30,35,40,45,99]
+age_lbs=['25歳以下','26-30歳','31-35歳','36-40歳','41-45歳','46歳以上']
+age_cut=pd.cut(df['年齢上限'].dropna(),bins=age_bins,labels=age_lbs,right=True)
+age_cnt=age_cut.value_counts().reindex(age_lbs).fillna(0).astype(int)
+fig1,ax1=plt.subplots(figsize=(5.5,3.5))
+bar_ca=[cR if '31-35' in l else cB for l in age_lbs]
+bars=ax1.barh(age_lbs,age_cnt.values,color=bar_ca,height=0.5,edgecolor='none')
+for bar,v in zip(bars,age_cnt.values):
+    if v>0:
+        ax1.text(v+0.5,bar.get_y()+bar.get_height()/2,f'{v:,}件',
+                 va='center',ha='left',fontsize=11,color=cD,fontproperties=JP)
+for tick in ax1.get_yticklabels(): tick.set_fontproperties(JP)
+ax1.set_xlim(0,age_cnt.max()*1.25 if age_cnt.max()>0 else 10); ax1.xaxis.set_visible(False)
+ax1.spines['top'].set_visible(False); ax1.spines['right'].set_visible(False)
+ax1.spines['left'].set_visible(False); ax1.spines['bottom'].set_visible(False)
+ax1.set_facecolor('white'); ax1.tick_params(left=False,bottom=False)
+fig1.patch.set_facecolor('white'); plt.tight_layout(pad=0.5)
+addimg(sl,fig2img(fig1),0.22,2.42,6.3,4.5)
+
+# 右: 世代別訴求率 + 職種別年齢上限
+section_header(sl,'世代・年齢訴求キーワード 記載率',6.52,2.08,6.6,LBLUE,NAVY)
+gen_labs=['20代活躍','30代活躍','40代可','年齢不問']
+gen_vals=[round(df['20代'].mean()*100,1),round(df['30代'].mean()*100,1),
+          round(df['40代'].mean()*100,1),round(df['年齢不問'].mean()*100,1)]
+fig2,ax2=plt.subplots(figsize=(5.5,2.2))
+bar_cg=[cB,cT,'#6B7280','#1A3460']
+bars=ax2.barh(gen_labs,gen_vals,color=bar_cg,height=0.5,edgecolor='none')
+for bar,v in zip(bars,gen_vals):
+    ax2.text(v+0.3,bar.get_y()+bar.get_height()/2,f'{v}%',
+             va='center',ha='left',fontsize=12,fontweight='bold',color=cD,fontproperties=JP)
+for tick in ax2.get_yticklabels(): tick.set_fontproperties(JP)
+ax2.set_xlim(0,max(gen_vals)*1.4 if max(gen_vals)>0 else 10); ax2.xaxis.set_visible(False)
+ax2.spines['top'].set_visible(False); ax2.spines['right'].set_visible(False)
+ax2.spines['left'].set_visible(False); ax2.spines['bottom'].set_visible(False)
+ax2.set_facecolor('white'); ax2.tick_params(left=False,bottom=False)
+fig2.patch.set_facecolor('white'); plt.tight_layout(pad=0.5)
+addimg(sl,fig2img(fig2),6.52,2.42,6.6,2.3)
+
+section_header(sl,'職種別 年齢上限 中央値（記載あり）',6.52,4.82,6.6,LGRAY,MID)
+cat_age=df.groupby('カテゴリ')['年齢上限'].median().dropna().sort_values()
+if len(cat_age)>0:
+    fig3,ax3=plt.subplots(figsize=(5.5,2.0))
+    bar_cc=[cT if v==cat_age.max() else cB for v in cat_age.values]
+    bars=ax3.barh(cat_age.index,cat_age.values,color=bar_cc,height=0.5,edgecolor='none')
+    for bar,v in zip(bars,cat_age.values):
+        ax3.text(v+0.2,bar.get_y()+bar.get_height()/2,f'{int(v)}歳',
+                 va='center',ha='left',fontsize=11,color=cD,fontproperties=JP)
+    for tick in ax3.get_yticklabels(): tick.set_fontproperties(JP)
+    ax3.set_xlim(20,55); ax3.xaxis.set_visible(False)
+    ax3.spines['top'].set_visible(False); ax3.spines['right'].set_visible(False)
+    ax3.spines['left'].set_visible(False); ax3.spines['bottom'].set_visible(False)
+    ax3.set_facecolor('white'); ax3.tick_params(left=False,bottom=False)
+    fig3.patch.set_facecolor('white'); plt.tight_layout(pad=0.5)
+    addimg(sl,fig2img(fig3),6.52,5.16,6.6,2.0)
 
 # ── SAVE ───────────────────────────────────────────────────────────────────
 out='/tmp/建設業界_採用市場調査v2.pptx'
