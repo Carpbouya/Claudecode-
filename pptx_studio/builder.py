@@ -290,6 +290,17 @@ def _hbar_panel(slide, t, labels, vals, hl_label, median_label,
              stat_w, row_h - 0.04, stat_str, 9, color=tc, bold=is_hl)
 
 
+def _calc_top_pct(labels, vals, hl_label):
+    if not hl_label or hl_label not in labels:
+        return None
+    idx = labels.index(hl_label)
+    above = sum(vals[idx:])
+    total = sum(vals)
+    if total == 0:
+        return None
+    return above / total * 100
+
+
 def s_income(prs, d, t, pg, company, logo_bytes=None):
     """Income distribution slide: left KPI panel + two horizontal bar charts."""
     slide = _blank(prs)
@@ -330,6 +341,29 @@ def s_income(prs, d, t, pg, company, logo_bytes=None):
              label_str, 10, color=t.colors.text_mid)
         info_y += 0.38
 
+    hl_lower = d.get("highlight_lower", "")
+    hl_upper = d.get("highlight_upper", "")
+    pct_l = _calc_top_pct(labels, lower, hl_lower)
+    pct_u = _calc_top_pct(labels, upper, hl_upper)
+
+    info_y += 0.15
+    _rect(slide, kpi_x, info_y, 2.8, 0.01, fill="#E5E7EB")
+    info_y += 0.15
+    _box(slide, kpi_x, info_y, 2.8, 0.28,
+         "佐藤工業の市場ポジション", 10, bold=True, color=t.colors.text_dark)
+    info_y += 0.32
+    if pct_l is not None:
+        _box(slide, kpi_x, info_y, 1.5, 0.45,
+             f"上位 {pct_l:.0f}%", 22, bold=True, color="#2563EB")
+        _box(slide, kpi_x + 1.5, info_y + 0.08, 1.5, 0.3,
+             f"下限（{hl_lower}万円帯）", 9, color=t.colors.text_mid)
+        info_y += 0.48
+    if pct_u is not None:
+        _box(slide, kpi_x, info_y, 1.5, 0.45,
+             f"上位 {pct_u:.0f}%", 22, bold=True, color="#2563EB")
+        _box(slide, kpi_x + 1.5, info_y + 0.08, 1.5, 0.3,
+             f"上限（{hl_upper}万円帯）", 9, color=t.colors.text_mid)
+
     chart_top = 1.65
     chart_h = H - chart_top - 0.65
     has_upper = upper and any(v > 0 for v in upper)
@@ -337,22 +371,121 @@ def s_income(prs, d, t, pg, company, logo_bytes=None):
     if has_upper:
         pw = (W - 3.8) / 2 - 0.15
         _hbar_panel(slide, t, labels, lower,
-                    d.get("highlight_lower", ""),
+                    hl_lower,
                     d.get("median_lower", ""),
                     "下限年収分布", lower_n,
                     3.6, chart_top, pw, chart_h)
         _hbar_panel(slide, t, labels, upper,
-                    d.get("highlight_upper", ""),
+                    hl_upper,
                     d.get("median_upper", ""),
                     "上限年収分布", upper_n,
                     3.6 + pw + 0.3, chart_top, pw, chart_h)
     else:
         pw = W - 4.0
         _hbar_panel(slide, t, labels, lower,
-                    d.get("highlight_lower", ""),
+                    hl_lower,
                     d.get("median_lower", ""),
                     "下限年収分布", lower_n,
                     3.6, chart_top, pw, chart_h)
+
+    if d.get("note"):
+        _box(slide, 0.38, H - 0.52, W - 0.76, 0.3,
+             f"※ {d['note']}", t.typo.sz_sm, color=t.colors.text_mid)
+    _footer(slide, t, pg, company)
+
+
+def s_benchmark(prs, d, t, pg, company, logo_bytes=None):
+    """Benchmark slide: KPI comparisons + horizontal percentage bars."""
+    slide = _blank(prs)
+    _bg(slide, t.colors.surface)
+    _title_bar(slide, t, d.get("slide_title", ""), d.get("subtitle", ""), logo_bytes)
+
+    kpis = d.get("kpis", [])
+    bars = d.get("bars", [])
+    extras = d.get("extras", [])
+
+    kpi_x, kpi_top = 0.45, 1.75
+    kpi_w = 4.2
+
+    for i, kpi in enumerate(kpis):
+        y = kpi_top + i * 0.72
+        _rect(slide, kpi_x, y, kpi_w, 0.62, fill="#FFFFFF")
+        _rect(slide, kpi_x, y, 0.06, 0.62, fill=t.colors.accent)
+        _box(slide, kpi_x + 0.2, y + 0.04, 1.8, 0.26,
+             kpi.get("label", ""), 10, bold=True, color=t.colors.text_dark)
+        sato_v = kpi.get("sato", "")
+        market_v = kpi.get("market", "")
+        diff_v = kpi.get("diff", "")
+        _box(slide, kpi_x + 0.2, y + 0.30, 1.3, 0.28,
+             sato_v, 16, bold=True, color=t.colors.accent)
+        _box(slide, kpi_x + 1.6, y + 0.34, 1.2, 0.22,
+             f"市場 {market_v}", 9, color=t.colors.text_mid)
+        if diff_v:
+            dc = "#059669" if diff_v.startswith("+") or diff_v.startswith("−") and "−" in diff_v else t.colors.text_mid
+            if diff_v.startswith("+"):
+                dc = "#059669"
+            elif diff_v.startswith("−") or diff_v.startswith("-"):
+                dc = "#059669"
+            elif diff_v.startswith("±"):
+                dc = t.colors.text_mid
+            else:
+                dc = "#EF4444"
+            _box(slide, kpi_x + 3.0, y + 0.14, 1.0, 0.34,
+                 diff_v, 14, bold=True, color=dc)
+
+    bar_x = 5.2
+    bar_w_total = W - bar_x - 0.5
+    bar_top = 1.75
+    _box(slide, bar_x, bar_top - 0.35, bar_w_total, 0.3,
+         "求人票の記載率", 11, bold=True, color=t.colors.text_dark)
+
+    n_bars = len(bars)
+    avail_h = H - bar_top - 1.0
+    row_h = min(avail_h / max(n_bars, 1), 0.52)
+    label_w = bar_w_total * 0.35
+    chart_w = bar_w_total * 0.40
+    stat_w = bar_w_total * 0.22
+
+    for i, bar in enumerate(bars):
+        y = bar_top + i * row_h
+        pct = bar.get("pct", 0)
+        lbl = bar.get("label", "")
+        has = bar.get("has_sato", False)
+
+        _box(slide, bar_x, y + 0.04, label_w - 0.05, row_h - 0.08,
+             lbl, 9, color=t.colors.text_dark)
+
+        bw = (pct / 100.0) * chart_w
+        bw = max(bw, 0.04)
+        if pct < 15:
+            fill = "#EF4444"
+        elif pct < 50:
+            fill = "#F59E0B"
+        else:
+            fill = t.colors.accent
+        _rect(slide, bar_x + label_w, y + 0.08, bw, row_h - 0.18, fill=fill)
+
+        pct_str = f"{pct:.1f}%"
+        _box(slide, bar_x + label_w + bw + 0.06, y + 0.04,
+             stat_w, row_h - 0.08, pct_str, 9, bold=True, color=t.colors.text_dark)
+
+        if has:
+            _rect(slide, bar_x + label_w + chart_w + stat_w - 0.1, y + 0.10,
+                  0.22, row_h - 0.22, fill="#DCFCE7")
+            _box(slide, bar_x + label_w + chart_w + stat_w - 0.1, y + 0.10,
+                 0.22, row_h - 0.22, "✓", 9, bold=True, color="#059669")
+
+    if extras:
+        ex_y = bar_top + n_bars * row_h + 0.15
+        _rect(slide, bar_x, ex_y, bar_w_total, 0.01, fill="#E5E7EB")
+        ex_y += 0.12
+        _box(slide, bar_x, ex_y, bar_w_total, 0.22,
+             "佐藤工業の追加記載", 9, bold=True, color=t.colors.text_dark)
+        ex_y += 0.25
+        for ex in extras:
+            _box(slide, bar_x + 0.15, ex_y, bar_w_total - 0.2, 0.22,
+                 f"• {ex}", 9, color=t.colors.accent)
+            ex_y += 0.24
 
     if d.get("note"):
         _box(slide, 0.38, H - 0.52, W - 0.76, 0.3,
@@ -613,6 +746,7 @@ SLIDE_TYPES = {
     "table":       {"label": "データテーブル",      "icon": "📋", "desc": "CSVからテーブルを自動生成"},
     "quote":       {"label": "キーメッセージ",      "icon": "💬", "desc": "インパクトのある一言を大きく"},
     "income":      {"label": "年収分布比較",        "icon": "💰", "desc": "年収階級分布に自社レンジをハイライト"},
+    "benchmark":   {"label": "ベンチマーク比較",    "icon": "📏", "desc": "KPI比較＋記載率の横棒グラフ"},
     "closing":     {"label": "クロージング",        "icon": "🎯", "desc": "まとめ・お問い合わせ"},
 }
 
@@ -696,6 +830,11 @@ SLIDE_FIELDS = {
         {"key": "median_upper",    "label": "中央値帯（上限）",       "type": "text",     "default": ""},
         {"key": "note",            "label": "注記（任意）",           "type": "text",     "default": ""},
     ],
+    "benchmark": [
+        {"key": "slide_title", "label": "スライドタイトル",                       "type": "text",     "default": ""},
+        {"key": "subtitle",    "label": "サブタイトル",                           "type": "text",     "default": ""},
+        {"key": "note",        "label": "注記（任意）",                           "type": "text",     "default": ""},
+    ],
     "closing": [
         {"key": "main_message", "label": "メインメッセージ",                     "type": "text",     "default": "ありがとうございました"},
         {"key": "contact",      "label": "連絡先・URL（任意）",                  "type": "textarea", "default": ""},
@@ -714,6 +853,7 @@ BUILDERS = {
     "chart_pie":  s_chart_pie,
     "table":      s_table,
     "income":     s_income,
+    "benchmark":  s_benchmark,
     "quote":      s_quote,
     "closing":    s_closing,
 }
