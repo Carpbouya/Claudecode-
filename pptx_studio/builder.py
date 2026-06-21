@@ -78,13 +78,38 @@ def _bg(slide, color):
 def _img(slide, buf, l, t, w, h):
     slide.shapes.add_picture(buf, Inches(l), Inches(t), Inches(w), Inches(h))
 
-def _title_bar(slide, t: Theme, title: str, subtitle: str = ""):
+def _logo_img(slide, logo_bytes: bytes, l: float, t: float,
+              max_h: float, max_w: float | None = None):
+    """Add logo preserving aspect ratio; capped to max_h (and max_w if given)."""
+    if not logo_bytes:
+        return
+    try:
+        buf = io.BytesIO(logo_bytes)
+        sp = slide.shapes.add_picture(buf, Inches(l), Inches(t), height=Inches(max_h))
+        if max_w:
+            actual_w_in = sp.width / 914400  # EMU → inches
+            if actual_w_in > max_w:
+                sp._element.getparent().remove(sp._element)
+                buf.seek(0)
+                slide.shapes.add_picture(buf, Inches(l), Inches(t), width=Inches(max_w))
+    except Exception:
+        pass
+
+def _title_bar(slide, t: Theme, title: str, subtitle: str = "",
+               logo_bytes: bytes | None = None):
     _rect(slide, 0, 0, W, 0.07, fill=t.colors.accent)
     _rect(slide, 0, 0.07, W, 1.2, fill=t.colors.primary)
-    _box(slide, 0.55, 0.18, W-1.1, 0.72, title,
+    title_w = W - 1.1
+    if logo_bytes:
+        logo_max_h = 0.82
+        logo_max_w = 2.2
+        logo_l = W - logo_max_w - 0.2
+        _logo_img(slide, logo_bytes, logo_l, 0.22, logo_max_h, logo_max_w)
+        title_w = logo_l - 0.55 - 0.1
+    _box(slide, 0.55, 0.18, title_w, 0.72, title,
          t.typo.sz_h1, bold=True, color=t.colors.text_light)
     if subtitle:
-        _box(slide, 0.55, 0.9, W-1.1, 0.35, subtitle,
+        _box(slide, 0.55, 0.9, title_w, 0.35, subtitle,
              t.typo.sz_sm, color="#9CA3AF")
 
 def _footer(slide, t: Theme, pg: int, company: str = ""):
@@ -211,22 +236,26 @@ def _chart_pie(csv: str, title: str, accent: str) -> io.BytesIO | None:
 
 # ── Slide builders ─────────────────────────────────────────────
 
-def s_title(prs, d, t: Theme, pg, company):
+def s_title(prs, d, t: Theme, pg, company, logo_bytes=None):
     slide = _blank(prs)
     _bg(slide, t.colors.primary)
     # Vertical accent stripe + echo in secondary color
     _rect(slide, 0, 0, 0.09, H, fill=t.colors.accent)
     _rect(slide, 0.09, 0, 0.035, H, fill=t.colors.secondary)
-    # Subtle right panel in secondary color
+    # Right decorative panel
     _rect(slide, 10.8, 0, 2.53, H, fill=t.colors.secondary)
     # Divider
     _rect(slide, 0.85, 3.88, 5.0, 0.05, fill=t.colors.accent)
-    # Text
-    _box(slide, 0.85, 1.6, 12.0, 2.1,
+    # Logo — prominent placement in upper-right
+    if logo_bytes:
+        _logo_img(slide, logo_bytes, W-4.2, 0.3, 1.55, 3.5)
+    # Title text (shrink if logo present)
+    title_w = 9.5 if logo_bytes else 12.0
+    _box(slide, 0.85, 1.6, title_w, 2.1,
          d.get("title", "タイトルを入力"),
          t.typo.sz_huge, bold=True, color=t.colors.text_light)
     if d.get("subtitle"):
-        _box(slide, 0.85, 3.95, 11.5, 0.7, d["subtitle"],
+        _box(slide, 0.85, 3.95, title_w, 0.7, d["subtitle"],
              t.typo.sz_h3, color="#9CA3AF")
     metas = [x for x in [d.get("date"), d.get("author")] if x]
     if metas:
@@ -237,7 +266,7 @@ def s_title(prs, d, t: Theme, pg, company):
              t.typo.sz_sm, color="#6B7280", align=PP_ALIGN.RIGHT)
 
 
-def s_section(prs, d, t: Theme, pg, company):
+def s_section(prs, d, t: Theme, pg, company, logo_bytes=None):
     slide = _blank(prs)
     _bg(slide, t.colors.surface_alt)
     _rect(slide, 0, 0, 0.5, H, fill=t.colors.accent)
@@ -254,10 +283,10 @@ def s_section(prs, d, t: Theme, pg, company):
     _footer(slide, t, pg, company)
 
 
-def s_kpi3(prs, d, t: Theme, pg, company):
+def s_kpi3(prs, d, t: Theme, pg, company, logo_bytes=None):
     slide = _blank(prs)
     _bg(slide, t.colors.surface)
-    _title_bar(slide, t, d.get("slide_title", ""), d.get("subtitle", ""))
+    _title_bar(slide, t, d.get("slide_title", ""), d.get("subtitle", ""), logo_bytes)
     card_w, card_h, top = 3.7, 4.9, 1.38
     xs = [0.38, 4.48, 8.58]
     for i in range(1, 4):
@@ -279,10 +308,10 @@ def s_kpi3(prs, d, t: Theme, pg, company):
     _footer(slide, t, pg, company)
 
 
-def s_bullet(prs, d, t: Theme, pg, company):
+def s_bullet(prs, d, t: Theme, pg, company, logo_bytes=None):
     slide = _blank(prs)
     _bg(slide, t.colors.surface)
-    _title_bar(slide, t, d.get("slide_title", ""), d.get("subtitle", ""))
+    _title_bar(slide, t, d.get("slide_title", ""), d.get("subtitle", ""), logo_bytes)
     cy = 1.48
     if d.get("lead"):
         _box(slide, 0.55, cy, W-1.1, 0.52,
@@ -300,10 +329,10 @@ def s_bullet(prs, d, t: Theme, pg, company):
     _footer(slide, t, pg, company)
 
 
-def s_two_column(prs, d, t: Theme, pg, company):
+def s_two_column(prs, d, t: Theme, pg, company, logo_bytes=None):
     slide = _blank(prs)
     _bg(slide, t.colors.surface)
-    _title_bar(slide, t, d.get("slide_title", ""), d.get("subtitle", ""))
+    _title_bar(slide, t, d.get("slide_title", ""), d.get("subtitle", ""), logo_bytes)
     mid = 6.78
     col_w = 5.9
     top = 1.42
@@ -327,10 +356,10 @@ def s_two_column(prs, d, t: Theme, pg, company):
     _footer(slide, t, pg, company)
 
 
-def _chart_slide(prs, d, t: Theme, pg, company, chart_fn):
+def _chart_slide(prs, d, t: Theme, pg, company, chart_fn, logo_bytes=None):
     slide = _blank(prs)
     _bg(slide, t.colors.surface)
-    _title_bar(slide, t, d.get("slide_title", ""), d.get("subtitle", ""))
+    _title_bar(slide, t, d.get("slide_title", ""), d.get("subtitle", ""), logo_bytes)
     buf = chart_fn(
         d.get("data_csv", ""), d.get("chart_title", ""),
         d.get("y_label", ""), t.colors.accent,
@@ -343,18 +372,18 @@ def _chart_slide(prs, d, t: Theme, pg, company, chart_fn):
     _footer(slide, t, pg, company)
 
 
-def s_chart_bar(prs, d, t, pg, company):
-    _chart_slide(prs, d, t, pg, company, _chart_bar)
+def s_chart_bar(prs, d, t, pg, company, logo_bytes=None):
+    _chart_slide(prs, d, t, pg, company, _chart_bar, logo_bytes)
 
 
-def s_chart_line(prs, d, t, pg, company):
-    _chart_slide(prs, d, t, pg, company, _chart_line)
+def s_chart_line(prs, d, t, pg, company, logo_bytes=None):
+    _chart_slide(prs, d, t, pg, company, _chart_line, logo_bytes)
 
 
-def s_chart_pie(prs, d, t: Theme, pg, company):
+def s_chart_pie(prs, d, t: Theme, pg, company, logo_bytes=None):
     slide = _blank(prs)
     _bg(slide, t.colors.surface)
-    _title_bar(slide, t, d.get("slide_title", ""), d.get("subtitle", ""))
+    _title_bar(slide, t, d.get("slide_title", ""), d.get("subtitle", ""), logo_bytes)
     buf = _chart_pie(d.get("data_csv", ""), d.get("chart_title", ""), t.colors.accent)
     if buf:
         _img(slide, buf, 1.5, 1.38, W-3.0, H-2.05)
@@ -364,10 +393,10 @@ def s_chart_pie(prs, d, t: Theme, pg, company):
     _footer(slide, t, pg, company)
 
 
-def s_table(prs, d, t: Theme, pg, company):
+def s_table(prs, d, t: Theme, pg, company, logo_bytes=None):
     slide = _blank(prs)
     _bg(slide, t.colors.surface)
-    _title_bar(slide, t, d.get("slide_title", ""), d.get("subtitle", ""))
+    _title_bar(slide, t, d.get("slide_title", ""), d.get("subtitle", ""), logo_bytes)
     raw = d.get("data_csv", "")
     rows = [[c.strip() for c in r.split(',')] for r in raw.strip().splitlines() if r.strip()]
     if not rows:
@@ -406,7 +435,7 @@ def s_table(prs, d, t: Theme, pg, company):
     _footer(slide, t, pg, company)
 
 
-def s_quote(prs, d, t: Theme, pg, company):
+def s_quote(prs, d, t: Theme, pg, company, logo_bytes=None):
     slide = _blank(prs)
     _bg(slide, t.colors.accent)
     _box(slide, 0.45, 0.15, 3.0, 2.8, "❝",
@@ -421,7 +450,7 @@ def s_quote(prs, d, t: Theme, pg, company):
     _footer(slide, t, pg, company)
 
 
-def s_closing(prs, d, t: Theme, pg, company):
+def s_closing(prs, d, t: Theme, pg, company, logo_bytes=None):
     slide = _blank(prs)
     _bg(slide, t.colors.primary)
     _rect(slide, 0, 0, W, 0.07, fill=t.colors.accent)
@@ -551,14 +580,28 @@ BUILDERS = {
 
 # ── Main entry ─────────────────────────────────────────────────
 
-def build_pptx(slides: list, theme: Theme, company: str = "") -> io.BytesIO:
+def build_pptx(
+    slides: list,
+    theme: Theme,
+    company: str = "",
+    logo_bytes: bytes | None = None,
+    logo_in_header: bool = True,
+) -> io.BytesIO:
+    """
+    Build a PPTX file from a list of slide dicts and a Theme.
+    logo_bytes      : raw bytes of a PNG/JPG logo image (optional)
+    logo_in_header  : if True, logo appears in every slide's title bar;
+                      it always appears prominently on the title slide.
+    """
     prs = Presentation()
     prs.slide_width  = Inches(W)
     prs.slide_height = Inches(H)
     for pg, slide_data in enumerate(slides, start=1):
         stype = slide_data.get("type", "bullet")
         builder = BUILDERS.get(stype, s_bullet)
-        builder(prs, slide_data, theme, pg, company)
+        # Title slide always gets the logo; other slides only if logo_in_header
+        show_logo = logo_bytes if (stype == "title" or logo_in_header) else None
+        builder(prs, slide_data, theme, pg, company, show_logo)
     buf = io.BytesIO()
     prs.save(buf)
     buf.seek(0)

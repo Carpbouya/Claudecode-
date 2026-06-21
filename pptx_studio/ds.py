@@ -2,8 +2,9 @@
 Design system — color tokens, typography tokens, 5 pre-built themes.
 Non-engineers pick a theme; every slide uses the same tokens automatically.
 """
+import copy
 from dataclasses import dataclass, field
-from typing import Dict
+from typing import Dict, Optional
 from pptx.dml.color import RGBColor
 
 
@@ -44,6 +45,32 @@ class Theme:
     emoji: str
     colors: Colors = field(default_factory=Colors)
     typo: Typo = field(default_factory=Typo)
+
+
+def _soft(hex_color: str, factor: float = 0.82) -> str:
+    """Return a light tint of hex_color for soft/background use."""
+    h = hex_color.lstrip('#')[:6]
+    r, g, b = int(h[:2], 16), int(h[2:4], 16), int(h[4:], 16)
+    r = min(255, int(r + (255 - r) * factor))
+    g = min(255, int(g + (255 - g) * factor))
+    b = min(255, int(b + (255 - b) * factor))
+    return f"#{r:02X}{g:02X}{b:02X}"
+
+
+def with_brand(
+    base: Theme,
+    primary: Optional[str] = None,
+    accent: Optional[str] = None,
+) -> Theme:
+    """Return a copy of base with optional color overrides applied."""
+    t = copy.deepcopy(base)
+    if primary:
+        t.colors.primary = primary
+        t.colors.secondary = primary
+    if accent:
+        t.colors.accent = accent
+        t.colors.accent_soft = _soft(accent)
+    return t
 
 
 THEMES: Dict[str, Theme] = {
