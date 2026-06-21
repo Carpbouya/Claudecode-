@@ -234,6 +234,132 @@ def _chart_pie(csv: str, title: str, accent: str) -> io.BytesIO | None:
     buf.seek(0)
     return buf
 
+def _parse_list(val):
+    if isinstance(val, list):
+        return val
+    return [v.strip() for v in str(val).split(',') if v.strip()]
+
+def _parse_nums(val):
+    raw = _parse_list(val)
+    out = []
+    for v in raw:
+        try:
+            out.append(float(v))
+        except ValueError:
+            out.append(0)
+    return out
+
+
+def _hbar_panel(slide, t, labels, vals, hl_label, median_label,
+                panel_title, n_count, x_off, top, panel_w, panel_h):
+    """Horizontal bar distribution panel matching Lega Company style."""
+    total = sum(vals) if sum(vals) > 0 else 1
+    max_v = max(vals) if vals else 1
+    bar_area_w = panel_w * 0.42
+    label_w = panel_w * 0.24
+    stat_w = panel_w * 0.30
+
+    _box(slide, x_off, top, panel_w * 0.55, 0.28,
+         f"{panel_title}  n={n_count:,}", 10, bold=True, color=t.colors.text_dark)
+    if median_label:
+        _box(slide, x_off + panel_w * 0.42, top, panel_w * 0.55, 0.28,
+             f"中央値 {median_label}万円", 9, color="#EF4444", align=PP_ALIGN.RIGHT)
+
+    n_bars = len(labels)
+    bar_top = top + 0.32
+    avail_h = panel_h - 0.38
+    row_h = min(avail_h / max(n_bars, 1), 0.42)
+
+    for i, (lbl, v) in enumerate(zip(labels, vals)):
+        y = bar_top + i * row_h
+        is_hl = (lbl == hl_label)
+        pct = (v / total * 100) if total > 0 else 0
+        bar_w = (v / max_v) * bar_area_w if max_v > 0 else 0
+        bar_w = max(bar_w, 0.06) if v > 0 else 0.06
+
+        _box(slide, x_off, y + 0.02, label_w - 0.05, row_h - 0.04,
+             lbl, 9, color=t.colors.text_mid)
+
+        fill = t.colors.accent if is_hl else "#D1D5DB"
+        _rect(slide, x_off + label_w, y + 0.06,
+              bar_w, row_h - 0.14, fill=fill)
+
+        stat_str = f"{int(v)}件 {pct:.1f}%"
+        tc = t.colors.text_dark if is_hl else t.colors.text_mid
+        _box(slide, x_off + label_w + bar_w + 0.08, y + 0.02,
+             stat_w, row_h - 0.04, stat_str, 9, color=tc, bold=is_hl)
+
+
+def s_income(prs, d, t, pg, company, logo_bytes=None):
+    """Income distribution slide: left KPI panel + two horizontal bar charts."""
+    slide = _blank(prs)
+    _bg(slide, t.colors.surface)
+    _title_bar(slide, t, d.get("slide_title", ""), d.get("subtitle", ""), logo_bytes)
+
+    labels = _parse_list(d.get("labels") or d.get("labels_csv", ""))
+    lower = _parse_nums(d.get("lower") or d.get("lower_csv", ""))
+    upper = _parse_nums(d.get("upper") or d.get("upper_csv", ""))
+
+    desc = d.get("description", "")
+    if desc:
+        _box(slide, 0.55, 1.32, W - 1.1, 0.3, desc, 10, color=t.colors.text_mid)
+
+    kpi_x, kpi_top = 0.45, 1.75
+    total_n = d.get("total_n", int(sum(lower)) if lower else 0)
+    total_co = d.get("total_companies", 0)
+    lower_n = d.get("lower_n", int(sum(lower)) if lower else 0)
+    upper_n = d.get("upper_n", int(sum(upper)) if upper else 0)
+
+    _box(slide, kpi_x, kpi_top, 2.5, 0.9,
+         f"{total_n:,}", 38, bold=True, color=t.colors.accent)
+    _box(slide, kpi_x + 2.0, kpi_top + 0.25, 1.2, 0.5,
+         "求人", 14, color=t.colors.text_mid)
+
+    info_y = kpi_top + 1.05
+    kpi_items = []
+    if total_co:
+        kpi_items.append((f"{total_co:,}社", "集計対象企業"))
+    kpi_items.append((f"{lower_n:,}件", "下限年収の記載あり"))
+    if upper_n:
+        kpi_items.append((f"{upper_n:,}件", "上限年収の記載あり"))
+
+    for val_str, label_str in kpi_items:
+        _box(slide, kpi_x, info_y, 1.2, 0.32,
+             val_str, 13, bold=True, color=t.colors.accent)
+        _box(slide, kpi_x + 1.2, info_y + 0.02, 2.0, 0.3,
+             label_str, 10, color=t.colors.text_mid)
+        info_y += 0.38
+
+    chart_top = 1.65
+    chart_h = H - chart_top - 0.65
+    has_upper = upper and any(v > 0 for v in upper)
+
+    if has_upper:
+        pw = (W - 3.8) / 2 - 0.15
+        _hbar_panel(slide, t, labels, lower,
+                    d.get("highlight_lower", ""),
+                    d.get("median_lower", ""),
+                    "下限年収分布", lower_n,
+                    3.6, chart_top, pw, chart_h)
+        _hbar_panel(slide, t, labels, upper,
+                    d.get("highlight_upper", ""),
+                    d.get("median_upper", ""),
+                    "上限年収分布", upper_n,
+                    3.6 + pw + 0.3, chart_top, pw, chart_h)
+    else:
+        pw = W - 4.0
+        _hbar_panel(slide, t, labels, lower,
+                    d.get("highlight_lower", ""),
+                    d.get("median_lower", ""),
+                    "下限年収分布", lower_n,
+                    3.6, chart_top, pw, chart_h)
+
+    if d.get("note"):
+        _box(slide, 0.38, H - 0.52, W - 0.76, 0.3,
+             f"※ {d['note']}", t.typo.sz_sm, color=t.colors.text_mid)
+    _footer(slide, t, pg, company)
+
+
 # ── Slide builders ─────────────────────────────────────────────
 
 def s_title(prs, d, t: Theme, pg, company, logo_bytes=None):
@@ -486,6 +612,7 @@ SLIDE_TYPES = {
     "chart_pie":   {"label": "円グラフ",            "icon": "🥧", "desc": "構成比を円グラフで表示"},
     "table":       {"label": "データテーブル",      "icon": "📋", "desc": "CSVからテーブルを自動生成"},
     "quote":       {"label": "キーメッセージ",      "icon": "💬", "desc": "インパクトのある一言を大きく"},
+    "income":      {"label": "年収分布比較",        "icon": "💰", "desc": "年収階級分布に自社レンジをハイライト"},
     "closing":     {"label": "クロージング",        "icon": "🎯", "desc": "まとめ・お問い合わせ"},
 }
 
@@ -557,6 +684,18 @@ SLIDE_FIELDS = {
         {"key": "message", "label": "メインメッセージ（インパクトのある一文）", "type": "textarea", "default": ""},
         {"key": "source",  "label": "出典・補足（任意）",                       "type": "text",     "default": ""},
     ],
+    "income": [
+        {"key": "slide_title",     "label": "スライドタイトル",       "type": "text",     "default": ""},
+        {"key": "chart_title",     "label": "グラフタイトル",         "type": "text",     "default": ""},
+        {"key": "labels_csv",      "label": "年収階級（カンマ区切り）","type": "text",     "default": "300-400,400-500,500-600,600-700,700-800,800-900,900-1000"},
+        {"key": "lower_csv",       "label": "下限分布（カンマ区切り）","type": "text",     "default": ""},
+        {"key": "upper_csv",       "label": "上限分布（カンマ区切り）","type": "text",     "default": ""},
+        {"key": "highlight_lower", "label": "自社該当帯（下限）",     "type": "text",     "default": ""},
+        {"key": "highlight_upper", "label": "自社該当帯（上限）",     "type": "text",     "default": ""},
+        {"key": "median_lower",    "label": "中央値帯（下限）",       "type": "text",     "default": ""},
+        {"key": "median_upper",    "label": "中央値帯（上限）",       "type": "text",     "default": ""},
+        {"key": "note",            "label": "注記（任意）",           "type": "text",     "default": ""},
+    ],
     "closing": [
         {"key": "main_message", "label": "メインメッセージ",                     "type": "text",     "default": "ありがとうございました"},
         {"key": "contact",      "label": "連絡先・URL（任意）",                  "type": "textarea", "default": ""},
@@ -574,6 +713,7 @@ BUILDERS = {
     "chart_line": s_chart_line,
     "chart_pie":  s_chart_pie,
     "table":      s_table,
+    "income":     s_income,
     "quote":      s_quote,
     "closing":    s_closing,
 }
