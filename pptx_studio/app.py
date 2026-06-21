@@ -9,6 +9,7 @@ import json
 import streamlit as st
 from builder import build_pptx, SLIDE_TYPES, SLIDE_FIELDS
 from ds import THEMES, with_brand
+from importer import extract_brand
 
 st.set_page_config(
     page_title="パワポスタジオ",
@@ -90,6 +91,8 @@ if "logo_header"   not in st.session_state: st.session_state.logo_header   = Tru
 if "use_custom_c"  not in st.session_state: st.session_state.use_custom_c  = False
 if "custom_pri"    not in st.session_state: st.session_state.custom_pri    = "#1F2937"
 if "custom_acc"    not in st.session_state: st.session_state.custom_acc    = "#3B82F6"
+if "import_result" not in st.session_state: st.session_state.import_result = None
+if "import_fname"  not in st.session_state: st.session_state.import_fname  = ""
 
 slides = st.session_state.slides
 
@@ -109,6 +112,88 @@ with st.sidebar:
     )
     st.session_state.theme_key = selected_theme
     theme = THEMES[selected_theme]
+
+    # ── 1.5 既存PPTXからデザインを読み込む ────────────────────
+    with st.expander("📂 既存スライドからデザインを読み込む"):
+        st.caption("社内の既存PPTXをアップロードしてカラー・ロゴを自動抽出します")
+        pptx_up = st.file_uploader(
+            "pptx_import",
+            type=["pptx"],
+            key="pptx_import",
+            label_visibility="collapsed",
+        )
+        if pptx_up is not None and pptx_up.name != st.session_state.import_fname:
+            with st.spinner("デザインを解析中…"):
+                try:
+                    r = extract_brand(pptx_up.read())
+                    st.session_state.import_result = r
+                    st.session_state.import_fname  = pptx_up.name
+                except Exception as e:
+                    st.error(f"解析エラー: {e}")
+
+        ir = st.session_state.import_result
+        if ir:
+            palette = ir.get("palette", [])
+
+            # Palette swatches — hover to see hex value
+            if palette:
+                sw = '<div style="display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 8px">'
+                for col in palette[:12]:
+                    sw += (
+                        f'<div title="{col}" style="width:24px;height:24px;'
+                        f'background:{col};border-radius:4px;cursor:default;'
+                        f'border:1.5px solid rgba(255,255,255,0.20)"></div>'
+                    )
+                sw += '</div>'
+                st.markdown(sw, unsafe_allow_html=True)
+
+            # Color selectors — pick from palette with swatch preview label
+            def _fmt(h):
+                return f"{h}"
+
+            opts = palette if palette else [ir["primary"], ir["accent"]]
+
+            pri_idx = opts.index(ir["primary"]) if ir["primary"] in opts else 0
+            acc_idx = opts.index(ir["accent"])  if ir["accent"]  in opts else min(1, len(opts)-1)
+
+            pc, ac = st.columns(2)
+            with pc:
+                sel_pri = st.selectbox(
+                    "Primary", options=opts, index=pri_idx,
+                    key="import_sel_pri",
+                    format_func=_fmt,
+                )
+                st.markdown(
+                    f'<div style="width:100%;height:18px;background:{sel_pri};'
+                    f'border-radius:3px;margin-top:-8px"></div>',
+                    unsafe_allow_html=True,
+                )
+            with ac:
+                sel_acc = st.selectbox(
+                    "Accent", options=opts, index=acc_idx,
+                    key="import_sel_acc",
+                    format_func=_fmt,
+                )
+                st.markdown(
+                    f'<div style="width:100%;height:18px;background:{sel_acc};'
+                    f'border-radius:3px;margin-top:-8px"></div>',
+                    unsafe_allow_html=True,
+                )
+
+            if ir.get("logo_bytes"):
+                st.image(io.BytesIO(ir["logo_bytes"]), width=110, caption="検出されたロゴ")
+
+            if st.button("このデザインを適用", use_container_width=True,
+                         type="primary", key="apply_import"):
+                st.session_state.use_custom_c = True
+                st.session_state.custom_pri   = sel_pri
+                st.session_state.custom_acc   = sel_acc
+                if ir.get("logo_bytes"):
+                    st.session_state.logo_bytes = ir["logo_bytes"]
+                st.success("適用しました！")
+                st.rerun()
+
+    st.markdown("---")
 
     # ── 2. ブランドカラーカスタマイズ ─────────────────────────
     with st.expander("🎨 ブランドカラーをカスタマイズ"):
