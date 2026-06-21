@@ -4,6 +4,7 @@
 
 起動: streamlit run app.py
 """
+import copy
 import io
 import json
 import streamlit as st
@@ -376,7 +377,7 @@ with col_list:
         preview = (preview or "")[:22]
         is_sel  = (st.session_state.sel == i)
 
-        r1, r2, r3, r4 = st.columns([5, 1, 1, 1])
+        r1, r2, r3, r4, r5 = st.columns([5, 1, 1, 1, 1])
         with r1:
             if st.button(
                 f"{info.get('icon','📄')}  {i+1}. {preview}",
@@ -399,6 +400,13 @@ with col_list:
                 _clear_form_state()
                 st.rerun()
         with r4:
+            if st.button("📋", key=f"bdup_{i}", use_container_width=True,
+                         help="このスライドを複製"):
+                slides.insert(i + 1, copy.deepcopy(slides[i]))
+                st.session_state.sel = i + 1
+                _clear_form_state()
+                st.rerun()
+        with r5:
             if st.button("🗑", key=f"bdel_{i}", use_container_width=True):
                 slides.pop(i)
                 st.session_state.sel = max(0, i - 1)
