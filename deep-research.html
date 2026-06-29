@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deep Research</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --surface2: #1a1a28;
+      --border: #2a2a3a;
+      --border-active: #6366f1;
+      --text: #e4e4ed;
+      --text2: #8888a0;
+      --accent: #6366f1;
+      --accent-glow: rgba(99,102,241,0.15);
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Segoe UI', 'Yu Gothic UI', system-ui, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* === ヘッダー === */
+    header {
+      display: flex;
+      align-items: center;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .logo-text {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-text span { color: var(--accent); }
+
+    .header-nav {
+      margin-left: auto;
+      display: flex;
+      gap: 4px;
+    }
+
+    .nav-tab {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--text2);
+      cursor: pointer;
+      border: none;
+      background: none;
+      transition: all 0.15s;
+    }
+
+    .nav-tab:hover { color: var(--text); background: var(--surface2); }
+    .nav-tab.active { color: var(--text); background: var(--accent-glow); border: 1px solid rgba(99,102,241,0.3); }
+
+    .back-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--text2);
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: none;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .back-btn:hover { color: var(--text); border-color: var(--text2); }
+
+    /* === メインレイアウト === */
+    .main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* === 左パネル：入力 === */
+    .input-panel {
+      width: 420px;
+      min-width: 420px;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+    }
+
+    .input-panel-header {
+      padding: 16px 20px 0;
+    }
+
+    .input-panel-header h2 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .query-input {
+      width: 100%;
+      min-height: 100px;
+      padding: 12px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.6;
+      resize: vertical;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    .query-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .query-input::placeholder { color: var(--text2); }
+
+    /* === 設定エリア === */
+    .settings {
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .setting-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .setting-label {
+      font-size: 11px;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 600;
+    }
+
+    .depth-selector {
+      display: flex;
+      gap: 6px;
+    }
+
+    .depth-btn {
+      flex: 1;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text2);
+      font-size: 12px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+
+    .depth-btn:hover { border-color: var(--text2); color: var(--text); }
+
+    .depth-btn.active {
+      border-color: var(--accent);
+      background: var(--accent-glow);
+      color: var(--text);
+    }
+
+    .depth-btn .depth-name { font-weight: 600; display: block; }
+    .depth-btn .depth-desc { font-size: 10px; margin-top: 2px; display: block; color: var(--text2); }
+
+    .source-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .source-chip {
+      padding: 5px 12px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text2);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .source-chip:hover { border-color: var(--text2); color: var(--text); }
+    .source-chip.active { border-color: var(--accent); background: var(--accent-glow); color: var(--text); }
+
+    .run-btn {
+      margin: 0 20px 16px;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .run-btn:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 20px rgba(99,102,241,0.4); }
+    .run-btn:active { transform: translateY(0); }
+
+    .run-btn.running {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      cursor: default;
+    }
+
+    /* === 右パネル：結果 === */
+    .result-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .result-header {
+      padding: 14px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .result-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text2);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text2);
+    }
+
+    .status-dot.ready { background: var(--green); }
+    .status-dot.running { background: var(--orange); animation: pulse 1.2s infinite; }
+    .status-dot.error { background: var(--red); }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .result-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 6px;
+    }
+
+    .action-btn {
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text2);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .action-btn:hover { color: var(--text); border-color: var(--text2); }
+
+    /* === 結果コンテンツ === */
+    .result-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    .result-content::-webkit-scrollbar { width: 6px; }
+    .result-content::-webkit-scrollbar-track { background: transparent; }
+    .result-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text2);
+      gap: 12px;
+    }
+
+    .empty-icon { font-size: 48px; opacity: 0.3; }
+    .empty-text { font-size: 14px; }
+    .empty-hint { font-size: 12px; opacity: 0.6; }
+
+    /* === リサーチ結果の表示 === */
+    .research-output { display: none; }
+    .research-output.visible { display: block; }
+
+    .progress-bar {
+      width: 100%;
+      height: 3px;
+      background: var(--surface2);
+      border-radius: 2px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .progress-bar.active { display: block; }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #8b5cf6);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    .step-log {
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text2);
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .step-text { line-height: 1.5; }
+    .step-text strong { color: var(--text); font-weight: 500; }
+
+    .report-section {
+      margin-bottom: 28px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .report-section h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .report-section p, .report-section li {
+      font-size: 14px;
+      line-height: 1.8;
+      color: rgba(228,228,237,0.85);
+    }
+
+    .report-section ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .report-section li::before {
+      content: '▸ ';
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .source-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-top: 6px;
+      font-size: 13px;
+      transition: border-color 0.15s;
+    }
+
+    .source-card:hover { border-color: var(--accent); }
+    .source-num { color: var(--accent); font-weight: 700; font-size: 11px; min-width: 20px; }
+    .source-title { color: var(--text); font-weight: 500; }
+    .source-url { color: var(--text2); font-size: 11px; margin-top: 2px; }
+
+    .confidence-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .confidence-high { background: rgba(34,197,94,0.15); color: var(--green); }
+    .confidence-mid { background: rgba(245,158,11,0.15); color: var(--orange); }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="back-btn">← デスクトップ</a>
+  <div class="logo">
+    <div class="logo-icon">🔬</div>
+    <div class="logo-text">Deep<span>Research</span></div>
+  </div>
+  <div class="header-nav">
+    <button class="nav-tab active">リサーチ</button>
+    <button class="nav-tab">履歴</button>
+    <button class="nav-tab">保存済み</button>
+  </div>
+</header>
+
+<div class="main">
+  <!-- 左パネル -->
+  <div class="input-panel">
+    <div class="input-panel-header">
+      <h2>リサーチクエリ</h2>
+      <textarea class="query-input" id="queryInput" placeholder="調べたいテーマを入力してください...&#10;&#10;例: 建設業界における施工管理技士の需要動向と&#10;今後5年間の市場予測"></textarea>
+    </div>
+
+    <div class="settings">
+      <div class="setting-group">
+        <div class="setting-label">調査深度</div>
+        <div class="depth-selector">
+          <button class="depth-btn" data-depth="quick">
+            <span class="depth-name">Quick</span>
+            <span class="depth-desc">~1分 / 概要</span>
+          </button>
+          <button class="depth-btn active" data-depth="standard">
+            <span class="depth-name">Standard</span>
+            <span class="depth-desc">~3分 / 詳細</span>
+          </button>
+          <button class="depth-btn" data-depth="deep">
+            <span class="depth-name">Deep</span>
+            <span class="depth-desc">~10分 / 徹底</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-label">情報ソース</div>
+        <div class="source-chips">
+          <button class="source-chip active">Web全体</button>
+          <button class="source-chip active">学術論文</button>
+          <button class="source-chip">ニュース</button>
+          <button class="source-chip active">統計データ</button>
+          <button class="source-chip">SNS</button>
+          <button class="source-chip">特許</button>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-label">出力形式</div>
+        <div class="source-chips">
+          <button class="source-chip active">レポート</button>
+          <button class="source-chip">箇条書き</button>
+          <button class="source-chip">比較表</button>
+          <button class="source-chip">SWOT分析</button>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-label">言語</div>
+        <div class="source-chips">
+          <button class="source-chip active">日本語</button>
+          <button class="source-chip">English</button>
+          <button class="source-chip">Both</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="run-btn" id="runBtn" onclick="startResearch()">
+      <span>🔍</span> リサーチ開始
+    </button>
+  </div>
+
+  <!-- 右パネル -->
+  <div class="result-panel">
+    <div class="result-header">
+      <div class="result-status">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">待機中</span>
+      </div>
+      <div class="result-actions">
+        <button class="action-btn" onclick="copyResult()">📋 コピー</button>
+        <button class="action-btn" onclick="exportPDF()">📄 PDF出力</button>
+        <button class="action-btn" onclick="saveResult()">💾 保存</button>
+      </div>
+    </div>
+
+    <div class="result-content" id="resultContent">
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">🔬</div>
+        <div class="empty-text">リサーチクエリを入力して開始</div>
+        <div class="empty-hint">AIが複数ソースから情報を収集・分析し、構造化されたレポートを生成します</div>
+      </div>
+
+      <div class="research-output" id="researchOutput">
+        <div class="progress-bar" id="progressBar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="step-log" id="stepLog"></div>
+        <div id="reportArea"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.depth-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.parentElement.querySelectorAll('.depth-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  document.querySelectorAll('.source-chip').forEach(chip => {
+    chip.addEventListener('click', () => chip.classList.toggle('active'));
+  });
+
+  let isRunning = false;
+
+  async function startResearch() {
+    const query = document.getElementById('queryInput').value.trim();
+    if (!query || isRunning) return;
+
+    isRunning = true;
+    const btn = document.getElementById('runBtn');
+    btn.classList.add('running');
+    btn.innerHTML = '<span>⏳</span> リサーチ中...';
+
+    document.getElementById('emptyState').style.display = 'none';
+    const output = document.getElementById('researchOutput');
+    output.classList.add('visible');
+
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    statusDot.className = 'status-dot running';
+    statusText.textContent = '実行中';
+
+    const progressBar = document.getElementById('progressBar');
+    const progressFill = document.getElementById('progressFill');
+    progressBar.classList.add('active');
+    progressFill.style.width = '0%';
+
+    const stepLog = document.getElementById('stepLog');
+    stepLog.innerHTML = '';
+    document.getElementById('reportArea').innerHTML = '';
+
+    const steps = [
+      { icon: '🔍', text: '<strong>クエリ解析中</strong> — キーワード抽出と検索戦略を策定', progress: 8 },
+      { icon: '🌐', text: '<strong>Web検索実行中</strong> — 複数の検索エンジンに並列クエリ送信', progress: 20 },
+      { icon: '📚', text: '<strong>学術論文を検索中</strong> — CiNii, Google Scholar, J-STAGEを走査', progress: 35 },
+      { icon: '📊', text: '<strong>統計データ収集中</strong> — 政府統計、業界レポートを参照', progress: 48 },
+      { icon: '📄', text: '<strong>ソース分析中</strong> — 42件の関連ドキュメントを発見', progress: 60 },
+      { icon: '🔗', text: '<strong>クロスリファレンス</strong> — 情報の整合性と信頼性を検証', progress: 72 },
+      { icon: '🧠', text: '<strong>合成・構造化中</strong> — 情報を統合しレポートを生成', progress: 88 },
+      { icon: '✅', text: '<strong>完了</strong> — レポートが生成されました', progress: 100 },
+    ];
+
+    for (let i = 0; i < steps.length; i++) {
+      await delay(600 + Math.random() * 1200);
+      addStep(stepLog, steps[i].icon, steps[i].text);
+      progressFill.style.width = steps[i].progress + '%';
+    }
+
+    await delay(400);
+    progressBar.classList.remove('active');
+    statusDot.className = 'status-dot ready';
+    statusText.textContent = '完了 — 42件のソースから生成';
+
+    generateReport(query);
+
+    btn.classList.remove('running');
+    btn.innerHTML = '<span>🔍</span> 再リサーチ';
+    isRunning = false;
+  }
+
+  function addStep(container, icon, text) {
+    const el = document.createElement('div');
+    el.className = 'step-item';
+    el.innerHTML = `<span class="step-icon">${icon}</span><span class="step-text">${text}</span>`;
+    container.appendChild(el);
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function generateReport(query) {
+    const area = document.getElementById('reportArea');
+
+    area.innerHTML = `
+      <div class="report-section">
+        <h3>📋 エグゼクティブサマリー</h3>
+        <p>「${query}」に関する包括的な調査を実施しました。Web上の公開情報、学術論文、統計データなど42件のソースから情報を収集・分析した結果をまとめます。本レポートでは、現状の概要、主要な知見、市場動向、および今後の展望について構造化して報告します。</p>
+        <div style="margin-top:8px;">
+          <span class="confidence-badge confidence-high">信頼度: 高</span>
+        </div>
+      </div>
+
+      <div class="report-section">
+        <h3>📊 主要な知見</h3>
+        <ul>
+          <li>当該分野の市場規模は直近3年で年平均8.2%の成長率を記録しており、今後も拡大傾向が継続する見通し</li>
+          <li>関連する技術革新（AI・DX化）が業界構造に大きな変化をもたらしており、デジタル人材の需要が急増</li>
+          <li>政府の政策動向として、2025年度以降の規制緩和・支援制度の拡充が予定されており、市場参入機会が拡大</li>
+          <li>競合状況の分析から、上位5社がシェア全体の62%を占める寡占構造が確認された</li>
+          <li>消費者/利用者のニーズ調査では、品質・信頼性（78%）、コスト効率（65%）、迅速な対応（52%）が上位</li>
+        </ul>
+      </div>
+
+      <div class="report-section">
+        <h3>📈 市場動向・データ分析</h3>
+        <ul>
+          <li>国内市場規模: 推定 2.4兆円（2025年度） → 3.1兆円（2030年度予測）</li>
+          <li>年間成長率（CAGR）: 5.2%（保守的シナリオ）〜 8.7%（楽観シナリオ）</li>
+          <li>地域別では、首都圏が全体の38%を占めるが、地方部での伸び率が高い（前年比+12%）</li>
+          <li>デジタル化投資額は前年比34%増で、特にクラウド・AI関連への投資が顕著</li>
+        </ul>
+      </div>
+
+      <div class="report-section">
+        <h3>⚡ リスクと課題</h3>
+        <ul>
+          <li>人材不足が深刻化しており、特に専門技術者の確保が業界全体の課題</li>
+          <li>規制環境の変化に対する対応コストが中小企業にとって負担となる可能性</li>
+          <li>技術革新のスピードに既存の教育・研修制度が追いついていない現状</li>
+          <li>グローバル競争の激化により、価格競争圧力が増大する懸念</li>
+        </ul>
+      </div>
+
+      <div class="report-section">
+        <h3>💡 提言・アクションプラン</h3>
+        <ul>
+          <li><strong>短期（〜6ヶ月）:</strong> 市場調査の深掘りと競合ベンチマーキングの実施</li>
+          <li><strong>中期（6ヶ月〜1年）:</strong> DX戦略の策定と人材育成プログラムの立ち上げ</li>
+          <li><strong>長期（1〜3年）:</strong> 新規事業領域への参入と持続的な競争優位性の構築</li>
+        </ul>
+      </div>
+
+      <div class="report-section">
+        <h3>📎 参照ソース（主要）</h3>
+        <div class="source-card">
+          <span class="source-num">[1]</span>
+          <div>
+            <div class="source-title">経済産業省 産業構造審議会 報告書 2025</div>
+            <div class="source-url">meti.go.jp/shingikai/...</div>
+          </div>
+        </div>
+        <div class="source-card">
+          <span class="source-num">[2]</span>
+          <div>
+            <div class="source-title">国土交通省 建設業の動向調査レポート</div>
+            <div class="source-url">mlit.go.jp/report/...</div>
+          </div>
+        </div>
+        <div class="source-card">
+          <span class="source-num">[3]</span>
+          <div>
+            <div class="source-title">矢野経済研究所 市場分析レポート 2025年版</div>
+            <div class="source-url">yano.co.jp/press/...</div>
+          </div>
+        </div>
+        <div class="source-card">
+          <span class="source-num">[4]</span>
+          <div>
+            <div class="source-title">J-STAGE 関連学術論文 (査読付き)</div>
+            <div class="source-url">jstage.jst.go.jp/article/...</div>
+          </div>
+        </div>
+        <div class="source-card">
+          <span class="source-num">[5]</span>
+          <div>
+            <div class="source-title">総務省統計局 労働力調査 最新データ</div>
+            <div class="source-url">stat.go.jp/data/...</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    area.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  function copyResult() {
+    const text = document.getElementById('reportArea').innerText;
+    if (text) {
+      navigator.clipboard.writeText(text);
+      alert('レポートをクリップボードにコピーしました');
+    }
+  }
+
+  function exportPDF() { alert('PDF出力機能（デモ）'); }
+  function saveResult() { alert('レポートを保存しました（デモ）'); }
+</script>
+</body>
+</html>
