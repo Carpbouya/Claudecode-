@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>散らかったデスクトップ</title>
+  <title>整理されたデスクトップ</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
 
@@ -11,18 +11,17 @@
       width: 100vw;
       height: 100vh;
       overflow: hidden;
-      background: linear-gradient(135deg, #1a3a5c 0%, #2d6a9f 40%, #1e5276 70%, #0d2b45 100%);
+      background: linear-gradient(135deg, #0f1923 0%, #1a3050 40%, #0d2840 70%, #061520 100%);
       font-family: 'Segoe UI', 'Yu Gothic UI', sans-serif;
       position: relative;
     }
 
-    /* 壁紙の模様 */
     body::before {
       content: '';
       position: absolute;
       inset: 0;
-      background-image: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.03) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.02) 0%, transparent 40%);
+      background-image: radial-gradient(circle at 30% 20%, rgba(100,180,255,0.04) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(80,140,220,0.03) 0%, transparent 40%);
       pointer-events: none;
     }
 
@@ -31,21 +30,62 @@
       bottom: 0;
       left: 0;
       right: 0;
-      height: 40px;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(255,255,255,0.1);
+      height: 48px;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(255,255,255,0.08);
       display: flex;
       align-items: center;
-      padding: 0 12px;
+      padding: 0 16px;
       z-index: 1000;
+    }
+
+    .taskbar-pinned {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 16px;
+    }
+
+    .taskbar-app {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+      position: relative;
+    }
+
+    .taskbar-app:hover {
+      background: rgba(255,255,255,0.12);
+    }
+
+    .taskbar-app .app-icon-svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .taskbar-app-active::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 16px;
+      height: 3px;
+      border-radius: 2px;
+      background: #76b9ed;
     }
 
     .taskbar-time {
       margin-left: auto;
-      color: white;
+      color: rgba(255,255,255,0.9);
       font-size: 12px;
       text-align: right;
+      line-height: 1.4;
     }
 
     .start-btn {
@@ -58,86 +98,118 @@
     .desktop {
       position: relative;
       width: 100%;
-      height: calc(100vh - 40px);
+      height: calc(100vh - 48px);
+      padding: 16px;
     }
 
-    .file-icon {
+    /* メインアプリエリア */
+    .main-apps {
       position: absolute;
-      width: 80px;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 48px;
+      z-index: 10;
+    }
+
+    .app-shortcut {
       display: flex;
       flex-direction: column;
       align-items: center;
       cursor: pointer;
-      padding: 4px;
-      border-radius: 6px;
+      padding: 12px 16px;
+      border-radius: 16px;
+      transition: all 0.2s;
+    }
+
+    .app-shortcut:hover {
+      background: rgba(255,255,255,0.1);
+      transform: scale(1.05);
+    }
+
+    .app-shortcut:active {
+      transform: scale(0.97);
+    }
+
+    .app-icon-box {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.08);
+    }
+
+    .app-icon-box svg {
+      width: 36px;
+      height: 36px;
+    }
+
+    .app-claude .app-icon-box { background: linear-gradient(135deg, #da7756, #c45a3a); }
+    .app-line .app-icon-box { background: linear-gradient(135deg, #06c755, #04a544); }
+    .app-notion .app-icon-box { background: linear-gradient(135deg, #ffffff, #e8e8e8); }
+
+    .app-shortcut .icon-label {
+      margin-top: 8px;
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    }
+
+    /* 整理されたフォルダグリッド */
+    .folder-grid {
+      position: absolute;
+      top: 160px;
+      left: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 88px);
+      gap: 8px 4px;
+    }
+
+    .file-icon {
+      width: 84px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      padding: 6px 4px;
+      border-radius: 8px;
       transition: background 0.15s;
     }
 
     .file-icon:hover {
-      background: rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.12);
     }
 
     .file-icon:active {
-      background: rgba(100,160,255,0.35);
+      background: rgba(100,160,255,0.3);
     }
 
     .icon-img {
-      font-size: 42px;
+      font-size: 40px;
       line-height: 1;
-      filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.5));
+      filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.4));
     }
 
     .icon-label {
       margin-top: 4px;
-      color: white;
+      color: rgba(255,255,255,0.95);
       font-size: 11px;
       text-align: center;
       word-break: break-all;
       line-height: 1.3;
-      max-width: 76px;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.7);
+      max-width: 78px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.9);
     }
 
-    /* ランダムな傾き */
-    .tilt-1  { transform: rotate(-3deg); }
-    .tilt-2  { transform: rotate(2deg); }
-    .tilt-3  { transform: rotate(-5deg); }
-    .tilt-4  { transform: rotate(4deg); }
-    .tilt-5  { transform: rotate(-1deg); }
-    .tilt-6  { transform: rotate(6deg); }
-    .tilt-7  { transform: rotate(-2deg); }
-    .tilt-8  { transform: rotate(3deg); }
-    .tilt-9  { transform: rotate(-4deg); }
-    .tilt-0  { transform: rotate(1deg); }
-
-    /* 付箋 */
-    .sticky-note {
+    /* 右側にゴミ箱 */
+    .trash-icon {
       position: absolute;
-      width: 160px;
-      padding: 10px 12px;
-      font-size: 12px;
-      line-height: 1.6;
-      border-radius: 2px;
-      box-shadow: 3px 4px 10px rgba(0,0,0,0.4);
-      cursor: default;
-    }
-
-    .sticky-yellow {
-      background: #fff176;
-      color: #333;
-      transform: rotate(-3deg);
-    }
-
-    .sticky-pink {
-      background: #f48fb1;
-      color: #222;
-      transform: rotate(2deg);
-    }
-
-    .sticky-blue {
-      background: #81d4fa;
-      color: #222;
-      transform: rotate(-1deg);
+      bottom: 20px;
+      right: 24px;
     }
   </style>
 </head>
@@ -145,177 +217,74 @@
 
 <div class="desktop" id="desktop">
 
-  <!-- 付箋 -->
-  <div class="sticky-note sticky-yellow" style="left: 62%; top: 8%;">
-    TODOリスト<br>
-    ・メール返信<br>
-    ・会議資料作成<br>
-    ・ランチ予約<br>
-    ・パスワード変更？
+  <!-- メインアプリ（中央上部に大きく配置） -->
+  <div class="main-apps">
+    <div class="app-shortcut app-claude">
+      <div class="app-icon-box">
+        <svg viewBox="0 0 24 24" fill="white">
+          <path d="M4.709 15.955l4.397-2.006-.807 3.997-2.625 3.088L4.18 18.39zm3.59-2.807l5.304-2.419-1.18 5.848-3.317 1.513zm4.497-3.22l3.88-1.77-.863 4.276-2.21 1.009zM18.276 4l-1.1 5.45-3.88 1.77 1.1-5.45zM12.6 6.8l-1.18 5.847-5.304 2.42L7.297.92z"/>
+        </svg>
+      </div>
+      <div class="icon-label">Claude</div>
+    </div>
+    <div class="app-shortcut app-line">
+      <div class="app-icon-box">
+        <svg viewBox="0 0 24 24" fill="white">
+          <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.271.173-.508.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M12 1C5.926 1 1 5.07 1 10.14c0 4.487 3.66 8.252 8.6 9.163.335.073.79.223.905.51.105.261.069.67.033.932l-.145.878c-.045.264-.207 1.034.906.564 1.113-.47 6.007-3.525 8.197-6.033C21.443 14.976 23 12.72 23 10.14 23 5.07 18.074 1 12 1"/>
+        </svg>
+      </div>
+      <div class="icon-label">LINE</div>
+    </div>
+    <div class="app-shortcut app-notion">
+      <div class="app-icon-box">
+        <svg viewBox="0 0 24 24" fill="#333">
+          <path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L18.1 2.08c-.42-.326-.98-.7-2.055-.607L3.01 2.46c-.467.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.934-.56.934-1.166V6.354c0-.607-.234-.934-.747-.887l-15.177.887c-.56.047-.747.327-.747.934zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.747 0-.934-.234-1.495-.934l-4.577-7.186v6.952l1.448.327s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.726l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.763 7.279v-6.44l-1.215-.14c-.093-.514.28-.887.747-.933zM2.83 1.634l13.728-.933c1.682-.14 2.102.093 2.802.607L22.268 3.4c.467.327.607.747.607 1.26v16.771c0 1.027-.374 1.634-1.682 1.727l-15.458.934c-.98.046-1.448-.093-1.962-.747l-3.13-4.06c-.56-.747-.793-1.307-.793-1.96V3.32c0-.84.374-1.54 1.308-1.634z"/>
+        </svg>
+      </div>
+      <div class="icon-label">Notion</div>
+    </div>
   </div>
 
-  <div class="sticky-note sticky-pink" style="left: 75%; top: 35%;">
-    ☎ 田中さん<br>
-    090-XXXX-XXXX<br>
-    午後3時に折返し！
+  <!-- 整理されたフォルダ群（左側に縦に並べる） -->
+  <div class="folder-grid">
+    <div class="file-icon">
+      <div class="icon-img">📁</div>
+      <div class="icon-label">文書</div>
+    </div>
+    <div class="file-icon">
+      <div class="icon-img">📁</div>
+      <div class="icon-label">画像・動画</div>
+    </div>
+    <div class="file-icon">
+      <div class="icon-img">📁</div>
+      <div class="icon-label">音楽</div>
+    </div>
+    <div class="file-icon">
+      <div class="icon-img">📁</div>
+      <div class="icon-label">コード</div>
+    </div>
+    <div class="file-icon">
+      <div class="icon-img">📁</div>
+      <div class="icon-label">PDF</div>
+    </div>
+    <div class="file-icon">
+      <div class="icon-img">📁</div>
+      <div class="icon-label">システム</div>
+    </div>
+    <div class="file-icon">
+      <div class="icon-img">📂</div>
+      <div class="icon-label">ダウンロード</div>
+    </div>
+    <div class="file-icon">
+      <div class="icon-img">📁</div>
+      <div class="icon-label">メモ</div>
+    </div>
   </div>
 
-  <div class="sticky-note sticky-blue" style="left: 5%; top: 55%;">
-    Wi-Fiパスワード<br>
-    MyHome_5G<br>
-    pass: ????8888
-  </div>
-
-  <!-- ファイルアイコン 30個 -->
-
-  <div class="file-icon tilt-2" style="left: 3%; top: 2%;">
-    <div class="icon-img">📄</div>
-    <div class="icon-label">report_final.docx</div>
-  </div>
-
-  <div class="file-icon tilt-9" style="left: 11%; top: 1%;">
-    <div class="icon-img">📄</div>
-    <div class="icon-label">report_final_v2.docx</div>
-  </div>
-
-  <div class="file-icon tilt-3" style="left: 20%; top: 3%;">
-    <div class="icon-img">📄</div>
-    <div class="icon-label">report_FINAL_v3_提出用.docx</div>
-  </div>
-
-  <div class="file-icon tilt-6" style="left: 30%; top: 1%;">
-    <div class="icon-img">📊</div>
-    <div class="icon-label">予算_2024.xlsx</div>
-  </div>
-
-  <div class="file-icon tilt-1" style="left: 40%; top: 4%;">
-    <div class="icon-img">📈</div>
-    <div class="icon-label">売上グラフ_修正済.xlsx</div>
-  </div>
-
-  <div class="file-icon tilt-7" style="left: 50%; top: 2%;">
-    <div class="icon-img">📑</div>
-    <div class="icon-label">presentation_v4.pptx</div>
-  </div>
-
-  <div class="file-icon tilt-4" style="left: 3%; top: 18%;">
-    <div class="icon-img">🖼️</div>
-    <div class="icon-label">vacation_photo_001.jpg</div>
-  </div>
-
-  <div class="file-icon tilt-8" style="left: 13%; top: 20%;">
-    <div class="icon-img">🖼️</div>
-    <div class="icon-label">screenshot_20240315.png</div>
-  </div>
-
-  <div class="file-icon tilt-2" style="left: 23%; top: 17%;">
-    <div class="icon-img">🎬</div>
-    <div class="icon-label">wedding_movie.mp4</div>
-  </div>
-
-  <div class="file-icon tilt-5" style="left: 33%; top: 19%;">
-    <div class="icon-img">🎵</div>
-    <div class="icon-label">my_favorites.mp3</div>
-  </div>
-
-  <div class="file-icon tilt-1" style="left: 43%; top: 16%;">
-    <div class="icon-img">📝</div>
-    <div class="icon-label">readme.txt</div>
-  </div>
-
-  <div class="file-icon tilt-6" style="left: 53%; top: 18%;">
-    <div class="icon-img">🔑</div>
-    <div class="icon-label">passwords_開けるな.txt</div>
-  </div>
-
-  <div class="file-icon tilt-3" style="left: 4%; top: 36%;">
-    <div class="icon-img">🐍</div>
-    <div class="icon-label">main.py</div>
-  </div>
-
-  <div class="file-icon tilt-9" style="left: 14%; top: 38%;">
-    <div class="icon-img">🌐</div>
-    <div class="icon-label">index.html</div>
-  </div>
-
-  <div class="file-icon tilt-7" style="left: 24%; top: 35%;">
-    <div class="icon-img">🎨</div>
-    <div class="icon-label">style.css</div>
-  </div>
-
-  <div class="file-icon tilt-4" style="left: 34%; top: 37%;">
-    <div class="icon-img">📦</div>
-    <div class="icon-label">package.json</div>
-  </div>
-
-  <div class="file-icon tilt-2" style="left: 44%; top: 35%;">
-    <div class="icon-img">🗜️</div>
-    <div class="icon-label">archive_backup.zip</div>
-  </div>
-
-  <div class="file-icon tilt-8" style="left: 54%; top: 36%;">
-    <div class="icon-img">📦</div>
-    <div class="icon-label">old_backup.tar.gz</div>
-  </div>
-
-  <div class="file-icon tilt-5" style="left: 4%; top: 52%;">
-    <div class="icon-img">⚙️</div>
-    <div class="icon-label">setup_installer.exe</div>
-  </div>
-
-  <div class="file-icon tilt-1" style="left: 25%; top: 54%;">
-    <div class="icon-img">💿</div>
-    <div class="icon-label">unknown_disk.dmg</div>
-  </div>
-
-  <div class="file-icon tilt-9" style="left: 35%; top: 51%;">
-    <div class="icon-img">🗄️</div>
-    <div class="icon-label">database.db</div>
-  </div>
-
-  <div class="file-icon tilt-6" style="left: 45%; top: 53%;">
-    <div class="icon-img">⚙️</div>
-    <div class="icon-label">config.yml</div>
-  </div>
-
-  <div class="file-icon tilt-3" style="left: 55%; top: 51%;">
-    <div class="icon-img">📋</div>
-    <div class="icon-label">無題のドキュメント</div>
-  </div>
-
-  <div class="file-icon tilt-7" style="left: 3%; top: 68%;">
-    <div class="icon-img">📁</div>
-    <div class="icon-label">新しいフォルダー</div>
-  </div>
-
-  <div class="file-icon tilt-2" style="left: 13%; top: 70%;">
-    <div class="icon-img">📂</div>
-    <div class="icon-label">ダウンロード</div>
-  </div>
-
-  <div class="file-icon tilt-4" style="left: 23%; top: 67%;">
-    <div class="icon-img">📄</div>
-    <div class="icon-label">resume_最終版_v7.pdf</div>
-  </div>
-
-  <div class="file-icon tilt-8" style="left: 33%; top: 69%;">
-    <div class="icon-img">📄</div>
-    <div class="icon-label">確定申告_2023.pdf</div>
-  </div>
-
-  <div class="file-icon tilt-5" style="left: 43%; top: 67%;">
-    <div class="icon-img">🐱</div>
-    <div class="icon-label">cat_funny.gif</div>
-  </div>
-
-  <div class="file-icon tilt-1" style="left: 53%; top: 68%;">
+  <!-- ゴミ箱（右下） -->
+  <div class="file-icon trash-icon">
     <div class="icon-img">🗑️</div>
-    <div class="icon-label">temp_98765.tmp</div>
-  </div>
-
-  <div class="file-icon tilt-9" style="left: 63%; top: 56%;">
-    <div class="icon-img">👻</div>
-    <div class="icon-label">.DS_Store</div>
+    <div class="icon-label">ゴミ箱</div>
   </div>
 
 </div>
@@ -323,22 +292,39 @@
 <!-- タスクバー -->
 <div class="taskbar">
   <div class="start-btn">⊞</div>
+  <div class="taskbar-pinned">
+    <div class="taskbar-app taskbar-app-active" title="Claude">
+      <svg class="app-icon-svg" viewBox="0 0 24 24" fill="#da7756">
+        <path d="M4.709 15.955l4.397-2.006-.807 3.997-2.625 3.088L4.18 18.39zm3.59-2.807l5.304-2.419-1.18 5.848-3.317 1.513zm4.497-3.22l3.88-1.77-.863 4.276-2.21 1.009zM18.276 4l-1.1 5.45-3.88 1.77 1.1-5.45zM12.6 6.8l-1.18 5.847-5.304 2.42L7.297.92z"/>
+      </svg>
+    </div>
+    <div class="taskbar-app" title="LINE">
+      <svg class="app-icon-svg" viewBox="0 0 24 24" fill="#06c755">
+        <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.271.173-.508.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M12 1C5.926 1 1 5.07 1 10.14c0 4.487 3.66 8.252 8.6 9.163.335.073.79.223.905.51.105.261.069.67.033.932l-.145.878c-.045.264-.207 1.034.906.564 1.113-.47 6.007-3.525 8.197-6.033C21.443 14.976 23 12.72 23 10.14 23 5.07 18.074 1 12 1"/>
+      </svg>
+    </div>
+    <div class="taskbar-app" title="Notion">
+      <svg class="app-icon-svg" viewBox="0 0 24 24" fill="white">
+        <path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L18.1 2.08c-.42-.326-.98-.7-2.055-.607L3.01 2.46c-.467.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.934-.56.934-1.166V6.354c0-.607-.234-.934-.747-.887l-15.177.887c-.56.047-.747.327-.747.934zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.747 0-.934-.234-1.495-.934l-4.577-7.186v6.952l1.448.327s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.726l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.763 7.279v-6.44l-1.215-.14c-.093-.514.28-.887.747-.933zM2.83 1.634l13.728-.933c1.682-.14 2.102.093 2.802.607L22.268 3.4c.467.327.607.747.607 1.26v16.771c0 1.027-.374 1.634-1.682 1.727l-15.458.934c-.98.046-1.448-.093-1.962-.747l-3.13-4.06c-.56-.747-.793-1.307-.793-1.96V3.32c0-.84.374-1.54 1.308-1.634z"/>
+      </svg>
+    </div>
+  </div>
   <div class="taskbar-time" id="clock"></div>
 </div>
 
 <script>
-  // 時計
   function updateClock() {
     const now = new Date();
     const h = String(now.getHours()).padStart(2, '0');
     const m = String(now.getMinutes()).padStart(2, '0');
-    document.getElementById('clock').textContent = h + ':' + m;
+    const month = now.getMonth() + 1;
+    const day = now.getDate();
+    document.getElementById('clock').innerHTML = h + ':' + m + '<br>' + month + '/' + day;
   }
   updateClock();
   setInterval(updateClock, 1000);
 
-  // ドラッグで動かせるようにする
-  document.querySelectorAll('.file-icon, .sticky-note').forEach(el => {
+  document.querySelectorAll('.file-icon').forEach(el => {
     let isDragging = false;
     let startX, startY, origLeft, origTop;
 
@@ -350,6 +336,7 @@
       origLeft = rect.left;
       origTop  = rect.top;
       el.style.zIndex = 999;
+      el.style.position = 'absolute';
       e.preventDefault();
     });
 
