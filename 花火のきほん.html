@@ -8,8 +8,8 @@
     --blue:#1A5AA6; --blue-tint:#E4EDF9;
     --night:#0A0E1A;
     --shadow:0 1px 2px rgba(19,26,43,.05), 0 10px 30px -16px rgba(19,26,43,.22);
-    --serif:"Hiragino Mincho ProN","Hiragino Mincho Pro","Yu Mincho",YuMincho,"Noto Serif JP","Source Han Serif JP",serif;
-    --sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",YuGothic,"Noto Sans JP",system-ui,-apple-system,sans-serif;
+    --serif:"Hiragino Mincho ProN","Hiragino Mincho Pro","Yu Mincho",YuMincho,"Noto Serif JP","Source Han Serif JP","IPAPGothic",serif;
+    --sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",YuGothic,"Noto Sans JP","IPAPGothic",system-ui,-apple-system,sans-serif;
     --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   }
   @media (prefers-color-scheme:dark){
@@ -111,6 +111,19 @@
   footer{font-family:var(--sans); font-size:.8125rem; color:var(--text-dim); line-height:1.8;
     margin-top:2.6rem; padding-top:1.4rem; border-top:1px solid var(--rule); text-align:center}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @page{ size:A4; margin:15mm 18mm }
+  @media print{
+    body{background:#fff; color:#000; font-size:10.5pt; line-height:1.85}
+    header.top{background:none; color:#000; padding:0 0 1.2rem; text-align:left}
+    header.top p{color:#333} .kicker{color:#555} .mins{color:#555; border-color:#999}
+    .wrap{max-width:none; padding:0}
+    section{padding-top:1.5rem; page-break-inside:avoid}
+    h2{page-break-after:avoid}
+    .cards li,.colors li,.key,.safe,figure,.fx{background:#fff; box-shadow:none; border-color:#999}
+    .next{background:none; color:#000; border:1px solid #999}
+    .next h2,.next p{color:#000} .btn{background:none; color:#000; border:1px solid #666}
+    a{color:#000}
+  }
 </style>
 
 <header class="top">
