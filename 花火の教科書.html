@@ -1,0 +1,2039 @@
+<title>花火の教科書</title>
+<style>
+  /* ===== tokens : light (default / un-stamped) ===== */
+  :root{
+    --bg:#F4F6FB; --bg-raised:#FFFFFF; --bg-sunken:#E8EBF4; --bg-tint:#EDF0F9;
+    --text:#131A2B; --text-mid:#3C4761; --text-dim:#5C6884;
+    --rule:#D3D9E8; --rule-soft:#E2E7F1;
+    --accent:#8E6212; --accent-vivid:#C08A24; --accent-tint:#F6EDD8;
+    --blue:#1A5AA6; --blue-tint:#E4EDF9;
+    --shadow:0 1px 2px rgba(19,26,43,.06), 0 8px 24px -12px rgba(19,26,43,.18);
+    --night:#0A0E1A;
+    --fs-xs:.8125rem; --fs-sm:.875rem; --fs-base:1.0625rem; --fs-lg:1.1875rem;
+    --fs-xl:1.4rem; --fs-2xl:1.75rem; --fs-3xl:2.3rem; --fs-4xl:3rem;
+    --serif:"Hiragino Mincho ProN","Hiragino Mincho Pro","Yu Mincho",YuMincho,"Noto Serif JP","Songti SC","Source Han Serif JP",serif;
+    --sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",YuGothic,"Noto Sans JP",system-ui,-apple-system,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --measure:44rem;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#0A0E1A; --bg-raised:#111828; --bg-sunken:#060A12; --bg-tint:#141D31;
+      --text:#E8ECF5; --text-mid:#C0C8DA; --text-dim:#939DB4;
+      --rule:#232E47; --rule-soft:#1A2338;
+      --accent:#EBBB63; --accent-vivid:#F2CB83; --accent-tint:#241D0E;
+      --blue:#6FB6F5; --blue-tint:#101B2C;
+      --shadow:0 1px 2px rgba(0,0,0,.5), 0 12px 32px -14px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0A0E1A; --bg-raised:#111828; --bg-sunken:#060A12; --bg-tint:#141D31;
+    --text:#E8ECF5; --text-mid:#C0C8DA; --text-dim:#939DB4;
+    --rule:#232E47; --rule-soft:#1A2338;
+    --accent:#EBBB63; --accent-vivid:#F2CB83; --accent-tint:#241D0E;
+    --blue:#6FB6F5; --blue-tint:#101B2C;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 12px 32px -14px rgba(0,0,0,.7);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:var(--serif); font-size:var(--fs-base); line-height:1.95;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  }
+  ::selection{background:var(--accent-vivid); color:var(--night)}
+  a{color:var(--blue); text-decoration-thickness:1px; text-underline-offset:.22em}
+  a:focus-visible,summary:focus-visible,input:focus-visible{
+    outline:2px solid var(--accent-vivid); outline-offset:3px; border-radius:3px;
+  }
+
+  /* ===== progress ===== */
+  #bar{position:fixed; inset:0 auto auto 0; height:3px; width:0;
+    background:linear-gradient(90deg,var(--accent-vivid),var(--blue)); z-index:60}
+
+  /* ===== shell ===== */
+  .shell{display:grid; grid-template-columns:17.5rem minmax(0,1fr); gap:0; max-width:88rem; margin:0 auto}
+  .side{position:sticky; top:0; height:100vh; overflow-y:auto; padding:2.2rem 1.4rem 3rem 1.8rem;
+    border-right:1px solid var(--rule-soft); background:var(--bg)}
+  .side::-webkit-scrollbar{width:9px}
+  .side::-webkit-scrollbar-thumb{background:var(--rule); border-radius:9px}
+  main{min-width:0; padding:0 clamp(1.1rem,4vw,3.5rem) 6rem}
+  .col{max-width:var(--measure); margin:0 auto}
+
+  /* ===== sidebar nav ===== */
+  .brand{font-family:var(--serif); font-size:1.28rem; letter-spacing:.06em; margin:0 0 .15rem}
+  .brand-sub{font-family:var(--sans); font-size:var(--fs-xs); color:var(--text-dim);
+    letter-spacing:.14em; margin:0 0 1.5rem}
+  .toc{list-style:none; margin:0; padding:0; font-family:var(--sans); font-size:var(--fs-sm); line-height:1.5}
+  .toc li{margin:0}
+  .toc a{display:flex; gap:.6rem; align-items:baseline; padding:.42rem .55rem; border-radius:6px;
+    color:var(--text-mid); text-decoration:none; border-left:2px solid transparent; transition:background .15s,color .15s}
+  .toc a:hover{background:var(--bg-tint); color:var(--text)}
+  .toc a.on{background:var(--accent-tint); color:var(--text); border-left-color:var(--accent-vivid); font-weight:600}
+  .toc .n{font-family:var(--mono); font-size:.75rem; color:var(--accent); min-width:1.6em; font-variant-numeric:tabular-nums}
+  .toc-part{font-family:var(--sans); font-size:.7rem; letter-spacing:.2em; color:var(--text-dim);
+    margin:1.35rem 0 .4rem .55rem; text-transform:none}
+  .side-foot{font-family:var(--sans); font-size:var(--fs-xs); color:var(--text-dim);
+    margin-top:2rem; padding-top:1rem; border-top:1px solid var(--rule-soft); line-height:1.7}
+
+  /* mobile nav */
+  .mnav{display:none}
+  @media (max-width:900px){
+    .shell{grid-template-columns:1fr}
+    .side{display:none}
+    .mnav{display:block; position:sticky; top:0; z-index:50; background:var(--bg);
+      border-bottom:1px solid var(--rule); padding:.5rem clamp(1.1rem,4vw,2rem)}
+    .mnav summary{font-family:var(--sans); font-size:var(--fs-sm); cursor:pointer; padding:.45rem 0;
+      display:flex; justify-content:space-between; color:var(--text-mid)}
+    .mnav .toc{max-height:60vh; overflow-y:auto; padding:.4rem 0 .8rem}
+  }
+
+  /* ===== hero ===== */
+  .hero{position:relative; margin:0 calc(-1*clamp(1.1rem,4vw,3.5rem)); padding:clamp(3.5rem,9vw,7rem) clamp(1.1rem,4vw,3.5rem) clamp(2.5rem,6vw,4rem);
+    background:var(--night); color:#EEF1F8; overflow:hidden; isolation:isolate}
+  #sky{position:absolute; inset:0; width:100%; height:100%; z-index:-1; opacity:.9}
+  .hero::after{content:""; position:absolute; inset:0; z-index:-1; pointer-events:none;
+    background:radial-gradient(120% 90% at 50% 40%, rgba(10,14,26,.15) 0%, rgba(10,14,26,.75) 62%, rgba(10,14,26,.94) 100%)}
+  .hero .col{position:relative}
+  .eyebrow{font-family:var(--sans); font-size:var(--fs-xs); letter-spacing:.34em; color:#EBBB63; margin:0 0 1.1rem}
+  h1{font-family:var(--serif); font-size:clamp(2.4rem,7vw,var(--fs-4xl)); line-height:1.24;
+    letter-spacing:.1em; margin:0 0 1rem; text-wrap:balance; font-weight:600}
+  .lede{font-size:var(--fs-lg); color:#C7CFE0; margin:0 0 2rem; max-width:34rem; text-wrap:pretty}
+  .chips{display:flex; flex-wrap:wrap; gap:.5rem; font-family:var(--sans); font-size:var(--fs-xs); margin:0; padding:0; list-style:none}
+  .chips li{border:1px solid rgba(235,187,99,.4); color:#EBBB63; border-radius:100px; padding:.3rem .85rem; letter-spacing:.06em}
+
+  /* ===== typography ===== */
+  h2{font-family:var(--serif); font-size:clamp(1.55rem,4.4vw,var(--fs-2xl)); line-height:1.4;
+    letter-spacing:.06em; margin:0 0 .5rem; text-wrap:balance; font-weight:600}
+  h3{font-family:var(--serif); font-size:var(--fs-xl); letter-spacing:.05em; line-height:1.5;
+    margin:2.8rem 0 .9rem; text-wrap:balance; font-weight:600}
+  h4{font-family:var(--sans); font-size:var(--fs-base); letter-spacing:.03em; margin:2rem 0 .6rem; font-weight:700}
+  p{margin:0 0 1.35rem; text-wrap:pretty}
+  strong{font-weight:700; color:var(--text)}
+  em{font-style:normal; background:linear-gradient(transparent 62%, var(--accent-tint) 62%); padding:0 .1em}
+  ul,ol{margin:0 0 1.35rem; padding-left:1.5rem}
+  li{margin:.35rem 0}
+  ul.plain{list-style:none; padding-left:0}
+  hr{border:0; border-top:1px solid var(--rule); margin:3.5rem 0}
+  code{font-family:var(--mono); font-size:.9em; background:var(--bg-tint); padding:.12em .4em; border-radius:4px}
+
+  /* chapter opener */
+  .chapter{padding-top:4.5rem; scroll-margin-top:1rem}
+  @media (max-width:900px){.chapter{scroll-margin-top:4rem}}
+  .ch-head{border-bottom:1px solid var(--rule); padding-bottom:1.4rem; margin-bottom:2.2rem}
+  .ch-no{font-family:var(--sans); font-size:var(--fs-xs); letter-spacing:.28em; color:var(--accent); margin:0 0 .7rem}
+  .ch-abs{font-family:var(--sans); font-size:var(--fs-sm); color:var(--text-dim); margin:.7rem 0 0; line-height:1.75}
+  .part-rule{display:flex; align-items:center; gap:1rem; margin:5.5rem 0 0;
+    font-family:var(--sans); font-size:var(--fs-xs); letter-spacing:.3em; color:var(--accent)}
+  .part-rule::before,.part-rule::after{content:""; height:1px; background:var(--rule); flex:1}
+
+  /* ===== boxes ===== */
+  .box{border-radius:10px; padding:1.4rem 1.6rem; margin:0 0 2rem; background:var(--bg-raised);
+    border:1px solid var(--rule-soft)}
+  .box-title{font-family:var(--sans); font-size:var(--fs-xs); letter-spacing:.2em; margin:0 0 .8rem;
+    color:var(--text-dim); font-weight:700}
+  .goals{background:var(--blue-tint); border-color:transparent}
+  .goals .box-title{color:var(--blue)}
+  .goals ol{margin:0; padding-left:1.3rem; font-size:var(--fs-sm); line-height:1.8}
+  .sum{background:var(--bg-raised); border-left:3px solid var(--accent-vivid)}
+  .sum .box-title{color:var(--accent)}
+  .sum ul{margin:0; padding-left:1.2rem; font-size:var(--fs-sm); line-height:1.85}
+  .note{background:var(--bg-tint); border-color:transparent; font-size:var(--fs-sm); line-height:1.85}
+  .warn{background:var(--bg-raised); border:1px solid var(--accent-vivid)}
+  .warn .box-title{color:var(--accent)}
+  .key{margin:2rem 0; padding:1.3rem 1.6rem; background:var(--bg-raised); border:1px solid var(--rule-soft);
+    border-radius:10px; box-shadow:var(--shadow)}
+  .key-label{font-family:var(--sans); font-size:var(--fs-xs); letter-spacing:.2em; color:var(--accent); margin:0 0 .5rem}
+  .key p:last-child{margin:0}
+
+  /* exercises */
+  .ex{margin:2.5rem 0 0; border:1px solid var(--rule); border-radius:10px; overflow:hidden; background:var(--bg-raised)}
+  .ex-head{font-family:var(--sans); font-size:var(--fs-sm); font-weight:700; letter-spacing:.1em;
+    padding:.9rem 1.6rem; background:var(--bg-tint); border-bottom:1px solid var(--rule-soft)}
+  .ex-body{padding:1.3rem 1.6rem .4rem}
+  .ex-body ol{padding-left:1.4rem; font-size:var(--fs-sm); line-height:1.8}
+  .ans{border-top:1px solid var(--rule-soft)}
+  .ans summary{font-family:var(--sans); font-size:var(--fs-sm); padding:.85rem 1.6rem; cursor:pointer;
+    color:var(--blue); list-style:none; display:flex; align-items:center; gap:.5rem}
+  .ans summary::-webkit-details-marker{display:none}
+  .ans summary::before{content:"▶"; font-size:.65em; transition:transform .18s}
+  .ans[open] summary::before{transform:rotate(90deg)}
+  .ans summary:hover{background:var(--bg-tint)}
+  .ans-body{padding:.2rem 1.6rem 1.2rem; background:var(--bg-tint)}
+  .ans-body ol{padding-left:1.4rem; font-size:var(--fs-sm); line-height:1.85; margin:0}
+
+  /* ===== tables ===== */
+  .tw{overflow-x:auto; margin:0 0 2rem; border:1px solid var(--rule-soft); border-radius:10px; background:var(--bg-raised)}
+  table{border-collapse:collapse; width:100%; font-family:var(--sans); font-size:var(--fs-sm); line-height:1.65}
+  caption{caption-side:top; text-align:left; font-family:var(--sans); font-size:var(--fs-xs);
+    color:var(--text-dim); padding:.9rem 1.1rem .3rem; letter-spacing:.08em}
+  th,td{padding:.68rem 1.1rem; text-align:left; border-bottom:1px solid var(--rule-soft); vertical-align:top}
+  thead th{font-size:var(--fs-xs); letter-spacing:.1em; color:var(--text-dim); background:var(--bg-tint);
+    border-bottom:1px solid var(--rule); white-space:nowrap}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:var(--bg-tint)}
+  td.num,th.num{text-align:right; font-variant-numeric:tabular-nums; font-family:var(--mono); font-size:.82rem; white-space:nowrap}
+  .hi td{background:var(--accent-tint)}
+  .hi:hover td{background:var(--accent-tint)}
+
+  /* colour swatch */
+  .sw{display:inline-flex; align-items:center; gap:.5rem; white-space:nowrap}
+  .dot{width:.85rem; height:.85rem; border-radius:50%; flex:none;
+    border:1px solid rgba(120,130,150,.45); box-shadow:0 0 8px -1px currentColor}
+  /* scale bars */
+  .bar{display:block; height:6px; border-radius:3px; background:var(--accent-vivid); min-width:2px}
+  .bar-cell{width:32%; min-width:5rem}
+
+  /* figures */
+  figure{margin:2.4rem 0; padding:1.4rem; background:var(--bg-raised); border:1px solid var(--rule-soft); border-radius:10px}
+  figure svg{display:block; width:100%; height:auto; max-width:34rem; margin:0 auto}
+  figcaption{font-family:var(--sans); font-size:var(--fs-xs); color:var(--text-dim); line-height:1.75;
+    margin-top:1rem; text-align:center}
+  .svg-l{fill:var(--text-dim); font-family:var(--sans); font-size:11px}
+  .svg-t{fill:var(--text); font-family:var(--sans); font-size:12px; font-weight:700}
+  .svg-line{stroke:var(--rule); stroke-width:1}
+  .svg-chip{fill:var(--bg-raised); stroke:var(--rule); stroke-width:1}
+  .svg-num{fill:var(--text); font-family:var(--sans); font-size:12.5px; font-weight:700}
+
+  /* formula */
+  .fx{margin:1.6rem 0; padding:1rem 1.2rem; background:var(--bg-sunken); border-radius:8px;
+    font-family:var(--mono); font-size:var(--fs-sm); text-align:center; overflow-x:auto; line-height:2}
+  .fx b{color:var(--accent); font-weight:700}
+
+  /* temperature window strip */
+  .tstrip{margin:2rem 0}
+  .tstrip-bar{height:2.6rem; border-radius:8px; position:relative; overflow:hidden;
+    background:linear-gradient(90deg,#1B2340 0%,#20406E 18%,#2B7CF0 38%,#4FA3FF 48%,#2B7CF0 58%,#8C6B3E 76%,#C9A25E 100%)}
+  .tstrip-win{position:absolute; inset:0 auto 0 36%; width:24%; border-left:2px dashed #fff; border-right:2px dashed #fff}
+  .tstrip-legend{display:flex; justify-content:space-between; font-family:var(--sans); font-size:var(--fs-xs);
+    color:var(--text-dim); margin-top:.5rem; gap:1rem}
+
+  /* sequence */
+  .seq{list-style:none; padding:0; margin:2.2rem 0; counter-reset:s}
+  .seq li{counter-increment:s; display:grid; grid-template-columns:2.1rem 1fr; gap:1rem;
+    padding:.7rem 0; border-bottom:1px solid var(--rule-soft); font-size:var(--fs-sm); line-height:1.75}
+  .seq li:last-child{border-bottom:0}
+  .seq li::before{content:counter(s,decimal-leading-zero); font-family:var(--mono); font-size:.78rem;
+    color:var(--accent); padding-top:.35rem; font-variant-numeric:tabular-nums}
+  .seq b{font-family:var(--sans); font-size:var(--fs-sm)}
+
+  /* glossary */
+  .gl-search{width:100%; max-width:22rem; font-family:var(--sans); font-size:var(--fs-sm);
+    padding:.6rem .9rem; border:1px solid var(--rule); border-radius:8px; background:var(--bg-raised);
+    color:var(--text); margin:0 0 1.4rem}
+  .gl{display:grid; gap:0; margin:0}
+  .gl-row{display:grid; grid-template-columns:9.5rem 1fr; gap:1rem; padding:.75rem .2rem;
+    border-bottom:1px solid var(--rule-soft)}
+  .gl-row.hide{display:none}
+  .gl-row dt{font-family:var(--sans); font-size:var(--fs-sm); font-weight:700; margin:0}
+  .gl-row dt span{display:block; font-weight:400; font-size:var(--fs-xs); color:var(--text-dim); letter-spacing:.04em}
+  .gl-row dd{margin:0; font-size:var(--fs-sm); line-height:1.75; color:var(--text-mid)}
+  @media (max-width:600px){.gl-row{grid-template-columns:1fr; gap:.2rem}}
+
+  /* closing */
+  .fin{margin-top:5rem; padding:3rem clamp(1.2rem,5vw,3rem); background:var(--night); color:#DDE3EF;
+    border-radius:14px; text-align:center}
+  .fin h2{color:#EEF1F8}
+  .fin p{max-width:30rem; margin-inline:auto; color:#BAC3D6}
+  .fin .pull{font-size:var(--fs-lg); color:#EBBB63; line-height:1.9}
+  footer{font-family:var(--sans); font-size:var(--fs-xs); color:var(--text-dim); line-height:1.8;
+    margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--rule); text-align:center}
+
+  @media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important; scroll-behavior:auto!important}}
+  html{scroll-behavior:smooth}
+  @media print{
+    .side,.mnav,#bar{display:none} .shell{display:block} .ans[open],.ans{page-break-inside:avoid}
+    .hero{background:none; color:#000} .fin{background:none; color:#000}
+  }
+</style>
+
+<div id="bar"></div>
+
+<div class="shell">
+  <aside class="side">
+    <p class="brand">花火の教科書</p>
+    <p class="brand-sub">HANABI · A TEXTBOOK</p>
+    <nav aria-label="目次">
+      <p class="toc-part">序</p>
+      <ul class="toc">
+        <li><a href="#intro"><span class="n">—</span>この教科書について</a></li>
+      </ul>
+      <p class="toc-part">第Ⅰ部 導入</p>
+      <ul class="toc">
+        <li><a href="#ch1"><span class="n">1</span>花火とは何か・歴史</a></li>
+      </ul>
+      <p class="toc-part">第Ⅱ部 理論</p>
+      <ul class="toc">
+        <li><a href="#ch2"><span class="n">2</span>火薬の化学</a></li>
+        <li><a href="#ch3"><span class="n">3</span>光と色の科学</a></li>
+        <li><a href="#ch4"><span class="n">4</span>音と煙、力学</a></li>
+      </ul>
+      <p class="toc-part">第Ⅲ部 構造</p>
+      <ul class="toc">
+        <li><a href="#ch5"><span class="n">5</span>玉の解剖</a></li>
+        <li><a href="#ch6"><span class="n">6</span>玉の種類と美学</a></li>
+        <li><a href="#ch7"><span class="n">7</span>仕掛花火と演出</a></li>
+      </ul>
+      <p class="toc-part">第Ⅳ部 実践</p>
+      <ul class="toc">
+        <li><a href="#ch8"><span class="n">8</span>環境と技術革新</a></li>
+        <li><a href="#ch9"><span class="n">9</span>安全と法規</a></li>
+        <li><a href="#ch10"><span class="n">10</span>観賞と撮影</a></li>
+      </ul>
+      <p class="toc-part">付録</p>
+      <ul class="toc">
+        <li><a href="#apa"><span class="n">A</span>用語集</a></li>
+        <li><a href="#apc"><span class="n">B</span>さらに学ぶために</a></li>
+        <li><a href="#apd"><span class="n">C</span>数値早見表</a></li>
+      </ul>
+    </nav>
+    <p class="side-foot">各章の演習の解答は、章末の「解答を見る」を開くと表示されます。<br><br>本書は原理を学ぶための教育用テキストです。火薬の調合手順は含みません。</p>
+  </aside>
+
+  <main>
+    <details class="mnav">
+      <summary>目次を開く<span aria-hidden="true">≡</span></summary>
+      <nav aria-label="目次（モバイル）">
+        <ul class="toc">
+          <li><a href="#intro"><span class="n">—</span>この教科書について</a></li>
+          <li><a href="#ch1"><span class="n">1</span>花火とは何か・歴史</a></li>
+          <li><a href="#ch2"><span class="n">2</span>火薬の化学</a></li>
+          <li><a href="#ch3"><span class="n">3</span>光と色の科学</a></li>
+          <li><a href="#ch4"><span class="n">4</span>音と煙、力学</a></li>
+          <li><a href="#ch5"><span class="n">5</span>玉の解剖</a></li>
+          <li><a href="#ch6"><span class="n">6</span>玉の種類と美学</a></li>
+          <li><a href="#ch7"><span class="n">7</span>仕掛花火と演出</a></li>
+          <li><a href="#ch8"><span class="n">8</span>環境と技術革新</a></li>
+          <li><a href="#ch9"><span class="n">9</span>安全と法規</a></li>
+          <li><a href="#ch10"><span class="n">10</span>観賞と撮影</a></li>
+          <li><a href="#apa"><span class="n">A</span>用語集</a></li>
+          <li><a href="#apc"><span class="n">B</span>さらに学ぶために</a></li>
+          <li><a href="#apd"><span class="n">C</span>数値早見表</a></li>
+        </ul>
+      </nav>
+    </details>
+
+    <header class="hero">
+      <canvas id="sky" aria-hidden="true"></canvas>
+      <div class="col">
+        <p class="eyebrow">化学 · 物理 · 歴史 · 美学</p>
+        <h1>花火の教科書</h1>
+        <p class="lede">なぜあの色になるのか。なぜ丸く開くのか。なぜ日本の花火は世界一と言われるのか。数秒で消える光の背後にある、数百年の積み重ねを読み解く。</p>
+        <ul class="chips">
+          <li>全10章</li><li>演習30問・解答つき</li><li>付録3・用語集30語</li>
+        </ul>
+      </div>
+    </header>
+
+    <section id="intro" class="chapter col">
+      <div class="ch-head">
+        <p class="ch-no">序</p>
+        <h2>この教科書について</h2>
+        <p class="ch-abs">花火を「きれい」で終わらせないための地図。読者の前提、章の構成、そして本書が意図的に書かないことについて。</p>
+      </div>
+      <p>花火は「化学の実験」であり「物理の応用」であり、同時に「日本が数百年かけて磨いた造形芸術」でもあります。本書は、花火をただ美しいもので終わらせず、<strong>なぜあの色になるのか／なぜ丸く開くのか／なぜ日本の花火は世界一と言われるのか</strong>を体系的に理解するための教科書です。</p>
+
+      <h3>対象読者</h3>
+      <ul>
+        <li>花火を科学として理解したい人（高校化学・物理の基礎があると読みやすい）</li>
+        <li>花火大会をより深く楽しみたい人、写真を撮りたい人</li>
+        <li>煙火業界・イベント業界に関心のある人</li>
+      </ul>
+
+      <h3>本書の使い方</h3>
+      <p>全10章＋付録。各章は<strong>学習目標 → 本文 → まとめ → 演習問題</strong>の順で構成されています。演習の解答は各章末の折りたたみを開くと表示されます。まず学習目標を読み、章を読み終えたらまとめで確認し、演習で自分の理解を試してください。</p>
+      <div class="tw">
+        <table>
+          <caption>本書の構成</caption>
+          <thead><tr><th>部</th><th>章</th><th>テーマ</th></tr></thead>
+          <tbody>
+            <tr><td>第Ⅰ部 導入</td><td class="num">1</td><td>花火とは何か・歴史</td></tr>
+            <tr><td>第Ⅱ部 理論</td><td class="num">2–4</td><td>火薬の化学・発色の科学・音と力学</td></tr>
+            <tr><td>第Ⅲ部 構造</td><td class="num">5–7</td><td>玉の解剖・種類と美学・仕掛花火</td></tr>
+            <tr><td>第Ⅳ部 実践</td><td class="num">8–10</td><td>現代技術・安全と法規・観賞と撮影</td></tr>
+            <tr><td>付録</td><td class="num">A–C</td><td>用語集・さらに学ぶために・数値早見表</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="box warn">
+        <p class="box-title">⚠ きわめて重要な注意（必ず読んでください）</p>
+        <p>本書は<strong>花火の原理を理解するための教育用テキスト</strong>です。火薬の調合手順、配合量の設計、造粒・圧搾・玉込めなどの<strong>製造方法は一切記載していません</strong>。</p>
+        <ul>
+          <li>日本では火薬類の製造・所持・消費は<strong>火薬類取締法</strong>によって厳格に規制されており、無許可の製造は犯罪です。</li>
+          <li>花火の材料は少量でも<strong>摩擦・静電気・衝撃で容易に発火</strong>し、死亡・失明・四肢欠損に至る事故が実際に起きています。</li>
+          <li>「自分で作ってみる」は本書の目的ではありません。作りたい人が進むべき道は、<strong>煙火業者への就職または花火師への師事</strong>という正規のルートだけです。</li>
+        </ul>
+        <p style="margin:0">本書で学べるのは「理屈」であり、「手順」ではありません。この一線は意図的に引かれています。</p>
+      </div>
+    </section>
+
+    <p class="part-rule">第Ⅰ部 導入</p>
+
+    <section id="ch1" class="chapter col">
+      <div class="ch-head">
+        <p class="ch-no">第 1 章</p>
+        <h2>花火とは何か ― 定義と歴史</h2>
+        <p class="ch-abs">錬丹術の副産物として生まれた火薬が、邪気払いの音を経て、江戸の町人文化の中で「鎮魂の光」になるまで。そして明治の色彩革命。</p>
+      </div>
+
+      <div class="box goals">
+        <p class="box-title">学習目標</p>
+        <ol>
+          <li>「花火（煙火）」を火薬工学的に定義できる</li>
+          <li>黒色火薬の起源から観賞用花火への転換の流れを説明できる</li>
+          <li>日本の花火が「和火」から「洋火」へ移る技術的転換点を指摘できる</li>
+        </ol>
+      </div>
+
+      <h3>1.1 花火の定義</h3>
+      <p>花火（<strong>煙火</strong>〈えんか〉が業界・法令上の呼称）とは、次のように定義できます。</p>
+      <div class="key">
+        <p class="key-label">定義</p>
+        <p>火薬類の燃焼・爆発によって生じる光・音・煙・火の粉を、観賞または信号を目的として<strong>制御した装置</strong>。</p>
+      </div>
+      <p>ポイントは「<strong>制御</strong>」の一語にあります。火薬は放っておけばただ爆発するだけですが、花火はそれを次の4軸で設計します。</p>
+      <div class="tw">
+        <table>
+          <thead><tr><th>軸</th><th>制御する手段</th></tr></thead>
+          <tbody>
+            <tr><td><strong>時間</strong>／いつ光るか</td><td>導火線の長さ、時差設計</td></tr>
+            <tr><td><strong>空間</strong>／どんな形に広がるか</td><td>星の配置と割薬の力</td></tr>
+            <tr><td><strong>色</strong>／何色に光るか</td><td>金属塩と燃焼温度</td></tr>
+            <tr><td><strong>音</strong>／どんな音を出すか</td><td>笛薬・雷薬</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>花火師の仕事は「爆発を作る」ことではなく、<em>爆発を思った通りの形に整える</em>ことです。</p>
+
+      <h3>1.2 火薬の起源 ― 中国</h3>
+      <p>黒色火薬の起源は中国です。唐代（9世紀ごろ）の錬丹術（不老不死の薬を求める術）の文献に、硝石・硫黄・炭を混ぜると激しく燃えるという記述が現れます。<strong>不老長寿を求めて、最も死に近い物質が生まれた</strong>というのは科学史の有名な皮肉です。</p>
+      <p>宋代には「爆竹」「煙火」として娯楽と儀礼に使われるようになりました。もともとは竹を焼いて破裂音を出し<strong>邪気を払う</strong>ものであり、花火の起源は宗教儀礼にあります。この「音で祓う」という発想は、後の日本の花火にも深く残ります。</p>
+
+      <h3>1.3 ヨーロッパへ ― 兵器から祝祭へ</h3>
+      <p>13世紀にイスラム世界経由でヨーロッパに伝わった火薬は、まず<strong>兵器</strong>として発達しました（大砲・銃）。同時にルネサンス期のイタリアでは、王侯の祝祭を飾る<strong>観賞用花火</strong>が発達します。とくにフィレンツェ・シエナの火工師たちが、金属粉を加えて火花を明るくする技術を進めました。</p>
+      <p>ヨーロッパ花火の特徴は「<strong>構造物としての花火</strong>」です。木枠に火薬を仕込んだ仕掛（イタリア語で <i>macchina</i>）を燃やして、宮殿や神殿の絵を火で描く。地上の造形が主役でした。</p>
+
+      <h3>1.4 日本の花火史</h3>
+      <h4>(1) 伝来（16世紀）</h4>
+      <p>1543年（天文12年）の鉄砲伝来とともに火薬が日本に入りました。花火として記録に残る最古級のものは、1613年（慶長18年）に<strong>徳川家康</strong>が駿府城でイギリス人の見せた花火を見物したという記述です。ただしそれ以前にも伊達政宗の観覧記録などがあり、諸説あります。</p>
+      <h4>(2) 江戸の花火文化（17〜19世紀）</h4>
+      <div class="tw">
+        <table>
+          <caption>江戸期の主な出来事</caption>
+          <thead><tr><th class="num">年</th><th>出来事</th></tr></thead>
+          <tbody>
+            <tr><td class="num">1659</td><td>初代・弥兵衛が江戸日本橋で<strong>鍵屋</strong>を創業（現存する宗家花火鍵屋）</td></tr>
+            <tr><td class="num">1733</td><td>飢饉と疫病の死者を弔い悪疫退散を祈って、両国・隅田川の<strong>川開き</strong>で花火が打ち上げられたとされる（現在の隅田川花火大会の起源。年次には諸説あり）</td></tr>
+            <tr><td class="num">19C初</td><td>鍵屋から分家した<strong>玉屋</strong>が台頭。両者が腕を競い、観衆は「たまや〜、かぎや〜」と声を掛けた</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="key">
+        <p class="key-label">押さえておきたいこと</p>
+        <p><strong>日本の花火は死者の供養と疫病退散から始まりました。</strong>夏の花火大会が今もお盆の時期に多いのは偶然ではありません。花火は本来、鎮魂の火です。</p>
+      </div>
+      <h4>(3) 和火 ― 色のない時代</h4>
+      <p>明治より前の日本の花火を<strong>和火（わび）</strong>と呼びます。酸化剤は硝石（硝酸カリウム）しかなく、燃焼温度が低いため、色は<strong>炭火色の橙〜赤褐色</strong>一色でした。</p>
+      <p>しかし和火は劣ったものではありません。ゆっくり燃え、深い橙色の火の粉が柔らかく流れる。現代でも「和火」は意図的に作られ、<strong>渋さと余韻</strong>で評価されます。金属粉のギラギラした輝きがない代わりに、線香花火のような静かな品格があります。</p>
+      <h4>(4) 洋火 ― 色彩革命（明治以降）</h4>
+      <p>明治になり、<strong>塩素酸カリウム KClO<sub>3</sub></strong>、<strong>過塩素酸カリウム KClO<sub>4</sub></strong>、<strong>硝酸ストロンチウム Sr(NO<sub>3</sub>)<sub>2</sub></strong> などの「洋薬」が輸入されると、状況は一変します。これらは硝石より強力な酸化剤で、<strong>炎の温度を大幅に上げられる</strong>ため、金属塩による鮮やかな発色が可能になりました。</p>
+      <p>赤・緑・青が出せるようになった――これが日本の花火の第二の誕生です。以後、日本の花火師は色の技術に日本独自の<strong>幾何学的完成度</strong>（真円・同心円・整った消え口）を組み合わせ、世界に類のない「割物」の伝統を作り上げます。</p>
+
+      <h3>1.5 日本の花火が世界で特別な理由</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th>観点</th><th>欧米型花火</th><th>日本型花火</th></tr></thead>
+          <tbody>
+            <tr><td>玉の形</td><td>円筒形（シェル）が主流</td><td><strong>球形</strong>が基本</td></tr>
+            <tr><td>開いた形</td><td>方向性があり、扇形・不定形も可</td><td><strong>真球・同心円</strong>を理想とする</td></tr>
+            <tr><td>評価軸</td><td>全体の演出・音楽との同期</td><td><strong>一発の完成度</strong>（真円・星の揃い・消え口）</td></tr>
+            <tr><td>構造</td><td>単層の星が多い</td><td><strong>芯入り</strong>（多重同心円）が発達</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>球形の玉は、どの方向から見ても同じ真円に開きます。これを実現するには、玉皮の中に星を<strong>完全な同心球状に</strong>並べ、割薬を均等に効かせなければなりません。日本の花火は「<strong>一発の彫刻</strong>」として評価される文化を作った、という点で世界的に特異です。</p>
+
+      <div class="box sum">
+        <p class="box-title">まとめ</p>
+        <ul>
+          <li>花火＝火薬の燃焼を光・音・煙として、時間・空間・色・音の4軸で制御した装置</li>
+          <li>起源は中国の錬丹術と邪気払いの儀礼。ヨーロッパで観賞用に発達</li>
+          <li>日本では江戸の町人文化として発展。鎮魂と疫病退散が原点</li>
+          <li>明治の洋薬導入（強力な酸化剤）が色彩革命をもたらした</li>
+          <li>日本花火の独自性は「球形・真円・芯入り」という幾何学的完成度</li>
+        </ul>
+      </div>
+
+      <div class="ex">
+        <p class="ex-head">演習問題 1</p>
+        <div class="ex-body">
+          <ol>
+            <li>「花火」を火薬工学的に一文で定義せよ。</li>
+            <li>和火が橙色一色だった理由を、酸化剤の観点から説明せよ。</li>
+            <li>日本の花火が球形・真円を理想とすることの技術的な難しさを述べよ。</li>
+          </ol>
+        </div>
+        <details class="ans">
+          <summary>解答を見る</summary>
+          <div class="ans-body">
+            <ol>
+              <li>火薬類の燃焼・爆発によって生じる光・音・煙・火の粉を、観賞や信号のために時間・空間・色・音の面で制御した装置。</li>
+              <li>和火の酸化剤は硝酸カリウム（硝石）のみで、燃焼温度が低かった。金属塩を励起して発光させるだけの温度に達せず、発色は主に木炭などの粒子の<strong>熱放射</strong>に由来したため、橙〜赤褐色の一色になった。</li>
+              <li>球形の玉は全方向に同じ形で開かなければならない。そのために ① 星を完全な同心球状に配置する、② 玉皮の強度を全周で均一にする、③ 割薬の力を全方向に等しく効かせる、④ 最高点（速度ゼロ）で正確に開花させる、という4条件がすべて揃う必要があり、一つでも崩れると真円が失われる。</li>
+            </ol>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <p class="part-rule">第Ⅱ部 理論</p>
+
+    <section id="ch2" class="chapter col">
+      <div class="ch-head">
+        <p class="ch-no">第 2 章</p>
+        <h2>火薬の化学 ― 燃焼と酸化還元</h2>
+        <p class="ch-abs">火薬は「酸素を自分の中に持った燃焼系」である。この一点から、速さも、危険も、そして黒色火薬が千年使われ続ける理由も導かれる。</p>
+      </div>
+
+      <div class="box goals">
+        <p class="box-title">学習目標</p>
+        <ol>
+          <li>燃焼の三要素と、火薬が「自己完結した燃焼系」であることを説明できる</li>
+          <li>主な酸化剤・燃料（還元剤）の役割を分類できる</li>
+          <li>黒色火薬の組成と反応の概略を書ける</li>
+          <li>酸素バランスの概念を理解し、燃焼特性との関係を説明できる</li>
+        </ol>
+      </div>
+
+      <h3>2.1 燃焼の三要素と火薬の特異性</h3>
+      <p>ふつうの燃焼には <strong>① 燃料 ② 酸素（酸化剤） ③ 熱（着火エネルギー）</strong> が必要です。焚き火は空気中の酸素を使うので、酸素の供給速度（＝空気の流れ）が燃焼速度の上限を決めます。</p>
+      <p>火薬が決定的に違うのは、<strong>酸化剤を自分の中に持っている</strong>点です。</p>
+      <div class="fx">火薬 ＝ 燃料 ＋ <b>酸化剤</b>（固体として混合済み）</div>
+      <p>このため火薬は次の性質を持ちます。</p>
+      <ul>
+        <li>空気がなくても燃える（真空中でも、水中でも燃える）</li>
+        <li>燃焼速度が空気の供給に律速されない → <strong>極端に速く燃える</strong></li>
+        <li>密閉すると発生ガスが逃げず、圧力が急上昇して<strong>爆発</strong>になる</li>
+      </ul>
+      <p>花火の設計とは、この「速すぎる燃焼」を、<strong>どこでどれだけ速くするか</strong>を作り分ける技術です。星はゆっくり燃えてほしい、割薬は一瞬で効いてほしい。同じ原理の物質を、粒度と配合と密度で作り分けます。</p>
+
+      <h3>2.2 酸化剤 ― 酸素の供給源</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th>物質</th><th>化学式</th><th>特徴</th></tr></thead>
+          <tbody>
+            <tr><td>硝酸カリウム（硝石）</td><td class="num">KNO<sub>3</sub></td><td>黒色火薬の主成分。穏やか、吸湿性が低い。和火の主役</td></tr>
+            <tr class="hi"><td>過塩素酸カリウム</td><td class="num">KClO<sub>4</sub></td><td>強力で比較的安定。現代の色火薬の中心。<strong>塩素供与も兼ねる</strong></td></tr>
+            <tr><td>塩素酸カリウム</td><td class="num">KClO<sub>3</sub></td><td>非常に強力だが<strong>感度が高く危険</strong>。硫黄との併用は自然発火の恐れがあり現代では極力回避</td></tr>
+            <tr><td>硝酸ストロンチウム</td><td class="num">Sr(NO<sub>3</sub>)<sub>2</sub></td><td>酸化剤かつ<strong>赤色</strong>の発色剤</td></tr>
+            <tr><td>硝酸バリウム</td><td class="num">Ba(NO<sub>3</sub>)<sub>2</sub></td><td>酸化剤かつ<strong>緑色</strong>の発色剤</td></tr>
+            <tr><td>過塩素酸アンモニウム</td><td class="num">NH<sub>4</sub>ClO<sub>4</sub></td><td>高性能。ロケット推進剤でも使われる</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="box note">
+        <p class="box-title">学習ポイント</p>
+        <p>硝酸ストロンチウムや硝酸バリウムのように、<strong>酸化剤と発色剤を兼ねる</strong>物質があります。花火の配合表を読むとき、「この成分は何役なのか」を意識すると構造が見えてきます。</p>
+        <p style="margin:0"><strong>なぜ塩素酸カリウムが危険か。</strong>KClO<sub>3</sub> は分解開始温度が低く、硫黄や硫化物（不純物として硫酸を生じうる）と混ざると常温でも発熱反応が進み得ます。歴史的な花火工場の大事故の多くにこの組み合わせが関わっており、業界は KClO<sub>4</sub> への置換を進めてきました。「強い酸化剤ほど良い」ではないという典型例です。</p>
+      </div>
+
+      <h3>2.3 燃料（還元剤）― 熱と光の源</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th>分類</th><th>物質</th><th>役割</th></tr></thead>
+          <tbody>
+            <tr><td>非金属</td><td>硫黄 S</td><td>着火性を上げる、燃焼を安定化</td></tr>
+            <tr><td>非金属</td><td>木炭 C</td><td>橙色の火花（和火の色）。粒度で火花の長さが変わる</td></tr>
+            <tr><td>金属</td><td>アルミニウム Al</td><td>強い<strong>白色</strong>光、銀色の火花</td></tr>
+            <tr><td>金属</td><td>マグネシウム Mg／マグナリウム</td><td>高輝度。色火薬の明るさを上げる</td></tr>
+            <tr><td>金属</td><td>チタン Ti</td><td>白い<strong>分岐する火花</strong>（近年多用）</td></tr>
+            <tr><td>金属</td><td>鉄 Fe</td><td>金色の火花。線香花火・手持ち花火の主役</td></tr>
+            <tr><td>有機</td><td>デキストリン</td><td><strong>結合剤</strong>（星を固める糊）＋燃料</td></tr>
+            <tr><td>有機</td><td>赤ガム、シェラック、パラフィン</td><td>結合剤・燃料。低温燃焼で発色を助ける</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>金属粉は「明るさ担当」、有機物は「色を綺麗に出す担当」と大まかに覚えると理解しやすいです。理由は第3章で扱う<strong>温度</strong>にあります。金属を入れると明るいが熱くなりすぎて色が飛ぶ、というトレードオフが花火化学の中心的な悩みです。</p>
+
+      <h3>2.4 黒色火薬 ― すべての基礎</h3>
+      <p><strong>黒色火薬（Black Powder, BP）</strong>は千年変わらない花火の基礎材料です。標準的な質量比と、理想化した反応式の一例を示します。</p>
+      <div class="fx">
+        硝酸カリウム <b>75%</b> ＋ 木炭 <b>15%</b> ＋ 硫黄 <b>10%</b><br>
+        2 KNO<sub>3</sub> ＋ S ＋ 3 C &nbsp;→&nbsp; K<sub>2</sub>S ＋ N<sub>2</sub> ＋ 3 CO<sub>2</sub>
+      </div>
+      <p>実際の反応はこれほど単純ではなく、K<sub>2</sub>CO<sub>3</sub>、K<sub>2</sub>SO<sub>4</sub>、CO、H<sub>2</sub>S など多数の生成物が混在します。重要なのは結果としての性質です。</p>
+      <ul>
+        <li>大量の<strong>高温ガス</strong>を出す → 打揚げの推進力になる（<strong>揚薬</strong>）</li>
+        <li>大量の<strong>熱と火の粉</strong>を出す → 星に火をつけられる（<strong>割薬</strong>）</li>
+        <li>燃焼速度が「速いが爆発的すぎない」→ <strong>押す力</strong>として使える</li>
+      </ul>
+      <div class="key">
+        <p class="key-label">なぜ千年変わらないのか</p>
+        <p>もし黒色火薬がダイナマイトのように猛烈に爆発したら、星は粉々になり、玉皮は危険な破片になるだけです。黒色火薬は<strong>星を壊さず、遠くまで均等に押し出せる</strong>という、花火にとって理想的な中庸さを持っています。使われ続けているのは、古いからではなく<strong>最適だから</strong>です。</p>
+      </div>
+
+      <h3>2.5 酸素バランス（Oxygen Balance）</h3>
+      <p>配合中の酸化剤が過剰か不足かを表す指標が<strong>酸素バランス（OB）</strong>です。</p>
+      <div class="tw">
+        <table>
+          <thead><tr><th>状態</th><th>燃焼の特徴</th></tr></thead>
+          <tbody>
+            <tr><td><strong>OB &gt; 0</strong> 酸素過剰</td><td>燃焼温度が高く、明るく速い。ただし色は飛びやすく、金属を酸化しすぎる</td></tr>
+            <tr><td><strong>OB ≈ 0</strong> 釣り合い</td><td>エネルギー効率が最大に近い</td></tr>
+            <tr><td><strong>OB &lt; 0</strong> 酸素不足</td><td>燃焼温度が低く、未燃炭素が残って煙や橙色の火花が増える</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>花火の配合は「OB = 0 が最適」ではありません。<strong>目的によって意図的にずらす</strong>のがコツです。</p>
+      <div class="tw">
+        <table>
+          <thead><tr><th>目的</th><th>狙い</th></tr></thead>
+          <tbody>
+            <tr><td>明るい白色光</td><td>OB をやや正に振り、高温にする</td></tr>
+            <tr><td>綺麗な青色</td><td>OB を抑えて<strong>低温</strong>に保つ（CuCl を壊さないため）</td></tr>
+            <tr><td>長く垂れる金色の柳</td><td>OB を負にして未燃炭素を多く残す</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>色を出したいなら、温度を上げすぎてはいけない。明るくしたいなら温度を上げたい。</strong>この矛盾の調停が花火の配合設計の本質です。</p>
+
+      <div class="box sum">
+        <p class="box-title">まとめ</p>
+        <ul>
+          <li>火薬は酸化剤を内蔵した自己完結型の燃焼系。だから空気なしで、速く燃える</li>
+          <li>酸化剤は硝酸塩・塩素酸塩・過塩素酸塩系。KClO<sub>3</sub> は強力だが危険で回避傾向</li>
+          <li>燃料は金属（明るさ）と有機物（発色と結合）に役割分担</li>
+          <li>黒色火薬 75:15:10 は「押す力」として理想的な中庸さを持つ</li>
+          <li>酸素バランスは目的に応じて意図的にずらす設計パラメータ</li>
+        </ul>
+      </div>
+
+      <div class="ex">
+        <p class="ex-head">演習問題 2</p>
+        <div class="ex-body">
+          <ol>
+            <li>火薬が水中でも燃えられる理由を説明せよ。</li>
+            <li>塩素酸カリウムが現代の花火で避けられる理由を述べよ。</li>
+            <li>「青い星に金属粉を大量に入れると色が悪くなる」理由を、酸素バランスと温度の観点から予測せよ（第3章の内容を先取りしてよい）。</li>
+          </ol>
+        </div>
+        <details class="ans">
+          <summary>解答を見る</summary>
+          <div class="ans-body">
+            <ol>
+              <li>火薬は酸化剤（酸素の供給源）を組成の中に含んでおり、外部の空気に依存しないため。したがって水中でも真空中でも燃焼が継続する。</li>
+              <li>KClO<sub>3</sub> は分解開始温度が低く感度が高い。とくに硫黄や硫化物との混合系では常温付近でも発熱反応が進行し得て、自然発火・爆発の危険がある。歴史的な工場事故の要因となったため、より安定な KClO<sub>4</sub> への置換が進んだ。</li>
+              <li>金属粉（Al、Mg など）は燃焼温度を大幅に上げる。しかし青の発光種 CuCl は高温で熱分解してしまうため、温度が上がると青が消え、代わりに金属の熱放射による白色光が優勢になる。結果として「明るいが白っぽい、色の浅い青」になる。</li>
+            </ol>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="ch3" class="chapter col">
+      <div class="ch-head">
+        <p class="ch-no">第 3 章</p>
+        <h2>光と色の科学</h2>
+        <p class="ch-abs">金色は「温度の色」、赤や青は「物質の色」。この二つを区別できるかどうかが、花火を科学として理解する分かれ目になる。</p>
+      </div>
+
+      <div class="box goals">
+        <p class="box-title">学習目標</p>
+        <ol>
+          <li>熱放射による発光と、原子・分子発光の違いを説明できる</li>
+          <li>主要な発色元素と対応する色・波長を暗記レベルで言える</li>
+          <li>青が最も難しい理由を温度と化学種の安定性から説明できる</li>
+          <li>ナトリウム汚染がなぜ問題かを説明できる</li>
+        </ol>
+      </div>
+
+      <h3>3.1 機構① 熱放射（白熱・インカンデセンス）</h3>
+      <p>高温の固体粒子はプランクの黒体放射に従って光ります。温度が上がるほど明るく、色は赤→橙→黄→白へと移ります（ウィーンの変位則）。</p>
+      <div class="fx">λ<sub>max</sub> ≈ <b>2.898 × 10<sup>−3</sup></b> ／ T &nbsp;&nbsp;[m·K ／ K]</div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>粒子</th><th>燃焼時の見え方</th></tr></thead>
+          <tbody>
+            <tr><td><span class="sw"><span class="dot" style="background:#E0A32E;color:#E0A32E"></span>木炭</span></td><td>橙色〜赤褐色（約1200–1700 K）。和火・柳の色</td></tr>
+            <tr><td><span class="sw"><span class="dot" style="background:#F0BE4A;color:#F0BE4A"></span>鉄</span></td><td>金色の火花。分岐しながら消える</td></tr>
+            <tr><td><span class="sw"><span class="dot" style="background:#F2F5FA;color:#F2F5FA"></span>アルミニウム</span></td><td>眩しい白（3000 K超）</td></tr>
+            <tr><td><span class="sw"><span class="dot" style="background:#E8EEF7;color:#E8EEF7"></span>チタン</span></td><td>白い火花。特徴的に激しく分岐する</td></tr>
+            <tr><td><span class="sw"><span class="dot" style="background:#FFFFFF;color:#FFFFFF"></span>マグネシウム</span></td><td>極めて明るい白</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="key">
+        <p class="key-label">重要な理解</p>
+        <p><strong>「金色」「銀色」「白」は熱放射の色</strong>であり、化学的な色ではありません。だから金と銀の花火に「元素の色」はなく、あるのは<strong>温度</strong>だけです。</p>
+      </div>
+
+      <h3>3.2 機構② 原子・分子発光（ルミネッセンス）</h3>
+      <p>炎の中で気体になった原子や分子が、熱で励起され、基底状態に戻るときに<strong>特定波長</strong>の光を放ちます。これが「赤」「緑」「青」の正体です。</p>
+      <div class="fx">励起種 M<sup>*</sup> &nbsp;→&nbsp; M ＋ <b>hν</b></div>
+      <p>熱放射が「連続スペクトル（すべての波長が混ざる）」なのに対し、こちらは「<strong>線または帯スペクトル</strong>（特定の波長だけ）」です。だから鮮やかで彩度が高い。</p>
+
+      <h3>3.3 発色元素の一覧 ― 花火の色見本</h3>
+      <div class="tw">
+        <table>
+          <caption>色・元素・発光種・波長の対応</caption>
+          <thead><tr><th>色</th><th>元素</th><th>発光種</th><th class="num">主な波長</th></tr></thead>
+          <tbody>
+            <tr><td><span class="sw"><span class="dot" style="background:#E8203A;color:#E8203A"></span>深紅</span></td><td>ストロンチウム Sr</td><td><strong>SrCl</strong></td><td class="num">605–682 nm</td></tr>
+            <tr><td><span class="sw"><span class="dot" style="background:#F07A18;color:#F07A18"></span>橙</span></td><td>カルシウム Ca</td><td>CaCl</td><td class="num">591–618 nm</td></tr>
+            <tr><td><span class="sw"><span class="dot" style="background:#F2D02C;color:#F2D02C"></span>黄</span></td><td>ナトリウム Na</td><td>Na 原子（D線）</td><td class="num">589 nm</td></tr>
+            <tr><td><span class="sw"><span class="dot" style="background:#2ED16A;color:#2ED16A"></span>緑</span></td><td>バリウム Ba</td><td><strong>BaCl</strong></td><td class="num">505–535 nm</td></tr>
+            <tr class="hi"><td><span class="sw"><span class="dot" style="background:#2B7CF0;color:#2B7CF0"></span>青</span></td><td>銅 Cu</td><td><strong>CuCl</strong></td><td class="num">420–460 nm</td></tr>
+            <tr><td><span class="sw"><span class="dot" style="background:#9B4FE0;color:#9B4FE0"></span>紫・藤</span></td><td>Sr ＋ Cu</td><td>SrCl ＋ CuCl</td><td class="num">赤と青の混色</td></tr>
+            <tr><td><span class="sw"><span class="dot" style="background:#F2F5FA;color:#F2F5FA"></span>白・銀</span></td><td>Al, Mg, Ti</td><td>熱放射</td><td class="num">連続</td></tr>
+            <tr><td><span class="sw"><span class="dot" style="background:#E0A32E;color:#E0A32E"></span>金</span></td><td>木炭, 鉄</td><td>熱放射</td><td class="num">連続</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>3.4 塩素供与体 ― 隠れた主役</h3>
+      <p>上の表をよく見てください。赤・橙・緑・青の発光種はすべて「<strong>◯Cl</strong>」という<strong>一塩化物</strong>です。つまり炎の中に<strong>塩素</strong>がなければ、これらの色は出ません。</p>
+      <p>金属単体や酸化物では色がまるで違ってしまいます。たとえば銅の酸化物 CuO は緑がかった色を出し、狙った青にはなりません。だから配合には塩素の供給源が必要です。</p>
+      <ul>
+        <li>過塩素酸カリウム KClO<sub>4</sub>（酸化剤兼塩素供与体、一石二鳥）</li>
+        <li>塩素化ゴム、PVC（ポリ塩化ビニル）などの塩素含有有機物</li>
+      </ul>
+      <p>かつては<strong>ヘキサクロロベンゼン</strong>が優れた塩素供与体として使われましたが、残留性有機汚染物質（POPs）として国際的に規制され、現在は塩素化パラフィンや PVC 系に置き換えられています。<strong>環境規制が花火の配合を変えてきた</strong>実例です。</p>
+
+      <h3>3.5 なぜ青は難しいのか</h3>
+      <p>花火師の間では「<strong>青が出せれば一人前</strong>」と言われます。理由は CuCl の熱的な脆さにあります。</p>
+      <div class="tstrip">
+        <div class="tstrip-bar" role="img" aria-label="温度が低いと暗く、狭い中間域だけで青が美しく光り、高温では分解して青が消えることを示す帯"><span class="tstrip-win"></span></div>
+        <div class="tstrip-legend">
+          <span>低温：CuCl が十分に気化せず<strong>暗い</strong></span>
+          <span style="text-align:center">中間：<strong>美しい青</strong>（狭い窓）</span>
+          <span style="text-align:right">高温：分解して<strong>青が消える</strong></span>
+        </div>
+      </div>
+      <p>CuCl が青く光る温度窓は非常に狭く、おおよそ 1200 °C 前後より上では熱分解が進んでしまいます。したがって青い星は次の二重拘束に置かれます。</p>
+      <ul>
+        <li>燃焼温度を低く保たなければならない → <strong>暗くなる</strong></li>
+        <li>明るくしようと金属粉を足す → <strong>温度が上がって青が死ぬ</strong></li>
+      </ul>
+      <div class="key">
+        <p class="key-label">観賞のヒント</p>
+        <p><strong>「明るい青」は花火化学における最難関の一つ</strong>です。深く鮮やかな青が高い位置で大きく開いたら、それは相当な技術の産物です。花火大会で青を見たら、拍手する価値があります。</p>
+      </div>
+
+      <h3>3.6 ナトリウム汚染 ― 見えない敵</h3>
+      <p>ナトリウムの D 線（589 nm）は<strong>極端に発光効率が高い</strong>ため、微量でも炎全体を黄色く染めます。理科の炎色反応実験で、白金線を洗っても黄色が消えにくいのと同じ現象です。このため、</p>
+      <ul>
+        <li>青・緑・紫の配合では、<strong>ナトリウムを含む原料を徹底的に避ける</strong></li>
+        <li>硝酸カリウムの代わりに硝酸ナトリウムを使うと、色が全部黄色に転ぶ</li>
+        <li>結合剤や着火薬からの微量混入も色を濁らせる</li>
+      </ul>
+      <p><strong>純度が色を決める。</strong>花火の色は配合表だけでなく、原料管理の清潔さで決まるという、地味だが決定的な事実です。</p>
+
+      <h3>3.7 色の評価</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th>評価軸</th><th>意味</th></tr></thead>
+          <tbody>
+            <tr><td><strong>彩度・純度</strong></td><td>濁りがなく深い色か。黄色や白が混ざっていないか</td></tr>
+            <tr><td><strong>均一性</strong></td><td>すべての星が同じ色か。ばらつきは配合・造粒の不均一を示す</td></tr>
+            <tr><td><strong>色変化の切れ</strong></td><td>変色星（例：赤→緑）の切り替わりが一斉かつ明瞭か</td></tr>
+            <tr><td><strong>消え口</strong></td><td>消え方が揃っているか。ダラダラ残るのは燃焼制御が甘い証拠</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>「<strong>消え口が揃う</strong>」は日本の花火独特の美意識です。同時に開き、同時に色が変わり、同時に消える。この<strong>同時性</strong>が、日本の花火を「幾何学的な完成」に見せています。</p>
+
+      <div class="box sum">
+        <p class="box-title">まとめ</p>
+        <ul>
+          <li>発光機構は熱放射（白・金・銀）と原子分子発光（赤・緑・青）の2系統</li>
+          <li>赤 Sr、橙 Ca、黄 Na、緑 Ba、青 Cu。発光種は一塩化物 MCl なので塩素供与体が必須</li>
+          <li>青は CuCl の温度窓が狭く、明るさと色が両立しない最難関</li>
+          <li>ナトリウムは微量で全体を黄色に染めるため厳格に排除する</li>
+        </ul>
+      </div>
+
+      <div class="ex">
+        <p class="ex-head">演習問題 3</p>
+        <div class="ex-body">
+          <ol>
+            <li>「金色の花火」と「赤色の花火」の発光機構の違いを説明せよ。</li>
+            <li>塩素供与体が必要な理由を、発光種の化学式から説明せよ。</li>
+            <li>ウィーンの変位則を用いて、λ<sub>max</sub> = 600 nm となる温度を概算せよ。</li>
+            <li>ある花火職人が「青い星の材料は他の色と別の場所で扱う」と言った。理由を推測せよ。</li>
+          </ol>
+        </div>
+        <details class="ans">
+          <summary>解答を見る</summary>
+          <div class="ans-body">
+            <ol>
+              <li>金色は木炭や鉄の粒子が高温になって光る<strong>熱放射（連続スペクトル）</strong>であり、色は温度で決まる。赤色はストロンチウムの一塩化物 SrCl による<strong>分子発光（帯スペクトル）</strong>であり、色は化学種で決まる。前者は温度の色、後者は物質の色。</li>
+              <li>赤・橙・緑・青の発光種はそれぞれ SrCl、CaCl、BaCl、CuCl という一塩化物である。炎中に塩素がなければこれらの化学種が生成せず、金属単体や酸化物の異なる発光になってしまうため、塩素供与体が必須となる。</li>
+              <li>T ≈ 2.898×10<sup>−3</sup> ／ 6.00×10<sup>−7</sup> ≈ <strong>4.8×10<sup>3</sup> K</strong>（約4800 K）。</li>
+              <li>ナトリウムの汚染を避けるため。Na の D線（589 nm）は発光効率が極めて高く、微量の混入でも炎全体が黄色く染まり、最も温度条件に敏感な青色が濁ってしまう。器具・作業台の共用による微量混入すら避けたいという判断。</li>
+            </ol>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="ch4" class="chapter col">
+      <div class="ch-head">
+        <p class="ch-no">第 4 章</p>
+        <h2>音と煙、そして力学</h2>
+        <p class="ch-abs">打揚花火は大砲である。真円は「速度ゼロの瞬間」を狙う技術であり、垂れる花火は空気抵抗と重力が描く形である。</p>
+      </div>
+
+      <div class="box goals">
+        <p class="box-title">学習目標</p>
+        <ol>
+          <li>打揚げから開花までの物理過程を順に説明できる</li>
+          <li>玉の号数と到達高度・開花直径の関係を概算できる</li>
+          <li>音を出す仕組み（雷・笛）の原理を説明できる</li>
+          <li>星の軌道が空気抵抗でどう決まるかを説明できる</li>
+        </ol>
+      </div>
+
+      <h3>4.1 打揚げの物理</h3>
+      <p>打揚花火は、<strong>筒（打揚筒）の中で黒色火薬（揚薬）を燃やし、そのガス圧で玉を押し出す</strong>という、原理的には大砲そのものです。玉が筒を出るときの初速はおよそ 100 m/s 前後（玉の大きさや設計により幅があります）。以後は重力と空気抵抗で減速し、<strong>ほぼ最高点に達したところで開花</strong>するよう、導火線の長さが設計されています。</p>
+      <figure>
+        <svg viewBox="0 0 520 260" role="img" aria-labelledby="t-traj">
+          <title id="t-traj">打揚げの軌跡：加速・慣性飛行・最高点での開花</title>
+          <path d="M40 236 C 150 236 210 120 264 60" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4" opacity=".45"/>
+          <path d="M264 60 C 318 120 378 236 488 236" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 5" opacity=".2"/>
+          <rect x="28" y="212" width="24" height="34" rx="3" fill="none" class="svg-line" stroke-width="1.5"/>
+          <g stroke="#E9B75B" stroke-width="1.4" opacity=".95">
+            <g transform="translate(264 60)">
+              <line x1="0" y1="0" x2="0" y2="-34"/><line x1="0" y1="0" x2="24" y2="-24"/>
+              <line x1="0" y1="0" x2="34" y2="0"/><line x1="0" y1="0" x2="24" y2="24"/>
+              <line x1="0" y1="0" x2="0" y2="34"/><line x1="0" y1="0" x2="-24" y2="24"/>
+              <line x1="0" y1="0" x2="-34" y2="0"/><line x1="0" y1="0" x2="-24" y2="-24"/>
+            </g>
+          </g>
+          <circle cx="264" cy="60" r="3" fill="#E9B75B"/>
+          <line x1="20" y1="246" x2="500" y2="246" class="svg-line"/>
+          <text class="svg-t" x="40" y="204" text-anchor="middle">①</text>
+          <text class="svg-l" x="40" y="259" text-anchor="middle">点火・加速</text>
+          <text class="svg-t" x="176" y="146">②</text>
+          <text class="svg-l" x="120" y="178">上昇・減速</text>
+          <text class="svg-t" x="264" y="26" text-anchor="middle">③</text>
+          <text class="svg-l" x="222" y="108" text-anchor="end">最高点</text>
+          <text class="svg-l" x="502" y="196" text-anchor="end">星が減速しながら落下</text>
+        </svg>
+        <figcaption>打揚げから開花まで。③の最高点では速度がほぼゼロになる。ここで開花させることが真円の前提になる。</figcaption>
+      </figure>
+      <p>なぜ最高点で開くのか。理由は3つあります。</p>
+      <ol>
+        <li><strong>速度がほぼゼロ</strong>なので、星が全方向に等距離に飛ぶ → <strong>真円</strong>になる</li>
+        <li>上昇中に開くと、玉自身の運動が加わって形が歪む（上に伸びた卵形になる）</li>
+        <li>最も高い位置で開けば、広い範囲から見える</li>
+      </ol>
+      <p>つまり<strong>真円は「速度ゼロの瞬間を狙う」タイミング技術</strong>でもあります。</p>
+
+      <h3>4.2 号数と規模の関係</h3>
+      <p>日本では玉の直径を「<strong>号</strong>」で表します。1号 ≈ 1寸 ≈ 約3 cm です。</p>
+      <div class="tw">
+        <table>
+          <caption>号数と規模（目安。設計により変動します）</caption>
+          <thead><tr><th>号数</th><th class="num">玉の直径</th><th class="num">到達高度</th><th class="num">開花直径</th><th>高度の比較</th></tr></thead>
+          <tbody>
+            <tr><td>3号</td><td class="num">9 cm</td><td class="num">120 m</td><td class="num">60 m</td><td class="bar-cell"><span class="bar" style="width:15%"></span></td></tr>
+            <tr><td>4号</td><td class="num">12 cm</td><td class="num">160 m</td><td class="num">80 m</td><td class="bar-cell"><span class="bar" style="width:20%"></span></td></tr>
+            <tr><td>5号</td><td class="num">15 cm</td><td class="num">190 m</td><td class="num">130 m</td><td class="bar-cell"><span class="bar" style="width:24%"></span></td></tr>
+            <tr class="hi"><td><strong>10号（尺玉）</strong></td><td class="num">30 cm</td><td class="num">330 m</td><td class="num">320 m</td><td class="bar-cell"><span class="bar" style="width:41%"></span></td></tr>
+            <tr><td>20号（二尺玉）</td><td class="num">60 cm</td><td class="num">500 m</td><td class="num">480 m</td><td class="bar-cell"><span class="bar" style="width:63%"></span></td></tr>
+            <tr><td>30号（三尺玉）</td><td class="num">90 cm</td><td class="num">600 m</td><td class="num">550 m</td><td class="bar-cell"><span class="bar" style="width:75%"></span></td></tr>
+            <tr><td>40号（四尺玉）</td><td class="num">120 cm</td><td class="num">800 m</td><td class="num">800 m</td><td class="bar-cell"><span class="bar" style="width:100%"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="key">
+        <p class="key-label">覚え方</p>
+        <p>尺玉（10号）は<strong>高さ330 m、開花直径320 m</strong>。東京タワー（333 m）の高さで開き、その花の幅は東京タワーの高さと同じ。この一組だけ覚えれば、他はスケールで推定できます。</p>
+      </div>
+      <p>四尺玉は新潟県小千谷市片貝町の「片貝まつり」などで打ち上げられ、世界最大級の打揚花火として知られます。玉の重量は 400 kg を超え、専用の埋設筒が必要です。</p>
+      <div class="box note">
+        <p class="box-title">考えてみよう</p>
+        <p style="margin:0">玉の直径が2倍になると、体積（＝火薬量）は 2<sup>3</sup> ＝ 8倍になります。一方、開花直径はおおむね直径に比例する程度です。花火が大きくなるコストは、見た目の大きさに対して<strong>急激に高くつく</strong>のです。尺玉が「一発いくら」と語られる理由がここにあります。</p>
+      </div>
+
+      <h3>4.3 音の科学</h3>
+      <p>花火の音は「おまけ」ではなく設計された要素です。</p>
+      <h4>(1) 雷（らい）・ドン</h4>
+      <p>割薬や専用の<strong>雷薬</strong>の急激な燃焼で発生する衝撃波です。音は光より遅い（約 340 m/s）ため、次の関係が成り立ちます。</p>
+      <div class="fx">距離 [m] ≈ <b>340</b> × （光ってから音が届くまでの秒数）</div>
+      <p>尺玉が 330 m 上空で開けば、音は約 1 秒遅れて届きます。<strong>光って1秒後にドン</strong>なら、ほぼ真上で尺玉が開いたと分かります。</p>
+      <h4>(2) 笛（ホイッスル）</h4>
+      <p>「ピュ〜」という音は、<strong>振動燃焼</strong>という現象です。安息香酸カリウムやサリチル酸ナトリウムなどの有機酸塩と酸化剤の混合物を細い筒に詰めて燃やすと、燃焼が連続ではなく<strong>周期的な微小爆燃の繰り返し</strong>になり、その周期が音波になります。管の長さが共鳴を決めるため、<strong>筒の長さで音の高さが変わる</strong>のです。花火の笛は、原理的には「火薬で鳴らす笛」です。</p>
+      <h4>(3) その他の音</h4>
+      <ul>
+        <li><strong>蜂（はち）</strong>：星が回転しながら不規則に飛び「ブーン」という音を出す</li>
+        <li><strong>柳・冠</strong>：音は控えめで、燃える火の粉の「シュルシュル」という繊細な音</li>
+        <li><strong>無音</strong>：あえて音を消し、光だけで見せる演出もある</li>
+      </ul>
+      <p><strong>音のない花火大会は成立しません。</strong>腹に響く低音は、花火が「身体で感じる芸術」である理由です。</p>
+
+      <h3>4.4 煙とその制御</h3>
+      <p>煙は花火の避けられない副産物です。主成分は金属酸化物、炭酸カリウム、未燃炭素などの微粒子です。</p>
+      <ul>
+        <li><strong>問題点</strong>：後続の花火が煙に隠れる、観客席に流れる、環境負荷（PM）</li>
+        <li><strong>対策</strong>：風向きを読んだ打揚順、低煙配合の使用、間隔の調整</li>
+      </ul>
+      <p><strong>昼花火</strong>は逆に煙を主役にします。有色の煙玉を空で開かせ、色のついた煙の造形を見せるものです。夜の花火が光の芸術なら、昼花火は<strong>煙の彫刻</strong>です。大曲の全国花火競技大会が昼花火の部を持つのは、この失われかけた技術を保存する意義があるからです。</p>
+
+      <h3>4.5 星の軌道 ― 空気抵抗が形を作る</h3>
+      <p>開花後の星の運動は、重力と空気抵抗の合成で決まります。</p>
+      <div class="fx">m (dv/dt) ＝ m g − ½ ρ C<sub>d</sub> A |v| v</div>
+      <p>抵抗は<strong>表面積に比例</strong>し、質量は<strong>体積に比例</strong>するので、</p>
+      <div class="fx">抵抗 ／ 質量 ∝ r<sup>2</sup> ／ r<sup>3</sup> ＝ <b>1 ／ r</b></div>
+      <p>つまり<strong>小さい星は速く減速し、大きい星は遠くまで飛ぶ</strong>。この単純な事実が花火の造形を支配します。</p>
+      <div class="tw">
+        <table>
+          <thead><tr><th>造形</th><th>星の性質</th><th>見え方</th></tr></thead>
+          <tbody>
+            <tr><td><strong>菊</strong></td><td>尾を引く星</td><td>中心から放射する線が見える</td></tr>
+            <tr><td><strong>牡丹</strong></td><td>尾を引かない星</td><td>点が球状に並ぶ</td></tr>
+            <tr><td><strong>柳・冠（かむろ）</strong></td><td>大きく重く、長時間燃える</td><td>慣性で伸び、重力で垂れ下がる</td></tr>
+            <tr><td><strong>千輪</strong></td><td>極小の星が多数</td><td>急減速して球状に一斉開花</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>垂れる花火（冠）は、空気抵抗と重力の物理が作る形</strong>です。星を重く大きく作り、ゆっくり長く燃やせば、放物線が伸びて枝垂れ柳になる。花火師は方程式を解いていませんが、<strong>経験を通じてこの物理を完全に手の内に入れています</strong>。</p>
+
+      <div class="box sum">
+        <p class="box-title">まとめ</p>
+        <ul>
+          <li>打揚げは大砲と同じ原理。最高点（速度ゼロ）で開くから真円になる</li>
+          <li>尺玉＝高度330 m・開花直径320 m を基準に他をスケール推定できる</li>
+          <li>音は雷（衝撃波）と笛（振動燃焼）。光と音の遅れで距離が分かる</li>
+          <li>星の軌道は「抵抗／質量 ∝ 1／半径」。星のサイズが造形を決める</li>
+        </ul>
+      </div>
+
+      <div class="ex">
+        <p class="ex-head">演習問題 4</p>
+        <div class="ex-body">
+          <ol>
+            <li>花火が光ってから 2.5 秒後に音が届いた。開花点までの距離を概算せよ。</li>
+            <li>上昇中に玉が開いた場合、形はどう歪むか。理由とともに述べよ。</li>
+            <li>号数が 10号から 20号になると、玉の体積（≒火薬量）は何倍になるか。</li>
+            <li>「冠菊（かむろぎく）」が長く垂れ下がる理由を、星の質量と表面積の関係から説明せよ。</li>
+          </ol>
+        </div>
+        <details class="ans">
+          <summary>解答を見る</summary>
+          <div class="ans-body">
+            <ol>
+              <li>340 m/s × 2.5 s ≈ <strong>850 m</strong>。</li>
+              <li>上昇中は玉自身が上向きの速度を持っているため、その速度ベクトルが星の飛散速度に加算される。結果として上方向に伸び、下方向は縮んだ<strong>卵形（縦長）</strong>に歪む。</li>
+              <li>直径が2倍なので体積は 2<sup>3</sup> ＝ <strong>8倍</strong>。</li>
+              <li>冠の星は質量が大きく（体積大）、一方で空気抵抗は表面積に比例する。抵抗／質量 ∝ 1／半径 なので、星が大きいほど減速しにくい。その結果、初速の慣性で遠くまで飛び、長時間燃え続けながら重力でゆっくり落下するため、放物線が長く伸びて垂れ下がる形になる。</li>
+            </ol>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <p class="part-rule">第Ⅲ部 構造</p>
+
+    <section id="ch5" class="chapter col">
+      <div class="ch-head">
+        <p class="ch-no">第 5 章</p>
+        <h2>玉の解剖 ― 打揚花火の構造</h2>
+        <p class="ch-abs">玉皮は包装ではなく圧力容器である。星の断面は、空で見える色変化の時間軸そのものである。</p>
+      </div>
+
+      <div class="box goals">
+        <p class="box-title">学習目標</p>
+        <ol>
+          <li>打揚花火の各部の名称と機能を言える</li>
+          <li>星の内部構造（掛星）と、それが色変化を生む仕組みを説明できる</li>
+          <li>点火から開花までのシークエンスを時系列で書ける</li>
+        </ol>
+      </div>
+
+      <h3>5.1 全体構造</h3>
+      <p>日本の割物（球形の玉）の断面は、入れ子構造になっています。</p>
+      <figure>
+        <svg viewBox="0 0 420 470" role="img" aria-labelledby="t-tama">
+          <title id="t-tama">10号玉の断面：玉皮・外星・割薬・芯・親導火・揚薬</title>
+          <!-- 親導火 -->
+          <path d="M210 30 C 210 46 204 52 210 66" fill="none" stroke="#E9B75B" stroke-width="3"/>
+          <!-- 玉皮 -->
+          <circle cx="210" cy="220" r="152" fill="none" class="svg-line" stroke-width="1"/>
+          <circle cx="210" cy="220" r="146" fill="none" stroke="currentColor" stroke-width="6" opacity=".16"/>
+          <!-- 内部 -->
+          <circle cx="210" cy="220" r="140" fill="currentColor" opacity=".035"/>
+          <!-- 割薬 -->
+          <circle cx="210" cy="220" r="52" fill="#8A6A2E" opacity=".28"/>
+          <circle cx="210" cy="220" r="52" fill="none" stroke="#8A6A2E" stroke-width="1" stroke-dasharray="3 3" opacity=".8"/>
+          <!-- 外星 16 -->
+          <g fill="#E9B75B">
+            <circle cx="210" cy="92" r="8"/>
+            <circle cx="210" cy="92" r="8" transform="rotate(22.5 210 220)"/>
+            <circle cx="210" cy="92" r="8" transform="rotate(45 210 220)"/>
+            <circle cx="210" cy="92" r="8" transform="rotate(67.5 210 220)"/>
+            <circle cx="210" cy="92" r="8" transform="rotate(90 210 220)"/>
+            <circle cx="210" cy="92" r="8" transform="rotate(112.5 210 220)"/>
+            <circle cx="210" cy="92" r="8" transform="rotate(135 210 220)"/>
+            <circle cx="210" cy="92" r="8" transform="rotate(157.5 210 220)"/>
+            <circle cx="210" cy="92" r="8" transform="rotate(180 210 220)"/>
+            <circle cx="210" cy="92" r="8" transform="rotate(202.5 210 220)"/>
+            <circle cx="210" cy="92" r="8" transform="rotate(225 210 220)"/>
+            <circle cx="210" cy="92" r="8" transform="rotate(247.5 210 220)"/>
+            <circle cx="210" cy="92" r="8" transform="rotate(270 210 220)"/>
+            <circle cx="210" cy="92" r="8" transform="rotate(292.5 210 220)"/>
+            <circle cx="210" cy="92" r="8" transform="rotate(315 210 220)"/>
+            <circle cx="210" cy="92" r="8" transform="rotate(337.5 210 220)"/>
+          </g>
+          <!-- 芯 8 -->
+          <g fill="#5AA9E6">
+            <circle cx="210" cy="130" r="6"/>
+            <circle cx="210" cy="130" r="6" transform="rotate(45 210 220)"/>
+            <circle cx="210" cy="130" r="6" transform="rotate(90 210 220)"/>
+            <circle cx="210" cy="130" r="6" transform="rotate(135 210 220)"/>
+            <circle cx="210" cy="130" r="6" transform="rotate(180 210 220)"/>
+            <circle cx="210" cy="130" r="6" transform="rotate(225 210 220)"/>
+            <circle cx="210" cy="130" r="6" transform="rotate(270 210 220)"/>
+            <circle cx="210" cy="130" r="6" transform="rotate(315 210 220)"/>
+          </g>
+          <!-- 揚薬 -->
+          <rect x="164" y="386" width="92" height="40" rx="4" fill="#8A6A2E" opacity=".28"/>
+          <rect x="164" y="386" width="92" height="40" rx="4" fill="none" class="svg-line"/>
+          <line x1="210" y1="372" x2="210" y2="386" class="svg-line"/>
+          <line x1="164" y1="406" x2="132" y2="406" stroke="#E9B75B" stroke-width="2"/>
+          <!-- markers -->
+          <g>
+            <line x1="318" y1="118" x2="286" y2="132" class="svg-line"/>
+            <circle cx="330" cy="118" r="12" class="svg-chip"/><text x="330" y="123" text-anchor="middle" class="svg-num">1</text>
+            <line x1="318" y1="182" x2="292" y2="192" class="svg-line"/>
+            <circle cx="330" cy="182" r="12" class="svg-chip"/><text x="330" y="187" text-anchor="middle" class="svg-num">2</text>
+            <line x1="318" y1="246" x2="258" y2="234" class="svg-line"/>
+            <circle cx="330" cy="246" r="12" class="svg-chip"/><text x="330" y="251" text-anchor="middle" class="svg-num">3</text>
+            <line x1="92" y1="176" x2="128" y2="186" class="svg-line"/>
+            <circle cx="80" cy="176" r="12" class="svg-chip"/><text x="80" y="181" text-anchor="middle" class="svg-num">4</text>
+            <line x1="92" y1="42" x2="202" y2="36" class="svg-line"/>
+            <circle cx="80" cy="42" r="12" class="svg-chip"/><text x="80" y="47" text-anchor="middle" class="svg-num">5</text>
+            <line x1="318" y1="406" x2="258" y2="406" class="svg-line"/>
+            <circle cx="330" cy="406" r="12" class="svg-chip"/><text x="330" y="411" text-anchor="middle" class="svg-num">6</text>
+          </g>
+        </svg>
+        <figcaption>10号玉（尺玉）の断面模式図。実際の構造は玉によって異なる。</figcaption>
+      </figure>
+      <div class="tw">
+        <table>
+          <thead><tr><th class="num">#</th><th>部位</th><th>読み</th><th>機能</th></tr></thead>
+          <tbody>
+            <tr><td class="num">1</td><td><strong>玉皮</strong></td><td>たまがわ</td><td>球形の外殻。和紙・クラフト紙を何層も貼って作る。<strong>強さが割れ方を決める</strong></td></tr>
+            <tr><td class="num">2</td><td><strong>星</strong>（外星）</td><td>ほし</td><td>発光体。玉皮の内側に規則的に並べる。これが花の「花弁」</td></tr>
+            <tr><td class="num">3</td><td><strong>割薬</strong></td><td>わりやく</td><td>玉の中心の黒色火薬。星に点火し、外へ押し出す</td></tr>
+            <tr><td class="num">4</td><td><strong>芯</strong></td><td>しん</td><td>内側の星の層。同心円構造を作る</td></tr>
+            <tr><td class="num">5</td><td><strong>親導火</strong></td><td>しんどうか</td><td>上昇中に燃えて時間を計り、割薬に点火する導火線</td></tr>
+            <tr><td class="num">6</td><td><strong>揚薬</strong></td><td>あげやく</td><td>玉を打ち上げる推進薬。<strong>速火線</strong>で点火を素早く伝える</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>5.2 玉皮の役割 ― 強度が形を決める</h3>
+      <p>玉皮は単なる「包み」ではありません。<strong>割薬の圧力を一瞬だけ閉じ込め、均等に破裂させる圧力容器</strong>です。</p>
+      <div class="tw">
+        <table>
+          <thead><tr><th>玉皮の状態</th><th>起きること</th><th>結果</th></tr></thead>
+          <tbody>
+            <tr><td>弱すぎる</td><td>早く破れて圧力が抜ける</td><td>小さく、不揃いな花</td></tr>
+            <tr><td>強すぎる</td><td>圧力が上がりすぎ、星が砕ける／燃え尽きる</td><td>輝きを失う</td></tr>
+            <tr><td>不均一</td><td>弱い部分から先に破れる</td><td>その方向に星が偏り、歪んだ花</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="key">
+        <p class="key-label">職人技の所在</p>
+        <p>真円の花火は、<strong>紙を均一に貼る手仕事</strong>によって支えられています。日本の花火の「真円」は、化学ではなく<strong>貼りの精度</strong>という職人技の産物なのです。地味な工程が最も美しさを決めるという、工芸の典型的な構造がここにあります。</p>
+      </div>
+
+      <h3>5.3 星の内部構造 ― 色が変わる仕組み</h3>
+      <p>星は単一の火薬の塊ではありません。<strong>掛星（かけぼし）</strong>は、芯となる核に異なる組成の層を何重にも「掛けて」作った、玉ねぎ状の多層構造です。</p>
+      <figure>
+        <svg viewBox="0 0 420 220" role="img" aria-labelledby="t-hoshi">
+          <title id="t-hoshi">掛星の断面：外側の層から順に燃えるため、層の順序が色変化の時間軸になる</title>
+          <g transform="translate(112 110)" stroke="#7A839A" stroke-width="1">
+            <circle r="80" fill="#DFE5F0"/>
+            <circle r="62" fill="#2ED16A" opacity=".9"/>
+            <circle r="44" fill="#E8203A" opacity=".92"/>
+            <circle r="26" fill="#B9C1CF"/>
+            <circle r="10" fill="#5C6474"/>
+          </g>
+          <g class="svg-l">
+            <line x1="200" y1="34" x2="152" y2="52" class="svg-line"/><text x="208" y="38">着火薬／外層＝<tspan font-weight="700">最初に燃える</tspan></text>
+            <line x1="200" y1="76" x2="160" y2="86" class="svg-line"/><text x="208" y="80">第1層：緑</text>
+            <line x1="200" y1="118" x2="150" y2="118" class="svg-line"/><text x="208" y="122">第2層：赤</text>
+            <line x1="200" y1="160" x2="140" y2="146" class="svg-line"/><text x="208" y="164">第3層：銀 → 核（種）</text>
+            <text x="208" y="196" font-weight="700" fill="currentColor">空では 緑 → 赤 → 銀 の順に見える</text>
+          </g>
+        </svg>
+        <figcaption>燃焼は外から内へ進む。したがって層の順番は、空で見える色変化の順番と一致する。</figcaption>
+      </figure>
+      <p>星は<strong>外側から内側へ燃える</strong>ので、層の順番が<strong>時間軸の逆順</strong>になります。「緑から赤に変わる星」を作りたければ、緑の層を外側に置く。<strong>星の断面図は、空で見える色変化の時間軸そのもの</strong>です。</p>
+      <div class="tw">
+        <table>
+          <caption>星の主な種類</caption>
+          <thead><tr><th>種類</th><th>特徴</th></tr></thead>
+          <tbody>
+            <tr><td><strong>掛星</strong></td><td>核に層を掛け重ねた球形の星。変色・多重変化が可能。手間がかかる</td></tr>
+            <tr><td><strong>切星（きりぼし）</strong></td><td>火薬の板を切って作る立方体状の星。量産に向く</td></tr>
+            <tr><td><strong>ポカ星</strong></td><td>型物やパラシュートなど、割薬を使わず穏やかに放出する中身</td></tr>
+            <tr><td><strong>引き星</strong></td><td>尾を長く引く星。菊の線を描く</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>5.4 開花までのシークエンス</h3>
+      <ol class="seq">
+        <li><span><b>点火</b> ― 電気点火または手点火で速火線に着火する。</span></li>
+        <li><span><b>揚薬が燃焼</b> ― 筒内の圧力が急上昇。同時に親導火にも着火する。</span></li>
+        <li><span><b>射出</b> ― 玉が筒から飛び出す。初速は約 100 m/s 前後。</span></li>
+        <li><span><b>上昇・減速</b> ― 3〜5秒かけて上昇。親導火が燃え進み、タイマーとして働く。</span></li>
+        <li><span><b>最高点</b> ― 速度がほぼゼロになる。ここで親導火が割薬に到達する。</span></li>
+        <li><span><b>割薬が爆燃</b> ― 星に点火しつつ、外向きに加速する。</span></li>
+        <li><span><b>玉皮が均等に破裂</b> ― 圧力が全周で同時に限界を超える。</span></li>
+        <li><span><b>開花</b> ― 星が球状に飛散する。</span></li>
+        <li><span><b>燃焼・色変化</b> ― 星が減速しながら燃え、層の順に色を変え、尾を引く。</span></li>
+        <li><span><b>消え口</b> ― すべての星が揃って消える。</span></li>
+      </ol>
+      <div class="key">
+        <p class="key-label">花火の不可逆性</p>
+        <p>このシークエンスで、花火師が制御できる時間はきわめて短い。<strong>打ち上げてしまえば、もう何もできません。</strong>すべての結果は、地上での設計と手仕事で決まっています。花火は「一回勝負の生産物」であり、修正の機会が原理的に存在しない。この不可逆性が、花火の職人文化の厳しさを作っています。</p>
+      </div>
+
+      <div class="box sum">
+        <p class="box-title">まとめ</p>
+        <ul>
+          <li>玉の構造：玉皮・星・割薬・芯・親導火・揚薬</li>
+          <li>玉皮は圧力容器であり、その均一性が真円を決める</li>
+          <li>掛星は多層構造で、外側の層が先に燃える＝断面が時間軸</li>
+          <li>開花は「最高点・速度ゼロ・親導火の時間計測」の一致で成立する</li>
+        </ul>
+      </div>
+
+      <div class="ex">
+        <p class="ex-head">演習問題 5</p>
+        <div class="ex-body">
+          <ol>
+            <li>玉皮が局所的に弱かった場合、開花の形はどうなるか。</li>
+            <li>「白 → 赤 → 緑」と変化する星を作るとき、層の順序を外側から書け。</li>
+            <li>親導火の長さが設計より短かった場合に起きる現象を2つ挙げよ。</li>
+          </ol>
+        </div>
+        <details class="ans">
+          <summary>解答を見る</summary>
+          <div class="ans-body">
+            <ol>
+              <li>弱い部分から先に破れて圧力がそこから抜けるため、その方向に星が偏って飛び出す。結果として真円が崩れ、片側が伸びた歪んだ形（または一方向に噴き出した形）になる。</li>
+              <li>星は外側から燃えるので、見える順＝外側からの層順。したがって外側から <strong>白 → 赤 → 緑</strong> の順に層を配置する。</li>
+              <li>① 上昇中（最高点に達する前）に開花し、形が縦長に歪む。② 開花高度が低くなり、保安上の危険が生じる（極端に短ければ低空開花や筒内爆発の恐れ）。</li>
+            </ol>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="ch6" class="chapter col">
+      <div class="ch-head">
+        <p class="ch-no">第 6 章</p>
+        <h2>玉の種類と観賞の美学</h2>
+        <p class="ch-abs">同心円の数は、そのまま技術の指標である。「盆が丸く、肩が張り、星が揃い、消え口が良い」――日本の花火における最高の褒め言葉を読み解く。</p>
+      </div>
+
+      <div class="box goals">
+        <p class="box-title">学習目標</p>
+        <ol>
+          <li>割物・ポカ物・小割物を分類できる</li>
+          <li>菊・牡丹・芯入り・冠などの主要な玉名を見分けられる</li>
+          <li>競技会で使われる評価用語（盆・肩・消え口など）の意味を説明できる</li>
+        </ol>
+      </div>
+
+      <h3>6.1 大分類</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th>分類</th><th>特徴</th><th>例</th></tr></thead>
+          <tbody>
+            <tr><td><strong>割物（わりもの）</strong></td><td>強い割薬で星を球状に飛散させる。日本花火の本流</td><td>菊、牡丹、芯入り</td></tr>
+            <tr><td><strong>ポカ物（ポカもの）</strong></td><td>玉が上下2つに「ポカッ」と割れ、中身を穏やかに放出</td><td>型物、蜂、落下傘、柳</td></tr>
+            <tr><td><strong>小割物（こわりもの）</strong></td><td>玉の中に小さな玉を多数入れ、二段階で開かせる</td><td>千輪、万華鏡</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>6.2 基本の形</h3>
+      <h4>菊（きく）</h4>
+      <p><strong>尾を引く星</strong>を使い、中心から放射する光の線が見える玉。花火の基本形であり最高峰。線が真っ直ぐで、長さが揃い、真円を描くことが理想です。</p>
+      <h4>牡丹（ぼたん）</h4>
+      <p><strong>尾を引かない星</strong>を使い、光の点が球状に並ぶ玉。菊が「線の芸術」なら牡丹は「点の芸術」で、星の色純度と配置の正確さがそのまま露わになります。ごまかしが効かない玉です。</p>
+      <h4>芯入り（しんいり）― 日本花火の到達点</h4>
+      <p>同心円を何重にも作る技法。<strong>世界のどこにもない日本独自の到達点</strong>です。</p>
+      <figure>
+        <svg viewBox="0 0 420 250" role="img" aria-labelledby="t-shin">
+          <title id="t-shin">三重芯の見え方：外側の親星と3つの芯で4重の同心円になる</title>
+          <g transform="translate(122 125)" fill="none" stroke-linecap="round">
+            <circle r="100" stroke="#E9B75B" stroke-width="9" stroke-dasharray="1 38.25"/>
+            <circle r="72" stroke="#5AA9E6" stroke-width="8" stroke-dasharray="1 36.7"/>
+            <circle r="46" stroke="#E8203A" stroke-width="8" stroke-dasharray="1 35.1"/>
+            <circle r="22" stroke="#2ED16A" stroke-width="7" stroke-dasharray="1 22"/>
+          </g>
+          <g class="svg-l">
+            <line x1="230" y1="40" x2="196" y2="66" class="svg-line"/><text x="238" y="44">親星（外側）</text>
+            <line x1="230" y1="84" x2="184" y2="94" class="svg-line"/><text x="238" y="88">第1芯</text>
+            <line x1="230" y1="128" x2="168" y2="126" class="svg-line"/><text x="238" y="132">第2芯</text>
+            <line x1="230" y1="172" x2="144" y2="146" class="svg-line"/><text x="238" y="176">第3芯</text>
+            <text x="238" y="212" font-weight="700" fill="currentColor">＝ 4重の同心円</text>
+          </g>
+        </svg>
+        <figcaption>三重芯。すべての層が同時に、同心に、真円に開かなければ成立しない。</figcaption>
+      </figure>
+      <div class="tw">
+        <table>
+          <thead><tr><th>呼称</th><th class="num">芯の数</th><th class="num">見える円</th></tr></thead>
+          <tbody>
+            <tr><td>芯入り</td><td class="num">1</td><td class="num">2重</td></tr>
+            <tr><td><strong>八重芯（やえしん）</strong></td><td class="num">2</td><td class="num">3重</td></tr>
+            <tr><td><strong>三重芯（みえしん）</strong></td><td class="num">3</td><td class="num">4重</td></tr>
+            <tr class="hi"><td><strong>四重芯（よえしん）</strong></td><td class="num">4</td><td class="num">5重</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>芯入りが難しい理由は明確です。<strong>すべての層が同時に、同心に、真円に開かなければならない</strong>。</p>
+      <ul>
+        <li>内側の星は少ない力で、外側の星は強い力で押し出す → 割薬の配置と力の配分を層ごとに設計する必要がある</li>
+        <li>どの層も同時に点火しなければならない</li>
+        <li>一つの層が歪めば、全体が失敗になる</li>
+      </ul>
+      <div class="key">
+        <p class="key-label">観賞のヒント</p>
+        <p>四重芯は最高難度で、これを綺麗に開かせられる業者は限られています。<strong>同心円の数は、そのまま技術の指標</strong>です。花火大会で「円が何重に見えたか」を数えてみてください。それは技術の直接的な計測になります。</p>
+      </div>
+
+      <h3>6.3 その他の主要な玉</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th>名称</th><th>特徴</th></tr></thead>
+          <tbody>
+            <tr><td><strong>冠（かむろ）</strong></td><td>開いた後、長く垂れ下がる。金色の「錦冠（にしきかむろ）」は特に人気</td></tr>
+            <tr><td><strong>柳</strong></td><td>枝垂れ柳のように垂れる。ポカ物で作ることが多い</td></tr>
+            <tr><td><strong>椰子（やし）</strong></td><td>太く力強い光の筋が椰子の葉のように伸びる。星が大きく数が少ない</td></tr>
+            <tr><td><strong>千輪（せんりん）</strong></td><td>多数の小玉が一斉に開き、球状に小さな花が咲き広がる</td></tr>
+            <tr><td><strong>蜂（はち）</strong></td><td>回転しながら不規則に飛ぶ。「ブーン」という音を伴う</td></tr>
+            <tr><td><strong>蝶（ちょう）</strong></td><td>蝶が舞うようにひらひら飛ぶ</td></tr>
+            <tr><td><strong>型物（かたもの）</strong></td><td>ハート・星・土星・スマイルなど図形を描く。<strong>見る方向で歪む</strong>のが弱点</td></tr>
+            <tr><td><strong>時差式</strong></td><td>時間差で複数回変化する。設計の巧みさが見える</td></tr>
+            <tr><td><strong>光露（こうろ）</strong></td><td>露のようにきらめく点滅する星</td></tr>
+            <tr><td><strong>錦（にしき）</strong></td><td>金色の火の粉が豪華に広がる</td></tr>
+            <tr><td><strong>和火（わび）</strong></td><td>意図的に古典的な橙色一色で作る。渋さの美学</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>型物について一つ補足します。ハート型の花火は、正面から見ればハートですが、横から見れば細い線です。<strong>型物は「正しい席」が存在する花火</strong>であり、球形の割物が「どこから見ても真円」であることの価値が、対比としてよく分かります。</p>
+
+      <h3>6.4 競技会の評価用語</h3>
+      <p>日本には花火の<strong>競技会</strong>があります（大曲、土浦など）。花火師が技術を競う場であり、独自の評価語彙が発達しています。</p>
+      <div class="tw">
+        <table>
+          <thead><tr><th>用語</th><th>意味</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td><strong>盆（ぼん）</strong></td><td>開いた花の<strong>真円度</strong>。「盆が良い」＝真円に開いた</td></tr>
+            <tr class="hi"><td><strong>肩（かた）</strong></td><td>花の外縁の張り。「肩が張っている」＝星が力強く均等に到達した</td></tr>
+            <tr class="hi"><td><strong>星のそろい</strong></td><td>すべての星の色・明るさ・到達距離が揃っているか</td></tr>
+            <tr class="hi"><td><strong>消え口（きえくち）</strong></td><td>消え方の揃い。ダラダラ残らず一斉に消えるのが良い</td></tr>
+            <tr><td><strong>座り（すわり）</strong></td><td>開花位置の高さと安定。狙った位置で開いたか</td></tr>
+            <tr><td><strong>玉のつり合い</strong></td><td>芯と親星のバランス、各層の比率の美しさ</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="key">
+        <p class="key-label">最高の褒め言葉</p>
+        <p><strong>「盆が丸く、肩が張り、星が揃い、消え口が良い」</strong>――これが日本の花火における最高の評価です。この4つを覚えて花火を見ると、鑑賞が一気に解像度を上げます。</p>
+      </div>
+
+      <h3>6.5 観賞の実践 ― この目で何を見るか</h3>
+      <ol class="seq">
+        <li><span><b>円は何重か</b> ― 芯入りの技術水準が分かる。</span></li>
+        <li><span><b>円は真円か</b> ― 玉皮の均一性と開花タイミングを反映する。</span></li>
+        <li><span><b>星の色は揃っているか</b> ― 配合と製造の管理精度が出る。</span></li>
+        <li><span><b>消え口は揃うか</b> ― 燃焼制御の精度。</span></li>
+        <li><span><b>青は深いか</b> ― 最難関の色。深い青は高技術の証。</span></li>
+        <li><span><b>光ってから音まで何秒か</b> ― 距離と号数を推定できる。</span></li>
+        <li><span><b>プログラムの構成</b> ― 静かな玉と派手な玉の配置、緩急の設計。</span></li>
+      </ol>
+      <p>花火は1発が数秒で終わります。しかし<strong>見る目を持てば、その数秒に情報が詰まっている</strong>ことが分かります。</p>
+
+      <div class="box sum">
+        <p class="box-title">まとめ</p>
+        <ul>
+          <li>割物・ポカ物・小割物の3分類。日本の本流は割物</li>
+          <li>菊＝線、牡丹＝点。芯入りは同心円の数が技術指標</li>
+          <li>型物は「見る方向」が存在する。球形の割物との対比が本質</li>
+          <li>盆・肩・星のそろい・消え口が日本花火の評価4本柱</li>
+        </ul>
+      </div>
+
+      <div class="ex">
+        <p class="ex-head">演習問題 6</p>
+        <div class="ex-body">
+          <ol>
+            <li>菊と牡丹の違いを、星の設計の観点から説明せよ。</li>
+            <li>「八重芯」は何重の同心円に見えるか。また芯入りが難しい理由を2つ挙げよ。</li>
+            <li>「盆が良い」「消え口が揃う」とはどういう状態か説明せよ。</li>
+            <li>型物花火の原理的な弱点を述べよ。</li>
+          </ol>
+        </div>
+        <details class="ans">
+          <summary>解答を見る</summary>
+          <div class="ans-body">
+            <ol>
+              <li>菊は尾を引く星（引き星）を用い、中心から放射する光の線として見える。牡丹は尾を引かない星を用い、光の点が球状に並んで見える。菊は線の造形、牡丹は点の造形であり、牡丹は星の色純度と配置の正確さが直接露わになる。</li>
+              <li>八重芯は芯2重＝<strong>3重の同心円</strong>に見える。難しい理由は ① 内側と外側で星に与える推進力が異なるため層ごとに割薬の配置と力の配分を設計しなければならない、② 全層が同時に点火・同心・真円に開かなければならず、一層でも歪めば全体が失敗になる。</li>
+              <li>「盆が良い」＝開いた花の輪郭が歪みなく真円である状態。「消え口が揃う」＝すべての星がほぼ同時に燃え尽き、遅れて残る星がなく一斉に消える状態。どちらも燃焼と構造の均一性の高さを示す。</li>
+              <li>型物は平面的な図形を空中に作るため、<strong>特定の方向から見たときだけ意図した形に見える</strong>。横や斜めから見ると潰れて線状に見えてしまう。球形の割物がどこから見ても真円であることと対照的。</li>
+            </ol>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="ch7" class="chapter col">
+      <div class="ch-head">
+        <p class="ch-no">第 7 章</p>
+        <h2>仕掛花火と演出</h2>
+        <p class="ch-abs">単発の完成度を競う割物とは対極の、時間の芸術。音楽に合わせるとは、常に「未来に向けて撃つ」ことである。</p>
+      </div>
+
+      <div class="box goals">
+        <p class="box-title">学習目標</p>
+        <ol>
+          <li>主な仕掛花火の種類と特徴を説明できる</li>
+          <li>スターマインの構成上の意味を理解できる</li>
+          <li>音楽同期演出（パイロミュージカル）の技術的要件を説明できる</li>
+        </ol>
+      </div>
+
+      <h3>7.1 スターマイン（速射連発）</h3>
+      <p>複数の玉を短い間隔で連続打揚する演出。<strong>単発の完成度を競う割物とは対極の、時間の芸術</strong>です。</p>
+      <ul>
+        <li><strong>ワイドスターマイン</strong>：横方向に長く展開し、視界いっぱいに広がる</li>
+        <li><strong>ミュージックスターマイン</strong>：音楽と同期させたもの</li>
+        <li>構成：導入 → 展開 → クライマックス、と音楽的な構造を持つ</li>
+      </ul>
+      <p>スターマインの本質は「<strong>間</strong>」です。詰め込めば煙で見えなくなり、間が空けば緊張が切れる。<strong>花火の演出は編集技術</strong>であり、映像編集や音楽の構成に近い設計が求められます。</p>
+
+      <h3>7.2 地上の仕掛花火</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th>名称</th><th>特徴</th></tr></thead>
+          <tbody>
+            <tr><td><strong>ナイアガラ</strong></td><td>橋や川面に長い火の滝を作る。金属粉の火の粉が滝のように流れ落ちる</td></tr>
+            <tr><td><strong>文字仕掛</strong></td><td>枠に火薬を配置して文字や絵を描く。ヨーロッパ花火の伝統に近い</td></tr>
+            <tr><td><strong>水中花火</strong></td><td>水面に半円状に開く。水面の反射で完全な円に見える。海上・湖上で映える</td></tr>
+            <tr><td><strong>低空演出</strong></td><td>打揚花火を低い位置で意図的に開かせ、迫力を出す</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>水中花火は原理が美しい演出です。水面で<strong>半球状</strong>に開いた花火が、水面の鏡像と合わさって<strong>完全な球</strong>として見える。物理的には半分しか作っていないのに、視覚的には全部ある。花火師が自然（水面）を設計の一部として使っている例です。</p>
+
+      <h3>7.3 音楽同期 ― パイロミュージカル</h3>
+      <p>音楽と花火を精密に同期させる演出です。技術的な要件は次の通りです。</p>
+      <ol class="seq">
+        <li><span><b>タイムコード同期</b> ― 音源と発火システムを SMPTE タイムコードなどで同期させる。</span></li>
+        <li><span><b>遅延補正</b> ― 点火から開花までの上昇時間を逆算し、<strong>音より早く点火する</strong>。</span></li>
+        <li><span><b>距離補正</b> ― 観客までの音の伝搬遅延（340 m/s）を考慮する。</span></li>
+      </ol>
+      <p>とくに(2)が重要です。尺玉なら開花まで約4〜5秒かかります。音楽のクライマックスに合わせたければ、<strong>その4〜5秒前に点火</strong>しなければなりません。つまり演出家は常に「未来に向けて撃つ」ことになります。</p>
+      <div class="key">
+        <p class="key-label">物理的な帰結</p>
+        <p>(3)を考えると、観客席の位置によって音と光の関係が変わります。<strong>すべての観客に完璧な同期はあり得ません。</strong>だから設計者は「基準となる観客位置」を決めて演出を組みます。花火の演出は、物理的に<strong>特定の席のために作られた作品</strong>なのです。</p>
+      </div>
+
+      <h3>7.4 現代の点火システム</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th>方式</th><th>内容</th></tr></thead>
+          <tbody>
+            <tr><td><strong>手花火（手点火）</strong></td><td>花火師が手で導火線に点火する伝統的方式。競技会では今も使われる</td></tr>
+            <tr><td><strong>電気点火</strong></td><td>電気点火具にパルスを送って点火。精度が高い</td></tr>
+            <tr><td><strong>コンピュータ制御</strong></td><td>シーケンサで数千発を 1/100 秒単位で制御。パイロミュージカルの基盤</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>電気点火の普及は、演出の可能性を根本的に広げました。同時に、<strong>手点火の技術は文化として保存する対象</strong>になっています。</p>
+
+      <h3>7.5 ドローンショーとの関係</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th>観点</th><th>花火</th><th>ドローンショー</th></tr></thead>
+          <tbody>
+            <tr><td>表現</td><td>三次元の爆発的広がり、身体に響く音</td><td>精密な形・文字・アニメーション</td></tr>
+            <tr><td>制御</td><td>不可逆、一回勝負</td><td>反復可能、修正可能</td></tr>
+            <tr><td>安全・環境</td><td>火薬・煙・騒音の管理が必要</td><td>火薬なし、低騒音</td></tr>
+            <tr><td>情緒</td><td>儚さ、鎮魂、夏の記憶</td><td>未来的、企業演出向き</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="key">
+        <p class="key-label">なぜ置き換わらないのか</p>
+        <p><strong>花火の本質は「取り返しがつかないこと」</strong>にあります。一度開いた花火は二度と同じ形にならず、その場にいた人の記憶にしか残らない。この不可逆性は技術的な欠点ですが、同時に花火が人の心を打つ理由そのものです。<strong>再現可能なものは儚くない。</strong></p>
+      </div>
+
+      <div class="box sum">
+        <p class="box-title">まとめ</p>
+        <ul>
+          <li>スターマインは時間の芸術。本質は「間」の設計</li>
+          <li>水中花火は水面の鏡像を設計に取り込んだ演出</li>
+          <li>音楽同期は上昇時間と音速の二重の遅延補正が必要で、基準観客位置が存在する</li>
+          <li>花火の不可逆性は欠点であると同時に価値の源泉</li>
+        </ul>
+      </div>
+
+      <div class="ex">
+        <p class="ex-head">演習問題 7</p>
+        <div class="ex-body">
+          <ol>
+            <li>尺玉を音楽の 1分30秒 の瞬間に開かせたい。点火はおよそ何秒に行うべきか。</li>
+            <li>水中花火が完全な円に見える理由を述べよ。</li>
+            <li>花火とドローンショーの表現上の違いを3点挙げよ。</li>
+          </ol>
+        </div>
+        <details class="ans">
+          <summary>解答を見る</summary>
+          <div class="ans-body">
+            <ol>
+              <li>尺玉の上昇時間は約4〜5秒なので、<strong>約1分25〜26秒</strong>の時点で点火する必要がある（さらに厳密には観客位置までの音の伝搬遅延も考慮する）。</li>
+              <li>水面付近で半球状に開いた花火が、水面での反射（鏡像）と組み合わされ、視覚的に上下対称の完全な円として認識されるため。</li>
+              <li>例：① 花火は三次元の爆発的広がりと衝撃音を持つが、ドローンは平面的・精密な形や文字表現に強い。② 花火は不可逆で一回勝負、ドローンは反復・修正が可能。③ 花火は火薬・煙・騒音の管理が必要だが、ドローンは火薬を使わず低騒音。</li>
+            </ol>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <p class="part-rule">第Ⅳ部 実践</p>
+
+    <section id="ch8" class="chapter col">
+      <div class="ch-head">
+        <p class="ch-no">第 8 章</p>
+        <h2>現代の課題 ― 環境と技術革新</h2>
+        <p class="ch-abs">花火は美しいが無害ではない。目を逸らさず、物質名と数値で考える。</p>
+      </div>
+
+      <div class="box goals">
+        <p class="box-title">学習目標</p>
+        <ol>
+          <li>花火の環境負荷を具体的な物質名で挙げられる</li>
+          <li>各課題に対する技術的対応の方向を説明できる</li>
+        </ol>
+      </div>
+
+      <h3>8.1 環境負荷の実態</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th>課題</th><th>原因物質</th><th>影響</th></tr></thead>
+          <tbody>
+            <tr><td><strong>大気汚染</strong></td><td>PM2.5、金属酸化物微粒子</td><td>大会直後に局所的な数値上昇が観測される</td></tr>
+            <tr class="hi"><td><strong>過塩素酸塩</strong></td><td>KClO<sub>4</sub>、NH<sub>4</sub>ClO<sub>4</sub> の残留</td><td>水系に残留しやすく、甲状腺のヨウ素取り込みを阻害する懸念</td></tr>
+            <tr><td><strong>重金属</strong></td><td>Ba、Cu、Sr、Pb など</td><td>土壌・水質への蓄積</td></tr>
+            <tr><td><strong>騒音</strong></td><td>衝撃波</td><td>住民、乳幼児、動物へのストレス</td></tr>
+            <tr><td><strong>廃棄物</strong></td><td>玉皮の紙片、プラスチック部材</td><td>打揚地周辺への散乱</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>「花火は美しいが無害ではない」</strong>――これは花火を学ぶ者が正面から受け止めるべき事実です。目を逸らさず、そのうえで技術的に改善する姿勢が求められます。</p>
+
+      <h3>8.2 技術的対応の方向</h3>
+      <ol class="seq">
+        <li><span><b>過塩素酸塩の代替</b> ― 硝酸塩系や高窒素化合物への置換研究。ただしコストと性能の両立が課題。</span></li>
+        <li><span><b>バリウムフリー緑</b> ― Ba を使わない緑の発色（ボロン系など）の研究。</span></li>
+        <li><span><b>低煙・無煙配合</b> ― 煙の発生を抑えた配合。連発演出でも視認性が保たれる。</span></li>
+        <li><span><b>騒音配慮</b> ― 低騒音玉の使用、静音時間帯の設定、事前告知。</span></li>
+        <li><span><b>回収の徹底</b> ― 打揚後の残渣・紙片の回収を運営に組み込む。</span></li>
+        <li><span><b>代替演出の併用</b> ― ドローンやレーザーと組み合わせ、火薬使用量を抑える。</span></li>
+      </ol>
+
+      <h3>8.3 「花火の未来」をどう考えるか</h3>
+      <p>花火は、環境負荷を持つ文化財です。ここには単純な答えがありません。</p>
+      <ul>
+        <li>「環境に悪いからやめるべき」は、数百年の技術と文化を失う判断です</li>
+        <li>「伝統だから変えなくてよい」は、実在する負荷を無視する判断です</li>
+      </ul>
+      <p>現実的な立場は、<strong>負荷を正確に測り、代替可能な部分を置き換え、文化として残す価値を明示的に議論する</strong>ことです。花火を学ぶことは、この種の「文化と環境のトレードオフ」を具体的な物質名と数値で考える訓練でもあります。</p>
+
+      <div class="box sum">
+        <p class="box-title">まとめ</p>
+        <ul>
+          <li>主な負荷は PM、過塩素酸塩、重金属、騒音、廃棄物</li>
+          <li>対応は代替酸化剤、バリウムフリー、低煙配合、運営面の工夫</li>
+          <li>「文化か環境か」の二択ではなく、測って置き換える実務が求められる</li>
+        </ul>
+      </div>
+
+      <div class="ex">
+        <p class="ex-head">演習問題 8</p>
+        <div class="ex-body">
+          <ol>
+            <li>過塩素酸塩が環境上問題視される理由を述べよ。</li>
+            <li>「低煙配合」が演出上も有利になる理由を説明せよ。</li>
+          </ol>
+        </div>
+        <details class="ans">
+          <summary>解答を見る</summary>
+          <div class="ans-body">
+            <ol>
+              <li>過塩素酸イオンは水に溶けやすく環境中で分解しにくいため水系に残留しやすい。またヨウ化物イオンと競合して甲状腺のヨウ素取り込みを阻害する懸念が指摘されている。</li>
+              <li>煙が少ないほど、後続の花火が煙に隠れずに見える。とくにスターマインのような連発演出では煙の滞留が視認性を大きく損なうため、低煙配合は演出の密度を上げられるという実利がある。</li>
+            </ol>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="ch9" class="chapter col">
+      <div class="ch-head">
+        <p class="ch-no">第 9 章</p>
+        <h2>安全と法規</h2>
+        <p class="ch-abs">花火大会はイベントである前に、法令に基づく火薬類消費行為である。そして手持ち花火は、おもちゃではなく小さな火薬製品である。</p>
+      </div>
+
+      <div class="box goals">
+        <p class="box-title">学習目標</p>
+        <ol>
+          <li>日本における火薬類の法的枠組みの概要を説明できる</li>
+          <li>打揚花火に必要な許可・体制の概要を知る</li>
+          <li>玩具花火の安全な取り扱いを具体的に述べられる</li>
+        </ol>
+      </div>
+      <div class="box note">
+        <p class="box-title">注意</p>
+        <p style="margin:0">以下は概要の解説であり、法令の正確な内容は必ず原文と所管官庁（都道府県・警察・消防）の指示に従ってください。<strong>法令は改正されます。</strong></p>
+      </div>
+
+      <h3>9.1 火薬類取締法の枠組み</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th>行為</th><th>原則</th></tr></thead>
+          <tbody>
+            <tr><td><strong>製造</strong></td><td>経済産業大臣の許可が必要（無許可製造は犯罪）</td></tr>
+            <tr><td><strong>販売</strong></td><td>都道府県知事の販売業許可が必要</td></tr>
+            <tr><td><strong>貯蔵</strong></td><td>許可された火薬庫での貯蔵が原則</td></tr>
+            <tr class="hi"><td><strong>消費（打揚げ）</strong></td><td><strong>都道府県知事の消費許可</strong>が必要</td></tr>
+            <tr><td><strong>運搬</strong></td><td>都道府県公安委員会への届出等が必要</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>つまり花火大会は「イベント」である前に、<strong>法令に基づく火薬類消費行為</strong>です。運営者は消費計画（打揚場所、玉の種類と数量、保安距離、警戒配置、消火設備、気象中止基準など）を作成し、許可を得て実施します。</p>
+
+      <h3>9.2 保安距離という考え方</h3>
+      <p>打揚花火では、玉の号数に応じて<strong>打揚場所から観客・建物までの保安距離</strong>を確保する必要があります。大きい玉ほど広い距離が必要で、これが「大玉を打てる会場は限られる」理由です。</p>
+      <div class="key">
+        <p class="key-label">地形が規模を決める</p>
+        <p>四尺玉が新潟県片貝など特定の地域でしか打ち上げられないのは、伝統の問題だけでなく、<strong>その保安距離を確保できる地形と土地利用がそこにあるから</strong>です。花火の規模は、その土地の空間的余裕によって規定されています。</p>
+      </div>
+
+      <h3>9.3 打揚げの実施体制</h3>
+      <ul>
+        <li><strong>保安責任者</strong>の選任と、火薬類の取扱いに関する知識・経験を持つ従事者の配置</li>
+        <li>打揚筒の設置（埋設・架台）と点検</li>
+        <li><strong>気象条件による中止判断</strong>（強風、落雷、視界不良）</li>
+        <li>消火設備、救護体制、警戒員の配置</li>
+        <li>不発弾（未発火の玉）の処理手順の事前確立</li>
+      </ul>
+      <div class="box warn">
+        <p class="box-title">⚠ 不発弾を見つけたら</p>
+        <p style="margin:0">打ち上がらなかった玉、開かずに落下した玉は、極めて危険な状態にあります。<strong>専門家以外は絶対に触れてはいけません。</strong>翌朝、河川敷で「花火の残骸のようなもの」を見つけたら、拾わずに主催者・警察に通報するのが正しい行動です。</p>
+      </div>
+
+      <h3>9.4 玩具花火（がん具煙火）の安全</h3>
+      <p>家庭で楽しむ花火も火薬です。「おもちゃ」ではなく<strong>小さな火薬製品</strong>として扱ってください。</p>
+      <h4>守るべきこと</h4>
+      <ol class="seq">
+        <li><span><b>水を用意する</b> ― バケツに水。使用後の花火は必ず水に入れる。</span></li>
+        <li><span><b>風下・可燃物に注意</b> ― 洗濯物、車、枯れ草、テント、ガソリン。</span></li>
+        <li><span><b>人・建物に向けない</b> ― ロケット花火は特に危険。</span></li>
+        <li><span><b>手持ちは腕を伸ばす</b> ― 顔の近くで持たない、覗き込まない。</span></li>
+        <li><span><b>不発を覗かない・再点火しない</b> ― <strong>最も多い重傷事故の原因</strong>。水に入れて処分する。</span></li>
+        <li><span><b>服装</b> ― 化繊より綿。サンダルより靴。長い髪はまとめる。</span></li>
+        <li><span><b>子どもは必ず大人と</b> ― 目の高さが花火に近く、危険が大きい。</span></li>
+        <li><span><b>筒物は固定</b> ― 手で持ってよいのは「手持ち」と明記されたものだけ。</span></li>
+        <li><span><b>束ねて点火しない</b> ― 予期しない大きさで燃える。</span></li>
+        <li><span><b>場所のルールを守る</b> ― 禁止区域、時間帯、近隣への配慮。</span></li>
+      </ol>
+      <div class="box warn">
+        <p class="box-title">⚠ 絶対にしてはいけないこと</p>
+        <ul>
+          <li>不発の花火を覗き込む、分解する</li>
+          <li>複数を束ねる、改造する、火薬を取り出す</li>
+          <li>缶やビンなど<strong>閉じた容器の中で燃やす</strong>（＝爆弾を作る行為）</li>
+          <li>人に向ける、追いかける</li>
+          <li>屋内・車内で使う</li>
+        </ul>
+        <p style="margin:0"><strong>なぜ不発を覗く行為が危険か。</strong>導火線が消えたように見えても、内部で緩慢に燃え続けていることがあります。数秒後、顔が最も近い位置にあるときに発火する。これが失明事故の典型的な経緯です。<strong>「消えたかな」と思ったら、確認せず水に入れる。</strong>これだけで多くの事故が防げます。</p>
+      </div>
+
+      <h3>9.5 線香花火 ― 最も小さく、最も美しい</h3>
+      <p>線香花火は日本独自の玩具花火で、物理的にも興味深い対象です。</p>
+      <ul>
+        <li>東の<strong>「長手（ながて）」</strong>：紙の撚り（こより）に火薬を包んだもの</li>
+        <li>西の<strong>「スボ手（すぼて）」</strong>：藁（わら）の先に火薬をつけたもの</li>
+      </ul>
+      <p>燃焼は次のように段階的に変化し、最後に静かに落ちます。</p>
+      <div class="fx">蕾 → <b>牡丹</b> → <b>松葉</b> → 散り菊 → 柳</div>
+      <p>この変化は、火薬玉の中で<strong>溶融した硫化カリウムの液滴が炭素の燃焼ガスで膨張・破裂</strong>して火花が飛ぶ現象です。液滴が小さくなるにつれ火花の勢いが変わり、あの一連の変化になります。</p>
+      <div class="key">
+        <p class="key-label">最小の教材</p>
+        <p><strong>手持ちの一本の中に、燃焼と流体力学の物語があります。</strong>線香花火は日本の花火文化のミニチュアであり、儚さの象徴として、最後に扱うのにふさわしい題材です。</p>
+      </div>
+
+      <div class="box sum">
+        <p class="box-title">まとめ</p>
+        <ul>
+          <li>花火は火薬類取締法の下にある。製造・販売・貯蔵・消費・運搬すべてに規制</li>
+          <li>大玉には保安距離が必要で、それが会場を規定する</li>
+          <li>玩具花火は「小さな火薬製品」。水を用意し、不発は覗かず水に入れる</li>
+          <li>線香花火の変化は溶融液滴の破裂による物理現象</li>
+        </ul>
+      </div>
+
+      <div class="ex">
+        <p class="ex-head">演習問題 9</p>
+        <div class="ex-body">
+          <ol>
+            <li>花火大会を開催するために必要な法的手続きの概要を述べよ。</li>
+            <li>四尺玉を打てる場所が限られる理由を2つ挙げよ。</li>
+            <li>玩具花火の事故で最も多い原因の一つを挙げ、正しい対処を述べよ。</li>
+          </ol>
+        </div>
+        <details class="ans">
+          <summary>解答を見る</summary>
+          <div class="ans-body">
+            <ol>
+              <li>都道府県知事の<strong>火薬類消費許可</strong>を取得する必要がある。そのために消費計画（打揚場所、玉の種類と数量、保安距離の確保、警戒配置、消火・救護体制、気象による中止基準、不発弾処理手順など）を作成し、保安責任者を選任する。運搬についても公安委員会への届出等が必要となる。</li>
+              <li>① 号数に応じた<strong>保安距離</strong>（観客・建物からの距離）を確保できる広い空間が必要であるため。② 玉が400 kg超に達し、専用の埋設筒や設置設備、それを運用できる技術と体制が必要であるため。</li>
+              <li><strong>不発の花火を覗き込む・再点火する</strong>こと。内部で緩慢燃焼が続いている場合があり、顔が近づいた瞬間に発火して失明などの重傷に至る。正しい対処は、確認や再点火をせずそのまま<strong>水を張ったバケツに入れて処分</strong>すること。</li>
+            </ol>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="ch10" class="chapter col">
+      <div class="ch-head">
+        <p class="ch-no">第 10 章</p>
+        <h2>観賞と撮影の実践</h2>
+        <p class="ch-abs">ISO は上げない。風上を選ぶ。そして時々、カメラから目を離す。</p>
+      </div>
+
+      <div class="box goals">
+        <p class="box-title">学習目標</p>
+        <ol>
+          <li>花火撮影の基本設定を根拠とともに説明できる</li>
+          <li>場所選びの判断基準を挙げられる</li>
+          <li>日本の主要な花火大会の特徴を知る</li>
+        </ol>
+      </div>
+
+      <h3>10.1 撮影の基本 ― なぜその設定なのか</h3>
+      <p>花火撮影の特殊性は、<strong>被写体が「動く光」であり、長時間露光で軌跡を記録する</strong>点にあります。</p>
+      <div class="tw">
+        <table>
+          <caption>基本設定と、その理由</caption>
+          <thead><tr><th>設定</th><th>推奨値</th><th>理由</th></tr></thead>
+          <tbody>
+            <tr><td>モード</td><td>マニュアル（M）／バルブ（B）</td><td>露光時間を自分で決めるため</td></tr>
+            <tr class="hi"><td><strong>ISO</strong></td><td><strong>100（低感度）</strong></td><td>花火は十分明るい。ノイズを避け、白飛びを防ぐ</td></tr>
+            <tr><td>絞り</td><td>F8 〜 F16</td><td>明るさを絞りで調整。線が細く締まる</td></tr>
+            <tr><td>シャッター</td><td>2 〜 8秒（バルブで開花に合わせる）</td><td>開花から消え口までを1枚に収める</td></tr>
+            <tr><td>ピント</td><td>マニュアル、無限遠付近で固定</td><td>暗所でAFは迷う。一度合わせたら触らない</td></tr>
+            <tr><td>手ブレ補正</td><td>三脚使用時はオフ</td><td>三脚と干渉することがある</td></tr>
+            <tr><td>画像形式</td><td>RAW</td><td>後処理での露出・色調整の余地を残す</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="key">
+        <p class="key-label">最重要のコツ</p>
+        <p><strong>ISO を上げないこと。</strong>花火は自ら光っているので暗所ではありません。ISO を上げると簡単に白飛びし、色が失われます。<strong>明るさの調整は絞りで</strong>行います。</p>
+      </div>
+      <h4>必須の道具</h4>
+      <ul>
+        <li><strong>三脚</strong>（最重要。手持ちでは原理的に不可能）</li>
+        <li><strong>レリーズ</strong>（シャッターを押す振動を避ける）</li>
+        <li><strong>黒い紙・帽子</strong>（多重露光をしたい場合、レンズを一時的に覆う）</li>
+        <li><strong>懐中電灯</strong>（赤いライトが望ましい。周囲への配慮）</li>
+        <li>虫除け、レジャーシート、飲み物</li>
+      </ul>
+
+      <h3>10.2 撮影の実践手順</h3>
+      <ol class="seq">
+        <li><span><b>明るいうちに場所を決める</b> ― 構図を暗くなる前に作る。</span></li>
+        <li><span><b>地上の要素を入れる</b> ― 橋、川面、街並み、人のシルエット。<strong>花火だけの写真は単調になりやすい</strong>。</span></li>
+        <li><span><b>1発目でテスト</b> ― 露出とフレーミングを確認して調整する。</span></li>
+        <li><span><b>プログラムを読む</b> ― クライマックスの位置を予測して構図を変えておく。</span></li>
+        <li><span><b>時々カメラから目を離す</b> ― 撮影に没入して花火を見なかった、が最もよくある後悔。</span></li>
+      </ol>
+
+      <h3>10.3 場所選びの判断基準</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th>観点</th><th>考えること</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td><strong>風向き</strong></td><td>煙が自分の側に流れると何も見えなくなる。<strong>風上側を選ぶ</strong></td></tr>
+            <tr><td>距離</td><td>近すぎると画角に入らず、遠いと迫力が出ない。尺玉なら数百 m 程度が目安</td></tr>
+            <tr><td>視界</td><td>電線、街灯、木、看板。低い位置の玉が隠れないか</td></tr>
+            <tr><td>前景</td><td>水面（反射が使える）、橋、建築</td></tr>
+            <tr><td>退路</td><td>終了後の混雑。帰路の計画も観賞の一部</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>風向きが最重要</strong>です。どんなに良い構図でも、煙の下流では白い霧を撮るだけになります。</p>
+
+      <h3>10.4 日本の主要な花火大会</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th>大会</th><th>場所</th><th>特徴</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td><strong>全国花火競技大会（大曲の花火）</strong></td><td>秋田県大仙市</td><td>日本最高峰の競技会。<strong>昼花火の部</strong>があり、内閣総理大臣賞が授与される</td></tr>
+            <tr><td>土浦全国花火競技大会</td><td>茨城県土浦市</td><td>大曲と並ぶ競技会。スターマインの部が有名</td></tr>
+            <tr><td>伊勢神宮奉納全国花火大会</td><td>三重県伊勢市</td><td>奉納花火。競技会でもある</td></tr>
+            <tr><td>長岡まつり大花火大会</td><td>新潟県長岡市</td><td>戦災の慰霊。「フェニックス」「正三尺玉」</td></tr>
+            <tr><td>片貝まつり 浅原神社奉納大煙火</td><td>新潟県小千谷市</td><td><strong>四尺玉</strong>。世界最大級</td></tr>
+            <tr><td>隅田川花火大会</td><td>東京都</td><td>江戸の川開きに由来する最も歴史ある大会の一つ</td></tr>
+            <tr><td>諏訪湖祭湖上花火大会</td><td>長野県諏訪市</td><td>湖と山に音が反響する。水上花火</td></tr>
+            <tr><td>教祖祭PL花火芸術</td><td>大阪府富田林市</td><td>大規模な同時打揚</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>競技会（大曲・土浦・伊勢）は、<strong>花火を「作品」として見る</strong>のに最適です。一発ごとに製造者が発表され、審査基準が公開されているので、第6章の評価用語を持って行けば鑑賞の質が変わります。</p>
+      <p>慰霊系の大会（長岡など）は、第1章で述べた<strong>花火の原点＝鎮魂</strong>を体感できる場です。長岡の「白菊」は空襲の犠牲者に捧げられる白一色の花火で、花火が娯楽である前に祈りだったことを思い出させます。</p>
+
+      <h3>10.5 学びの締めに ― 花火をどう見るか</h3>
+      <p>花火の一発には、次のすべてが同時に存在しています。</p>
+      <div class="tw">
+        <table>
+          <thead><tr><th>層</th><th>その一発に含まれているもの</th></tr></thead>
+          <tbody>
+            <tr><td>化学</td><td>酸化還元反応、金属塩の発光、温度と色のトレードオフ</td></tr>
+            <tr><td>物理</td><td>弾道、空気抵抗、衝撃波、黒体放射</td></tr>
+            <tr><td>工学</td><td>圧力容器としての玉皮、時間制御としての導火線</td></tr>
+            <tr><td>手仕事</td><td>紙を貼る精度、星を並べる正確さ</td></tr>
+            <tr><td>美学</td><td>真円、同心円、消え口の揃い</td></tr>
+            <tr><td>歴史</td><td>中国の錬丹術から江戸の町人文化まで</td></tr>
+            <tr><td>祈り</td><td>鎮魂と疫病退散という原点</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>そして、<strong>それが数秒で消える</strong>。</p>
+      <p>花火を学ぶ意味は、この儚さの背後にどれだけの積み重ねがあるかを知ることにあります。知識は感動を薄めません。<strong>深めます。</strong>次に花火を見上げるとき、円の重なりを数え、青の深さを見て、消え口の揃いに気づき、そして光ってから何秒後に音が来るかを数えてみてください。同じ花火が、まったく違って見えるはずです。</p>
+
+      <div class="box sum">
+        <p class="box-title">まとめ</p>
+        <ul>
+          <li>撮影は ISO100・F8〜16・バルブ・三脚。明るさは絞りで調整、ISO は上げない</li>
+          <li>場所選びは風向き最優先。前景と退路も設計する</li>
+          <li>競技会は作品として、慰霊祭は原点として見る</li>
+          <li>知識は感動を深める。円を数え、青を見て、消え口に気づく</li>
+        </ul>
+      </div>
+
+      <div class="ex">
+        <p class="ex-head">演習問題 10</p>
+        <div class="ex-body">
+          <ol>
+            <li>花火撮影で ISO を上げてはいけない理由を述べよ。</li>
+            <li>撮影場所を選ぶうえで最も優先すべき条件は何か。理由とともに答えよ。</li>
+            <li>本書で学んだ観点のうち、次の花火大会で確かめたいことを3つ挙げよ（自由記述）。</li>
+          </ol>
+        </div>
+        <details class="ans">
+          <summary>解答を見る</summary>
+          <div class="ans-body">
+            <ol>
+              <li>花火は自ら発光しており十分に明るいため、ISO を上げると容易に露出オーバーとなって光が白飛びし、せっかくの色（とくに彩度の高い赤・青）が失われる。ノイズも増える。明るさの調整は絞りで行うのが正しい。</li>
+              <li><strong>風向き</strong>。煙が観覧位置に流れ込むと、視界が白く覆われて花火そのものが見えなくなる。構図や距離の条件が良くても、風下では成立しない。風上側を選ぶことが最優先。</li>
+              <li>（自由記述。例：同心円が何重あるか数える／青の深さを確認する／消え口の揃いに注目する／光ってから音までの秒数で距離を測る）</li>
+            </ol>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <p class="part-rule">付録</p>
+
+    <section id="apa" class="chapter col">
+      <div class="ch-head">
+        <p class="ch-no">付録 A</p>
+        <h2>用語集</h2>
+        <p class="ch-abs">30語。読みたい語を入力すると絞り込めます。</p>
+      </div>
+      <label for="gl-search" style="font-family:var(--sans);font-size:var(--fs-sm);display:block;margin-bottom:.5rem;color:var(--text-dim)">用語を検索</label>
+      <input id="gl-search" class="gl-search" type="search" placeholder="例：割薬、盆、芯" autocomplete="off">
+      <dl class="gl">
+        <div class="gl-row"><dt>煙火<span>えんか</span></dt><dd>花火の業界・法令上の呼称。</dd></div>
+        <div class="gl-row"><dt>玉<span>たま</span></dt><dd>打揚花火の本体。</dd></div>
+        <div class="gl-row"><dt>玉皮<span>たまがわ</span></dt><dd>玉の外殻。紙を貼り重ねて作る圧力容器。</dd></div>
+        <div class="gl-row"><dt>星<span>ほし</span></dt><dd>発光体。花火の「花弁」に当たる。</dd></div>
+        <div class="gl-row"><dt>掛星<span>かけぼし</span></dt><dd>核に層を掛け重ねた多層構造の星。変色が可能。</dd></div>
+        <div class="gl-row"><dt>切星<span>きりぼし</span></dt><dd>板状の火薬を切って作る星。量産向き。</dd></div>
+        <div class="gl-row"><dt>割薬<span>わりやく</span></dt><dd>玉の中心の火薬。星を点火し飛散させる。</dd></div>
+        <div class="gl-row"><dt>揚薬<span>あげやく</span></dt><dd>玉を打ち上げる推進薬。</dd></div>
+        <div class="gl-row"><dt>親導火<span>しんどうか</span></dt><dd>上昇時間を計り割薬に点火する導火線。</dd></div>
+        <div class="gl-row"><dt>速火線<span>そっかせん</span></dt><dd>点火を素早く伝えるための導線。</dd></div>
+        <div class="gl-row"><dt>割物<span>わりもの</span></dt><dd>星を球状に飛散させる玉。日本花火の本流。</dd></div>
+        <div class="gl-row"><dt>ポカ物<span>ポカもの</span></dt><dd>玉が2つに割れ、中身を穏やかに放出する玉。</dd></div>
+        <div class="gl-row"><dt>小割物<span>こわりもの</span></dt><dd>小玉を内蔵し、二段階で開く玉。</dd></div>
+        <div class="gl-row"><dt>芯入り<span>しんいり</span></dt><dd>同心円構造を持つ玉。日本独自の到達点。</dd></div>
+        <div class="gl-row"><dt>八重芯<span>やえしん</span></dt><dd>芯が2重＝3重の同心円に見える。</dd></div>
+        <div class="gl-row"><dt>三重芯<span>みえしん</span></dt><dd>芯が3重＝4重の同心円に見える。</dd></div>
+        <div class="gl-row"><dt>冠<span>かむろ</span></dt><dd>開いた後、長く垂れ下がる玉。</dd></div>
+        <div class="gl-row"><dt>錦<span>にしき</span></dt><dd>金色の火の粉が豪華に広がるもの。</dd></div>
+        <div class="gl-row"><dt>千輪<span>せんりん</span></dt><dd>小玉が一斉に開き、小さな花が球状に咲く。</dd></div>
+        <div class="gl-row"><dt>型物<span>かたもの</span></dt><dd>ハートや星など図形を描く玉。見る方向で歪む。</dd></div>
+        <div class="gl-row"><dt>和火<span>わび</span></dt><dd>洋薬を使わない古典的な橙色の花火。</dd></div>
+        <div class="gl-row"><dt>盆<span>ぼん</span></dt><dd>開いた花の真円度。</dd></div>
+        <div class="gl-row"><dt>肩<span>かた</span></dt><dd>花の外縁の張り。星の到達の力強さと均等さ。</dd></div>
+        <div class="gl-row"><dt>消え口<span>きえくち</span></dt><dd>星の消え方の揃い。一斉に消えるのが良い。</dd></div>
+        <div class="gl-row"><dt>座り<span>すわり</span></dt><dd>開花位置の高さと安定。</dd></div>
+        <div class="gl-row"><dt>号<span>ごう</span></dt><dd>玉の直径の単位。1号 ≈ 3 cm（1寸）。</dd></div>
+        <div class="gl-row"><dt>尺玉<span>しゃくだま</span></dt><dd>10号玉。直径約30 cm、高度約330 m。</dd></div>
+        <div class="gl-row"><dt>スターマイン<span>—</span></dt><dd>速射連発の演出。時間の芸術。</dd></div>
+        <div class="gl-row"><dt>ナイアガラ<span>—</span></dt><dd>地上の火の滝を作る仕掛花火。</dd></div>
+        <div class="gl-row"><dt>黒色火薬<span>—</span></dt><dd>KNO<sub>3</sub> 75 : 木炭 15 : 硫黄 10 の古典的火薬。</dd></div>
+        <div class="gl-row"><dt>酸素バランス<span>—</span></dt><dd>配合中の酸素の過不足を示す設計指標。</dd></div>
+        <div class="gl-row"><dt>塩素供与体<span>—</span></dt><dd>発光種 MCl を作るための塩素源。</dd></div>
+      </dl>
+    </section>
+
+    <section id="apc" class="chapter col">
+      <div class="ch-head">
+        <p class="ch-no">付録 B</p>
+        <h2>さらに学ぶために</h2>
+      </div>
+
+      <h3>書籍・文献の探し方</h3>
+      <ul>
+        <li><strong>火薬学・煙火</strong>：日本煙火協会、日本火薬工業会の資料、関連学会の会誌</li>
+        <li><strong>英語の標準的教科書</strong>：John A. Conkling &amp; Chris Mocella, <i>Chemistry and Technology of Fireworks and Pyrotechnics</i>（この分野の標準的テキストとして広く参照される）</li>
+        <li><strong>歴史</strong>：江戸の花火文化については風俗史・浮世絵研究、各花火大会の公式記録</li>
+        <li><strong>法令</strong>：火薬類取締法・同施行令・同施行規則（e-Gov 法令検索で原文を確認できる）</li>
+      </ul>
+
+      <h3>実地で学ぶ</h3>
+      <ol class="seq">
+        <li><span><b>競技大会に行く</b> ― 大曲・土浦・伊勢。プログラムに製造者名と玉名が載っており、審査基準と照らして見られる。</span></li>
+        <li><span><b>花火資料館・工場見学</b> ― 一部の煙火業者や自治体の資料館で構造模型や玉皮の実物が見られる。</span></li>
+        <li><span><b>昼花火を見る</b> ― 大曲の昼花火は貴重な機会。</span></li>
+        <li><span><b>線香花火を観察する</b> ― 蕾→牡丹→松葉→散り菊→柳の変化を実際に見る。最も安価で身近な実験。</span></li>
+      </ol>
+
+      <h3>職業として関わる</h3>
+      <p>花火師になる道は、<strong>煙火業者への就職</strong>が基本です。火薬類取扱の資格・実務経験を積み、保安責任者などの立場を目指します。<strong>独学で火薬を扱うルートは存在しません（違法です）。</strong>関心があるなら、日本煙火協会や各地の煙火業者の採用情報を調べるのが正規の第一歩です。</p>
+    </section>
+
+    <section id="apd" class="chapter col">
+      <div class="ch-head">
+        <p class="ch-no">付録 C</p>
+        <h2>数値早見表</h2>
+      </div>
+
+      <h3>号数と規模</h3>
+      <div class="tw">
+        <table>
+          <caption>いずれも目安。設計により変動します</caption>
+          <thead><tr><th>号数</th><th class="num">直径</th><th class="num">高度</th><th class="num">開花直径</th></tr></thead>
+          <tbody>
+            <tr><td>3号</td><td class="num">9 cm</td><td class="num">120 m</td><td class="num">60 m</td></tr>
+            <tr><td>5号</td><td class="num">15 cm</td><td class="num">190 m</td><td class="num">130 m</td></tr>
+            <tr class="hi"><td><strong>10号（尺玉）</strong></td><td class="num">30 cm</td><td class="num">330 m</td><td class="num">320 m</td></tr>
+            <tr><td>20号</td><td class="num">60 cm</td><td class="num">500 m</td><td class="num">480 m</td></tr>
+            <tr><td>30号</td><td class="num">90 cm</td><td class="num">600 m</td><td class="num">550 m</td></tr>
+            <tr><td>40号</td><td class="num">120 cm</td><td class="num">800 m</td><td class="num">800 m</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>発色元素</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th>色</th><th>元素</th><th>発光種</th><th class="num">波長</th></tr></thead>
+          <tbody>
+            <tr><td><span class="sw"><span class="dot" style="background:#E8203A;color:#E8203A"></span>赤</span></td><td>Sr</td><td>SrCl</td><td class="num">605–682 nm</td></tr>
+            <tr><td><span class="sw"><span class="dot" style="background:#F07A18;color:#F07A18"></span>橙</span></td><td>Ca</td><td>CaCl</td><td class="num">591–618 nm</td></tr>
+            <tr><td><span class="sw"><span class="dot" style="background:#F2D02C;color:#F2D02C"></span>黄</span></td><td>Na</td><td>Na 原子</td><td class="num">589 nm</td></tr>
+            <tr><td><span class="sw"><span class="dot" style="background:#2ED16A;color:#2ED16A"></span>緑</span></td><td>Ba</td><td>BaCl</td><td class="num">505–535 nm</td></tr>
+            <tr><td><span class="sw"><span class="dot" style="background:#2B7CF0;color:#2B7CF0"></span>青</span></td><td>Cu</td><td>CuCl</td><td class="num">420–460 nm</td></tr>
+            <tr><td><span class="sw"><span class="dot" style="background:#F2F5FA;color:#F2F5FA"></span>白／銀</span></td><td>Al, Mg, Ti</td><td>熱放射</td><td class="num">連続</td></tr>
+            <tr><td><span class="sw"><span class="dot" style="background:#E0A32E;color:#E0A32E"></span>金</span></td><td>C, Fe</td><td>熱放射</td><td class="num">連続</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>覚えておくと便利な数値</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th>項目</th><th>値</th></tr></thead>
+          <tbody>
+            <tr><td>音速</td><td>約 340 m/s（光ってからの秒数 × 340 ≒ 距離）</td></tr>
+            <tr><td>黒色火薬の組成</td><td>KNO<sub>3</sub> 75 : 木炭 15 : 硫黄 10</td></tr>
+            <tr><td>1号</td><td>約 3 cm（1寸）</td></tr>
+            <tr><td>尺玉の上昇時間</td><td>約 4〜5 秒</td></tr>
+            <tr><td>玉の初速</td><td>約 100 m/s 前後</td></tr>
+            <tr><td>ウィーンの変位則</td><td>λ<sub>max</sub> ≈ 2.898×10<sup>−3</sup> ／ T [m]</td></tr>
+            <tr><td>撮影の基本</td><td>ISO 100、F8〜16、バルブ数秒、三脚必須</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="col">
+      <div class="fin">
+        <h2>おわりに</h2>
+        <p>花火は、消えるために作られる唯一の工芸品です。</p>
+        <p>陶器は残り、絵は残り、建築は残ります。しかし花火師が一年をかけて作った尺玉は、数秒で消えて何も残しません。残るのは、それを見上げた人の記憶だけです。</p>
+        <p>だからこそ、花火師はやり直せない一発に全部を込めます。紙を均一に貼り、星を同心に並べ、青の温度を計算し、導火線の長さを測る。その全部が、たった一度の数秒のために行われます。</p>
+        <p class="pull">知ることは、儚さを減らさない。<br>儚さの価値を、正確に測れるようにするだけです。</p>
+        <p>次の夏、空を見上げてください。</p>
+      </div>
+      <footer>
+        本書は花火の原理を学ぶための教育用テキストです。火薬の製造・調合の手順は意図的に含めていません。<br>
+        花火を実際に作りたい方は、火薬類取締法に従い、煙火業者を通じた正規のルートを選んでください。<br>
+        数値はいずれも目安であり、法令の内容は改正されます。実務では原文と所管官庁の指示を確認してください。
+      </footer>
+    </section>
+  </main>
+</div>
+
+<script>
+(function(){
+  /* progress bar */
+  var bar=document.getElementById('bar');
+  function prog(){
+    var h=document.documentElement.scrollHeight-window.innerHeight;
+    bar.style.width=(h>0?Math.min(1,window.scrollY/h)*100:0)+'%';
+  }
+  window.addEventListener('scroll',prog,{passive:true});
+  window.addEventListener('resize',prog); prog();
+
+  /* scroll spy */
+  var links=[].slice.call(document.querySelectorAll('.toc a'));
+  var secs=[].slice.call(document.querySelectorAll('section.chapter'));
+  if('IntersectionObserver' in window && secs.length){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(!e.isIntersecting) return;
+        var id=e.target.id;
+        links.forEach(function(a){
+          a.classList.toggle('on',a.getAttribute('href')==='#'+id);
+        });
+      });
+    },{rootMargin:'-25% 0px -70% 0px'});
+    secs.forEach(function(s){io.observe(s);});
+  }
+
+  /* close mobile nav on pick */
+  var mn=document.querySelector('.mnav');
+  if(mn) mn.addEventListener('click',function(e){
+    if(e.target.closest('a')) mn.open=false;
+  });
+
+  /* glossary filter */
+  var gi=document.getElementById('gl-search');
+  if(gi){
+    var rows=[].slice.call(document.querySelectorAll('.gl-row'));
+    gi.addEventListener('input',function(){
+      var q=gi.value.trim().toLowerCase();
+      rows.forEach(function(r){
+        r.classList.toggle('hide', q!=='' && r.textContent.toLowerCase().indexOf(q)<0);
+      });
+    });
+  }
+
+  /* hero : a single chrysanthemum burst */
+  var cv=document.getElementById('sky'); if(!cv) return;
+  var ctx=cv.getContext('2d'), W=0,H=0,dpr=Math.min(2,window.devicePixelRatio||1);
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var stars=[];
+  function size(){
+    var r=cv.getBoundingClientRect();
+    W=r.width; H=r.height;
+    cv.width=W*dpr; cv.height=H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    stars=[]; for(var i=0;i<70;i++) stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.1+.2,a:Math.random()*.5+.15});
+  }
+  size(); window.addEventListener('resize',size);
+
+  function drawStars(){
+    ctx.fillStyle='#0A0E1A'; ctx.fillRect(0,0,W,H);
+    for(var i=0;i<stars.length;i++){
+      var s=stars[i]; ctx.globalAlpha=s.a; ctx.fillStyle='#C7CFE0';
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,6.284); ctx.fill();
+    }
+    ctx.globalAlpha=1;
+  }
+  function rays(){
+    var n=96, out=[];
+    for(var i=0;i<n;i++){
+      var a=(i/n)*6.2832, sp=1+Math.random()*.22;
+      out.push({a:a,sp:sp,hue:38+Math.random()*14});
+    }
+    return out;
+  }
+  var R=rays(), cx=0, cy=0, t=0, radius=0, running=false;
+  function frame(){
+    t+=0.016;
+    var e=1-Math.pow(1-Math.min(1,t/1.5),3);      /* outward easing */
+    var life=Math.max(0,1-Math.max(0,(t-1.1)/1.9)); /* fade */
+    drawStars();
+    ctx.lineCap='round';
+    for(var i=0;i<R.length;i++){
+      var r=R[i], rr=radius*e*r.sp;
+      var x=cx+Math.cos(r.a)*rr, y=cy+Math.sin(r.a)*rr*.94;
+      var g=ctx.createLinearGradient(cx,cy,x,y);
+      g.addColorStop(0,'hsla('+r.hue+',85%,60%,0)');
+      g.addColorStop(.75,'hsla('+r.hue+',88%,62%,'+(.22*life)+')');
+      g.addColorStop(1,'hsla('+(r.hue+8)+',95%,78%,'+(.8*life)+')');
+      ctx.strokeStyle=g; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(cx+Math.cos(r.a)*rr*.22,cy+Math.sin(r.a)*rr*.2); ctx.lineTo(x,y); ctx.stroke();
+      ctx.globalAlpha=.9*life; ctx.fillStyle='hsl('+(r.hue+10)+',95%,80%)';
+      ctx.beginPath(); ctx.arc(x,y,1.5,0,6.284); ctx.fill(); ctx.globalAlpha=1;
+    }
+    if(t<3.0){ requestAnimationFrame(frame); }
+    else { running=false; ghost(); setTimeout(burst,3400); }
+  }
+  /* faint after-image so the hero is never empty between bursts */
+  function ghost(){
+    drawStars(); ctx.lineCap='round';
+    for(var i=0;i<R.length;i++){
+      var r=R[i], rr=radius*r.sp;
+      var x=cx+Math.cos(r.a)*rr, y=cy+Math.sin(r.a)*rr*.94;
+      var g=ctx.createLinearGradient(cx,cy,x,y);
+      g.addColorStop(0,'hsla('+r.hue+',80%,60%,0)');
+      g.addColorStop(1,'hsla('+r.hue+',85%,70%,.13)');
+      ctx.strokeStyle=g; ctx.lineWidth=1.2;
+      ctx.beginPath(); ctx.moveTo(cx+Math.cos(r.a)*rr*.2,cy+Math.sin(r.a)*rr*.18); ctx.lineTo(x,y); ctx.stroke();
+    }
+  }
+  function burst(){
+    if(running||W===0) return;
+    running=true; t=0; R=rays();
+    cx=W*(.5+(Math.random()-.5)*.3); cy=H*(.32+(Math.random()-.5)*.12);
+    radius=Math.min(W*.42,H*.62);
+    if(reduce){ t=1.05; drawStars(); frameOnce(); running=false; return; }
+    requestAnimationFrame(frame);
+  }
+  function frameOnce(){ var save=t; t=1.1; drawStars();
+    for(var i=0;i<R.length;i++){ var r=R[i], rr=radius*r.sp;
+      var x=cx+Math.cos(r.a)*rr, y=cy+Math.sin(r.a)*rr*.94;
+      var g=ctx.createLinearGradient(cx,cy,x,y);
+      g.addColorStop(0,'hsla('+r.hue+',85%,60%,0)');
+      g.addColorStop(1,'hsla('+(r.hue+8)+',95%,78%,.85)');
+      ctx.strokeStyle=g; ctx.lineWidth=1.4; ctx.beginPath();
+      ctx.moveTo(cx+Math.cos(r.a)*rr*.2,cy+Math.sin(r.a)*rr*.18); ctx.lineTo(x,y); ctx.stroke();
+    } t=save;
+  }
+  drawStars(); setTimeout(burst,450);
+})();
+</script>
