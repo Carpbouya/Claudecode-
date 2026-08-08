@@ -1,0 +1,250 @@
+<title>花火のきほん</title>
+<style>
+  :root{
+    --bg:#F4F6FB; --card:#FFFFFF; --tint:#EDF0F9;
+    --text:#131A2B; --text-mid:#3C4761; --text-dim:#5C6884;
+    --rule:#D3D9E8; --rule-soft:#E2E7F1;
+    --accent:#8E6212; --accent-vivid:#C08A24; --accent-tint:#F6EDD8;
+    --blue:#1A5AA6; --blue-tint:#E4EDF9;
+    --night:#0A0E1A;
+    --shadow:0 1px 2px rgba(19,26,43,.05), 0 10px 30px -16px rgba(19,26,43,.22);
+    --serif:"Hiragino Mincho ProN","Hiragino Mincho Pro","Yu Mincho",YuMincho,"Noto Serif JP","Source Han Serif JP",serif;
+    --sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",YuGothic,"Noto Sans JP",system-ui,-apple-system,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#0A0E1A; --card:#111828; --tint:#141D31;
+      --text:#E8ECF5; --text-mid:#C0C8DA; --text-dim:#939DB4;
+      --rule:#232E47; --rule-soft:#1A2338;
+      --accent:#EBBB63; --accent-vivid:#F2CB83; --accent-tint:#241D0E;
+      --blue:#6FB6F5; --blue-tint:#101B2C;
+      --shadow:0 1px 2px rgba(0,0,0,.5), 0 14px 34px -18px rgba(0,0,0,.75);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0A0E1A; --card:#111828; --tint:#141D31;
+    --text:#E8ECF5; --text-mid:#C0C8DA; --text-dim:#939DB4;
+    --rule:#232E47; --rule-soft:#1A2338;
+    --accent:#EBBB63; --accent-vivid:#F2CB83; --accent-tint:#241D0E;
+    --blue:#6FB6F5; --blue-tint:#101B2C;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 14px 34px -18px rgba(0,0,0,.75);
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--text);
+    font-family:var(--serif); font-size:1.125rem; line-height:2.05;
+    -webkit-font-smoothing:antialiased}
+  ::selection{background:var(--accent-vivid); color:var(--night)}
+  a{color:var(--blue); text-underline-offset:.22em}
+  a:focus-visible{outline:2px solid var(--accent-vivid); outline-offset:3px; border-radius:4px}
+  .wrap{max-width:40rem; margin:0 auto; padding:0 1.3rem 5rem}
+
+  /* hero */
+  header.top{background:var(--night); color:#EEF1F8; padding:clamp(3rem,10vw,5.5rem) 1.3rem clamp(2.2rem,6vw,3.2rem); text-align:center}
+  header.top .in{max-width:34rem; margin:0 auto}
+  .kicker{font-family:var(--sans); font-size:.75rem; letter-spacing:.32em; color:#EBBB63; margin:0 0 1rem}
+  h1{font-family:var(--serif); font-size:clamp(2.1rem,8vw,2.9rem); letter-spacing:.1em;
+    line-height:1.3; margin:0 0 .9rem; font-weight:600; text-wrap:balance}
+  header.top p{color:#C7CFE0; margin:0 auto; font-size:1.0625rem; max-width:26rem; text-wrap:pretty}
+  .mins{display:inline-block; font-family:var(--sans); font-size:.75rem; letter-spacing:.1em;
+    border:1px solid rgba(235,187,99,.42); color:#EBBB63; border-radius:100px; padding:.32rem .95rem; margin-top:1.6rem}
+
+  /* sections */
+  section{padding-top:3.4rem}
+  .num{font-family:var(--mono); font-size:.8rem; color:var(--accent); letter-spacing:.1em; margin:0 0 .3rem}
+  h2{font-family:var(--serif); font-size:1.6rem; letter-spacing:.05em; line-height:1.45;
+    margin:0 0 1.1rem; font-weight:600; text-wrap:balance}
+  p{margin:0 0 1.3rem; text-wrap:pretty}
+  strong{font-weight:700}
+  em{font-style:normal; background:linear-gradient(transparent 62%, var(--accent-tint) 62%); padding:0 .1em}
+
+  /* card grid */
+  .cards{display:grid; gap:.7rem; margin:0 0 1.6rem; padding:0; list-style:none}
+  .cards.two{grid-template-columns:repeat(auto-fit,minmax(12rem,1fr))}
+  .cards li{background:var(--card); border:1px solid var(--rule-soft); border-radius:12px;
+    padding:1rem 1.15rem; box-shadow:var(--shadow); font-size:1rem; line-height:1.8}
+  .cards b{display:block; font-family:var(--sans); font-size:.9375rem; margin-bottom:.15rem}
+  .cards .sub{display:block; font-family:var(--sans); font-size:.8125rem; color:var(--text-dim);
+    letter-spacing:.06em; margin-bottom:.4rem}
+
+  /* colour chips */
+  .colors{display:grid; grid-template-columns:repeat(auto-fit,minmax(7.5rem,1fr)); gap:.6rem;
+    margin:0 0 1.6rem; padding:0; list-style:none; font-family:var(--sans)}
+  .colors li{background:var(--card); border:1px solid var(--rule-soft); border-radius:12px;
+    padding:.85rem 1rem; display:flex; align-items:center; gap:.7rem; font-size:.9375rem}
+  .chip{width:1.4rem; height:1.4rem; border-radius:50%; flex:none;
+    border:1px solid rgba(120,130,150,.4); box-shadow:0 0 10px -1px currentColor}
+  .colors .el{font-family:var(--mono); font-size:.78rem; color:var(--text-dim); margin-left:auto}
+
+  /* key box */
+  .key{background:var(--card); border-left:3px solid var(--accent-vivid); border-radius:10px;
+    padding:1.15rem 1.35rem; margin:0 0 1.6rem; box-shadow:var(--shadow)}
+  .key p{margin:0; font-size:1rem; line-height:1.9}
+  .key .lab{font-family:var(--sans); font-size:.72rem; letter-spacing:.18em; color:var(--accent); margin:0 0 .45rem}
+  .safe{background:var(--card); border:1px solid var(--accent-vivid); border-radius:12px; padding:1.2rem 1.4rem; margin:0 0 1.6rem}
+  .safe ol{margin:0; padding-left:1.3rem; font-size:1rem; line-height:1.85}
+  .safe li{margin:.5rem 0}
+  .safe .lab{font-family:var(--sans); font-size:.72rem; letter-spacing:.18em; color:var(--accent); margin:0 0 .7rem}
+
+  /* figure */
+  figure{margin:1.8rem 0; padding:1.3rem; background:var(--card); border:1px solid var(--rule-soft);
+    border-radius:12px; box-shadow:var(--shadow)}
+  figure svg{display:block; width:100%; height:auto; max-width:24rem; margin:0 auto}
+  figcaption{font-family:var(--sans); font-size:.8125rem; color:var(--text-dim); text-align:center;
+    line-height:1.75; margin-top:.9rem}
+  .svg-l{fill:var(--text-mid); font-family:var(--sans); font-size:11px}
+
+  /* formula */
+  .fx{font-family:var(--mono); font-size:.95rem; text-align:center; background:var(--tint);
+    border-radius:9px; padding:.9rem 1rem; margin:0 0 1.4rem; line-height:1.9}
+  .fx b{color:var(--accent)}
+
+  /* next */
+  .next{margin-top:3.6rem; background:var(--night); color:#DDE3EF; border-radius:14px;
+    padding:2.2rem 1.6rem; text-align:center}
+  .next h2{color:#EEF1F8; font-size:1.35rem; margin-bottom:.6rem}
+  .next p{color:#BAC3D6; font-size:1rem; max-width:24rem; margin:0 auto 1.4rem}
+  .btn{display:inline-block; font-family:var(--sans); font-size:.9375rem; text-decoration:none;
+    color:var(--night); background:#EBBB63; border-radius:100px; padding:.75rem 1.7rem; font-weight:700}
+  .btn:hover{background:#F2CB83}
+  footer{font-family:var(--sans); font-size:.8125rem; color:var(--text-dim); line-height:1.8;
+    margin-top:2.6rem; padding-top:1.4rem; border-top:1px solid var(--rule); text-align:center}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="in">
+    <p class="kicker">HANABI · BASICS</p>
+    <h1>花火のきほん</h1>
+    <p>色のしくみ、丸く開く理由、そして見るときのコツ。これだけ知っていれば、今年の花火は違って見えます。</p>
+    <p class="mins">5分で読めます</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section>
+    <p class="num">01</p>
+    <h2>花火は「火薬で作る光」</h2>
+    <p>花火の中身は火薬です。ただ燃やすだけなら、ただの爆発。花火が芸術になるのは、その爆発を<strong>いつ・どこで・何色に・どんな音で</strong>光らせるかを、すべて計算して作り込んでいるからです。</p>
+    <p>打ち上げてしまったら、もう手は出せません。だから花火師は、地上での作業に全部を込めます。</p>
+  </section>
+
+  <section>
+    <p class="num">02</p>
+    <h2>色は、2種類の光でできている</h2>
+    <p>花火の色には、しくみがまったく違う2つの種類があります。ここだけ分かると、花火の見え方が変わります。</p>
+    <ul class="cards two">
+      <li><b>温度の光</b><span class="sub">金・銀・白</span>熱くなった粒が光っています。焚き火や鉄が赤くなるのと同じ。<strong>温度が色を決めます。</strong></li>
+      <li><b>物質の光</b><span class="sub">赤・緑・青</span>金属の種類ごとに決まった色で光ります。理科の炎色反応と同じ。<strong>物質が色を決めます。</strong></li>
+    </ul>
+    <p>「物質の光」の担当は、こんな顔ぶれです。</p>
+    <ul class="colors">
+      <li><span class="chip" style="background:#E8203A;color:#E8203A"></span>赤<span class="el">Sr</span></li>
+      <li><span class="chip" style="background:#F07A18;color:#F07A18"></span>橙<span class="el">Ca</span></li>
+      <li><span class="chip" style="background:#F2D02C;color:#F2D02C"></span>黄<span class="el">Na</span></li>
+      <li><span class="chip" style="background:#2ED16A;color:#2ED16A"></span>緑<span class="el">Ba</span></li>
+      <li><span class="chip" style="background:#2B7CF0;color:#2B7CF0"></span>青<span class="el">Cu</span></li>
+      <li><span class="chip" style="background:#E0A32E;color:#E0A32E"></span>金<span class="el">炭・鉄</span></li>
+    </ul>
+    <div class="key">
+      <p class="lab">いちばん難しい色は「青」</p>
+      <p>青く光る物質は、<strong>熱くなりすぎると壊れて青くなくなります。</strong>でも温度を下げると暗い。「明るくて深い青」は両立が難しく、花火師の腕がいちばん出るところです。<em>深い青を見たら、それは相当な技術です。</em></p>
+    </div>
+  </section>
+
+  <section>
+    <p class="num">03</p>
+    <h2>なぜ、きれいな丸に開くのか</h2>
+    <p>日本の花火は<strong>球のかたち</strong>をしています。中には、光る粒（<strong>星</strong>）が球状にきれいに並べられていて、中心の火薬がそれを全方向へ均等に押し出します。</p>
+    <figure>
+      <svg viewBox="0 0 352 240" role="img" aria-labelledby="t-b">
+        <title id="t-b">花火の玉の断面：外側の紙の殻、内側に並んだ星、中心の火薬</title>
+        <circle cx="120" cy="120" r="96" fill="none" stroke="currentColor" stroke-width="5" opacity=".18"/>
+        <circle cx="120" cy="120" r="34" fill="#8A6A2E" opacity=".3"/>
+        <circle cx="120" cy="120" r="34" fill="none" stroke="#8A6A2E" stroke-width="1" stroke-dasharray="3 3" opacity=".85"/>
+        <g fill="#E9B75B">
+          <circle cx="120" cy="42" r="8"/>
+          <circle cx="120" cy="42" r="8" transform="rotate(30 120 120)"/>
+          <circle cx="120" cy="42" r="8" transform="rotate(60 120 120)"/>
+          <circle cx="120" cy="42" r="8" transform="rotate(90 120 120)"/>
+          <circle cx="120" cy="42" r="8" transform="rotate(120 120 120)"/>
+          <circle cx="120" cy="42" r="8" transform="rotate(150 120 120)"/>
+          <circle cx="120" cy="42" r="8" transform="rotate(180 120 120)"/>
+          <circle cx="120" cy="42" r="8" transform="rotate(210 120 120)"/>
+          <circle cx="120" cy="42" r="8" transform="rotate(240 120 120)"/>
+          <circle cx="120" cy="42" r="8" transform="rotate(270 120 120)"/>
+          <circle cx="120" cy="42" r="8" transform="rotate(300 120 120)"/>
+          <circle cx="120" cy="42" r="8" transform="rotate(330 120 120)"/>
+        </g>
+        <g class="svg-l">
+          <line x1="228" y1="40" x2="196" y2="58" stroke="currentColor" stroke-width="1" opacity=".35"/>
+          <text x="234" y="44">紙の殻（玉皮）</text>
+          <line x1="228" y1="92" x2="182" y2="98" stroke="currentColor" stroke-width="1" opacity=".35"/>
+          <text x="234" y="96">星＝光る粒</text>
+          <line x1="228" y1="146" x2="156" y2="130" stroke="currentColor" stroke-width="1" opacity=".35"/>
+          <text x="234" y="150">中心の火薬</text>
+        </g>
+      </svg>
+      <figcaption>玉の断面。星が同心円に並んでいるから、開くと同心円の花になる。</figcaption>
+    </figure>
+    <p>そしてもう一つのしかけが、<strong>開くタイミング</strong>です。玉は上がりきって<strong>いちばん高いところで速度がほぼゼロになった瞬間</strong>に開きます。止まっているから、星が全方向に同じだけ飛んで、まっすぐな丸になるのです。</p>
+    <p>上がっている途中で開いてしまうと、上向きの勢いが残って<strong>タテに伸びた卵形</strong>に歪みます。あの真円は、偶然ではなくタイミングの技術です。</p>
+  </section>
+
+  <section>
+    <p class="num">04</p>
+    <h2>名前を3つだけ覚える</h2>
+    <p>花火には無数の名前がありますが、まずはこの3つ（＋おまけ1つ）で十分です。</p>
+    <ul class="cards">
+      <li><b>菊（きく）</b><span class="sub">線の花火</span>光が<strong>尾を引いて</strong>、中心から放射状に線が伸びる。花火の基本形で、いちばんの王道。</li>
+      <li><b>牡丹（ぼたん）</b><span class="sub">点の花火</span>尾を引かず、光の<strong>点</strong>が球状に並ぶ。ごまかしが効かないので、色の美しさがそのまま出る。</li>
+      <li><b>芯入り（しんいり）</b><span class="sub">二重丸・三重丸</span>花の中にもう一つ、さらにもう一つ丸がある。<strong>丸の数がそのまま技術の高さ</strong>。3重・4重が見えたら拍手もの。</li>
+      <li><b>冠（かむろ）</b><span class="sub">おまけ・垂れる花火</span>開いたあと、金色の光がゆっくり<strong>枝垂れ柳のように垂れ下がる</strong>。星が大きく重いから遠くまで飛び、長く残る。</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="num">05</p>
+    <h2>見るときの、3つのコツ</h2>
+    <ul class="cards">
+      <li><b>1. 丸を数える</b>花の中に丸がいくつ重なっているか。2重、3重…と数えるだけで、その一発の技術水準が分かります。</li>
+      <li><b>2. 青を探す</b>いちばん難しい色です。深く鮮やかな青が大きく開いたら、それは腕のいい花火師の仕事です。</li>
+      <li><b>3. 光ってから音までを数える</b>音は1秒で約340m進みます。数えた秒数×340が、花火までのだいたいの距離です。</li>
+    </ul>
+    <div class="fx">距離 ≈ <b>340</b> × （光ってから音が届くまでの秒数）</div>
+    <p>ちなみに、いわゆる<strong>尺玉</strong>（直径30cmの玉）は、高さ約330mで開いて、花の直径も約320m。<em>東京タワーの高さで開いて、東京タワーの高さぶん広がる</em>と覚えておくと、大きさの見当がつきます。</p>
+    <div class="key">
+      <p class="lab">場所選びの、たった一つのコツ</p>
+      <p><strong>風上に立つこと。</strong>煙が自分の側に流れてくると、白い霧しか見えなくなります。どんなに良い席でも、風下では台無しです。</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="num">06</p>
+    <h2>手持ち花火の安全</h2>
+    <p>家庭用の花火も、おもちゃではなく<strong>小さな火薬製品</strong>です。守るのはこの3つだけで、事故はほとんど防げます。</p>
+    <div class="safe">
+      <p class="lab">⚠ 必ず守る3つ</p>
+      <ol>
+        <li><strong>水を入れたバケツを用意する。</strong>使い終わった花火は必ず水に入れる。</li>
+        <li><strong>火がついていない花火を、絶対に覗き込まない。</strong>消えたように見えても中で燃えていることがあり、顔を近づけた瞬間に発火します。失明事故の典型です。確認せず、そのまま水に入れてください。</li>
+        <li><strong>人や家に向けない。</strong>とくにロケット花火。手で持っていいのは「手持ち」と書かれたものだけです。</li>
+      </ol>
+    </div>
+    <p>缶やビンの中で燃やす、束ねて火をつける、分解して火薬を取り出す――これらは花火の遊び方ではなく、爆発物を作る行為です。絶対にやめてください。</p>
+  </section>
+
+  <div class="next">
+    <h2>もっと詳しく知りたくなったら</h2>
+    <p>化学・物理・歴史・法規まで踏み込んだ全10章の教科書版があります。図解と演習問題つきです。</p>
+    <a class="btn" href="https://claude.ai/code/artifact/ad76a230-2782-4845-afbb-892de58de408">花火の教科書（詳しい版）へ</a>
+  </div>
+
+  <footer>
+    このページは花火のしくみを知るための入門テキストです。<br>
+    火薬の作り方や配合は含みません。日本では無許可の製造は法律で禁じられています。<br>
+    数値はいずれもおおよその目安です。
+  </footer>
+</div>
