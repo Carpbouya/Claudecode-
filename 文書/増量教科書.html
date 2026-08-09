@@ -1,0 +1,1307 @@
+<title>増量教科書 — 食べても太れない人のための「増やす技術」</title>
+
+<style>
+  /* ============ tokens ============ */
+  :root {
+    --paper:   #EDEFE9;
+    --surface: #F7F8F4;
+    --sunk:    #E4E7DE;
+    --ink:     #171C18;
+    --ink-2:   #5A635B;
+    --ink-3:   #838C82;
+    --rule:    #D2D7CC;
+    --rule-2:  #BFC6B8;
+    --grid:    rgba(23, 28, 24, 0.055);
+    --accent:      #9C6412;
+    --accent-mark: #B5761A;
+    --accent-soft: rgba(181, 118, 26, 0.11);
+    --pine:      #2F6B4F;
+    --pine-soft: rgba(47, 107, 79, 0.10);
+    --brick:      #A03A2C;
+    --brick-soft: rgba(160, 58, 44, 0.09);
+
+    --f-display: "Hiragino Mincho ProN", "Yu Mincho", YuMincho, "Noto Serif JP", "Songti SC", serif;
+    --f-body: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", YuGothic, "Noto Sans JP", "Meiryo", sans-serif;
+    --f-mono: ui-monospace, "SF Mono", SFMono-Regular, "Roboto Mono", Menlo, Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:   #131711;
+      --surface: #1B201A;
+      --sunk:    #20261F;
+      --ink:     #E7EAE0;
+      --ink-2:   #9AA396;
+      --ink-3:   #79826F;
+      --rule:    #2E352C;
+      --rule-2:  #3C443A;
+      --grid:    rgba(231, 234, 224, 0.042);
+      --accent:      #E0A249;
+      --accent-mark: #E0A249;
+      --accent-soft: rgba(224, 162, 73, 0.13);
+      --pine:      #79B892;
+      --pine-soft: rgba(121, 184, 146, 0.13);
+      --brick:      #DE8C7B;
+      --brick-soft: rgba(222, 140, 123, 0.13);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper:   #131711;
+    --surface: #1B201A;
+    --sunk:    #20261F;
+    --ink:     #E7EAE0;
+    --ink-2:   #9AA396;
+    --ink-3:   #79826F;
+    --rule:    #2E352C;
+    --rule-2:  #3C443A;
+    --grid:    rgba(231, 234, 224, 0.042);
+    --accent:      #E0A249;
+    --accent-mark: #E0A249;
+    --accent-soft: rgba(224, 162, 73, 0.13);
+    --pine:      #79B892;
+    --pine-soft: rgba(121, 184, 146, 0.13);
+    --brick:      #DE8C7B;
+    --brick-soft: rgba(222, 140, 123, 0.13);
+  }
+
+  /* ============ base ============ */
+  body {
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(to right, var(--grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+    background-size: 30px 30px;
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 17px;
+    line-height: 1.95;
+    font-feature-settings: "palt" 1;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .wrap {
+    max-width: 74rem;
+    margin: 0 auto;
+    padding: 0 1.4rem 6rem;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent-mark);
+    outline-offset: 3px;
+  }
+  strong { font-weight: 700; }
+  em {
+    font-style: normal;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 0.94em; }
+
+  /* ============ masthead ============ */
+  .masthead {
+    padding: clamp(3rem, 9vw, 6.5rem) 0 2.6rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .eyebrow {
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 1.6rem;
+  }
+  .masthead h1 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: clamp(2.1rem, 6.2vw, 3.6rem);
+    line-height: 1.42;
+    letter-spacing: 0.01em;
+    text-wrap: balance;
+    margin: 0;
+    max-width: 18em;
+  }
+  .masthead h1 .thin {
+    display: block;
+    font-size: 0.52em;
+    color: var(--ink-2);
+    letter-spacing: 0.06em;
+    margin-bottom: 0.9rem;
+    font-weight: 400;
+  }
+  .lede {
+    max-width: 36em;
+    margin: 1.8rem 0 0;
+    color: var(--ink-2);
+    font-size: 1.02rem;
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 2.6rem;
+    margin-top: 2.6rem;
+    padding-top: 1.6rem;
+    border-top: 1px solid var(--rule);
+  }
+  .facts div { padding: 0.3rem 0; }
+  .facts dt {
+    font-family: var(--f-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+    text-transform: uppercase;
+  }
+  .facts dd {
+    margin: 0.15rem 0 0;
+    font-family: var(--f-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.28rem;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+  }
+  .facts dd small { font-size: 0.62em; color: var(--ink-2); letter-spacing: 0; }
+
+  /* ============ layout ============ */
+  .shell { display: block; }
+  .toc { margin: 3rem 0 0; }
+  main { min-width: 0; max-width: 42em; }
+
+  @media (min-width: 1080px) {
+    .shell {
+      display: grid;
+      grid-template-columns: 14rem minmax(0, 42em);
+      gap: 0 4.5rem;
+      justify-content: center;
+      align-items: start;
+    }
+    .toc {
+      position: sticky;
+      top: 2rem;
+      margin: 4.5rem 0 0;
+      max-height: calc(100vh - 4rem);
+      overflow-y: auto;
+    }
+  }
+
+  .toc h2 {
+    font-family: var(--f-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 1rem;
+    font-weight: 400;
+  }
+  .toc ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.55rem; }
+  .toc a {
+    display: grid;
+    grid-template-columns: 2.1rem 1fr;
+    gap: 0.4rem;
+    color: var(--ink-2);
+    text-decoration: none;
+    font-size: 0.86rem;
+    line-height: 1.5;
+  }
+  .toc a span:first-child {
+    font-family: var(--f-mono);
+    font-size: 0.72rem;
+    color: var(--ink-3);
+    padding-top: 0.15em;
+  }
+  .toc a:hover { color: var(--accent); }
+  .toc a:hover span:first-child { color: var(--accent); }
+
+  /* ============ chapters ============ */
+  .ch { padding-top: 4.5rem; }
+  .ch-head { margin-bottom: 2rem; }
+  .ch-no {
+    font-family: var(--f-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 0.7rem;
+  }
+  .ch h2 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: clamp(1.55rem, 4vw, 2.05rem);
+    line-height: 1.5;
+    margin: 0;
+    text-wrap: balance;
+    padding-bottom: 0.9rem;
+    border-bottom: 2px solid var(--ink);
+  }
+  .ch h3 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.65;
+    margin: 2.8rem 0 0.9rem;
+  }
+  .ch h4 {
+    font-size: 0.94rem;
+    font-weight: 700;
+    margin: 1.9rem 0 0.5rem;
+    color: var(--ink);
+  }
+  .ch p { margin: 0 0 1.15rem; }
+  .ch > p:first-of-type { font-size: 1.02rem; }
+
+  .ch ul, .ch ol.steps {
+    margin: 0 0 1.4rem;
+    padding-left: 1.3em;
+  }
+  .ch li { margin-bottom: 0.55rem; }
+  .ch li::marker { color: var(--ink-3); }
+
+  /* ============ callouts ============ */
+  .box {
+    margin: 1.9rem 0;
+    padding: 1.5rem 1.5rem 1.2rem;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-top: 2px solid var(--rule-2);
+    position: relative;
+  }
+  .box > :last-child { margin-bottom: 0; }
+  .box .tag {
+    position: absolute;
+    top: -0.72rem;
+    left: 1.3rem;
+    font-family: var(--f-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    padding: 0.15rem 0.6rem;
+    background: var(--paper);
+    color: var(--ink-2);
+    border: 1px solid var(--rule-2);
+  }
+  .box p, .box li { font-size: 0.95rem; }
+  .box ul { margin-bottom: 0; }
+
+  .box.principle { border-top-color: var(--accent-mark); background: var(--accent-soft); }
+  .box.principle .tag { color: var(--accent); border-color: var(--accent-mark); }
+  .box.trap { border-top-color: var(--brick); background: var(--brick-soft); }
+  .box.trap .tag { color: var(--brick); border-color: var(--brick); }
+  .box.todo { border-top-color: var(--pine); background: var(--pine-soft); }
+  .box.todo .tag { color: var(--pine); border-color: var(--pine); }
+
+  /* ============ tables ============ */
+  .scroll { overflow-x: auto; margin: 1.7rem 0; border: 1px solid var(--rule); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 30rem; font-size: 0.89rem; }
+  caption {
+    caption-side: top;
+    text-align: left;
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+    padding: 0 0 0.55rem;
+  }
+  th, td {
+    padding: 0.62rem 0.9rem;
+    text-align: left;
+    border-bottom: 1px solid var(--rule);
+    line-height: 1.7;
+    vertical-align: top;
+  }
+  thead th {
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--ink-2);
+    font-weight: 400;
+    background: var(--sunk);
+    border-bottom: 1px solid var(--rule-2);
+    white-space: nowrap;
+  }
+  tbody tr:last-child td, tbody tr:last-child th { border-bottom: 0; }
+  tbody th { font-weight: 700; white-space: nowrap; }
+  td.n, th.n {
+    text-align: right;
+    font-family: var(--f-mono);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  tfoot td, tfoot th {
+    background: var(--sunk);
+    font-weight: 700;
+    border-top: 1px solid var(--rule-2);
+  }
+
+  /* ============ formula ============ */
+  .formula {
+    margin: 1.6rem 0;
+    padding: 1.2rem 1.3rem;
+    background: var(--sunk);
+    border-left: 3px solid var(--accent-mark);
+    font-family: var(--f-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.88rem;
+    line-height: 2.1;
+    overflow-x: auto;
+  }
+  .formula b { color: var(--accent); font-weight: 400; }
+  .formula .cmt { color: var(--ink-3); }
+
+  /* ============ figure ============ */
+  figure { margin: 2.2rem 0; }
+  figure svg { display: block; width: 100%; height: auto; background: var(--surface); border: 1px solid var(--rule); }
+  figcaption { font-size: 0.8rem; color: var(--ink-2); margin-top: 0.7rem; line-height: 1.75; }
+
+  /* ============ faq ============ */
+  details {
+    border-bottom: 1px solid var(--rule);
+    padding: 0.9rem 0;
+  }
+  summary {
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.96rem;
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    gap: 0.3rem;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: "Q";
+    font-family: var(--f-mono);
+    color: var(--accent);
+    font-weight: 400;
+  }
+  details p, details ul { font-size: 0.93rem; margin: 0.7rem 0 0.3rem 1.8rem; color: var(--ink-2); }
+
+  /* ============ checklist ============ */
+  .check { list-style: none; padding: 0; margin: 1.4rem 0; }
+  .check li {
+    display: grid;
+    grid-template-columns: 1.6rem 1fr;
+    gap: 0.4rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px dotted var(--rule-2);
+    font-size: 0.94rem;
+    margin: 0;
+  }
+  .check li::before {
+    content: "";
+    width: 0.9rem; height: 0.9rem;
+    border: 1.5px solid var(--rule-2);
+    margin-top: 0.5em;
+  }
+
+  .blank {
+    display: inline-block;
+    min-width: 4.5em;
+    border-bottom: 1px solid var(--rule-2);
+  }
+
+  /* ============ close ============ */
+  .colophon {
+    margin-top: 5rem;
+    padding-top: 1.6rem;
+    border-top: 1px solid var(--rule);
+    font-size: 0.8rem;
+    color: var(--ink-3);
+    line-height: 1.9;
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">増量教科書 / Textbook for Hardgainers</p>
+    <h1>
+      <span class="thin">食べても太れない人のための</span>
+      増やす技術。<br>体質ではなく、手順の問題だ。
+    </h1>
+    <p class="lede">
+      「昔から食べても太らない」——その一文で片づけられてきたものの正体は、たいてい
+      <em>収支の不足</em>と<em>食欲の天井</em>と<em>判定の早さ</em>の三つです。
+      この教科書は、計算する・食べ方を変える・鍛える・記録して直す、という順番で、
+      12週間で体重を確実に動かすための手順書です。
+    </p>
+    <dl class="facts">
+      <div>
+        <dt>Surplus</dt>
+        <dd>+300–500 <small>kcal/日</small></dd>
+      </div>
+      <div>
+        <dt>Pace</dt>
+        <dd>0.25–0.5<small>% 体重/週</small></dd>
+      </div>
+      <div>
+        <dt>Protein</dt>
+        <dd>1.6–2.2 <small>g/kg/日</small></dd>
+      </div>
+      <div>
+        <dt>Cycle</dt>
+        <dd>12 <small>週</small></dd>
+      </div>
+    </dl>
+  </header>
+
+  <div class="shell">
+
+    <nav class="toc" aria-label="目次">
+      <h2>目次</h2>
+      <ol>
+        <li><a href="#c0"><span>序</span><span>この本の使い方</span></a></li>
+        <li><a href="#c1"><span>1</span><span>太れない本当の理由</span></a></li>
+        <li><a href="#c2"><span>2</span><span>数字を決める</span></a></li>
+        <li><a href="#c3"><span>3</span><span>食欲の天井を上げる</span></a></li>
+        <li><a href="#c4"><span>4</span><span>1日の食事モデル</span></a></li>
+        <li><a href="#c5"><span>5</span><span>トレーニング設計</span></a></li>
+        <li><a href="#c6"><span>6</span><span>回復と消化</span></a></li>
+        <li><a href="#c7"><span>7</span><span>記録と修正</span></a></li>
+        <li><a href="#c8"><span>8</span><span>12週ロードマップ</span></a></li>
+        <li><a href="#a1"><span>付A</span><span>よくある質問</span></a></li>
+        <li><a href="#a2"><span>付B</span><span>記入シート</span></a></li>
+      </ol>
+    </nav>
+
+    <main>
+
+      <!-- ============ 序章 ============ -->
+      <section class="ch" id="c0">
+        <div class="ch-head">
+          <span class="ch-no">序 章</span>
+          <h2>この本の使い方</h2>
+        </div>
+
+        <p>
+          増量は、原理としては減量より単純です。摂るカロリーが消費を上回れば体重は増える。
+          それだけのことが痩せ型の人にできないのは、意志が弱いからではなく、
+          <strong>「上回った状態を毎日続ける仕組み」</strong>を持っていないからです。
+        </p>
+        <p>
+          この教科書は、上から順に読んで、そのまま実行できるように並んでいます。
+          読み物ではなく作業手順です。第2章で自分の数字を出し、第4章の食事モデルを1つ選び、
+          第5章のプログラムを始める。ここまでで初日の準備は終わります。
+        </p>
+
+        <div class="box principle">
+          <span class="tag">原則</span>
+          <p>
+            この本を通して守るルールは3つだけです。
+          </p>
+          <ul>
+            <li><strong>満腹を基準にしない。</strong>「決めた物を、決めた時間に」食べる。空腹を待たない。</li>
+            <li><strong>体重は週平均で見る。</strong>日々の増減は水分。判定は最短でも2週間。</li>
+            <li><strong>止めない。</strong>2週間止まったら食事を足す。やめるのではなく、数字を変える。</li>
+          </ul>
+        </div>
+
+        <p>
+          なお、この教科書は健康な人が体重・筋量を増やすための一般的な情報です。
+          持病がある、薬を飲んでいる、意図せず体重が減っている場合は、
+          始める前に医療機関で相談してください（詳しくは第1章の最後）。
+        </p>
+      </section>
+
+      <!-- ============ 1 ============ -->
+      <section class="ch" id="c1">
+        <div class="ch-head">
+          <span class="ch-no">第 1 章</span>
+          <h2>太れない本当の理由</h2>
+        </div>
+
+        <p>
+          「体質」という言葉は説明を止めてしまいます。分解すると、痩せ型の人が増えない理由は
+          ほぼ次の4つに収まります。自分がどれに当てはまるか、先に見当をつけてください。
+        </p>
+
+        <h3>理由① 食べている「つもり」の量が足りない</h3>
+        <p>
+          最も多い原因です。人は自分の摂取量を実際より少なく見積もる傾向があり、
+          痩せ型の人ほどこのズレが大きく出ます。「めちゃくちゃ食べた日」が2,400kcal で、
+          必要量が2,700kcal なら、体重は永遠に動きません。
+          <strong>最初の1週間だけでも実測する</strong>と、ほぼ全員が「思ったより食べていない」ことに気づきます。
+        </p>
+
+        <h3>理由② 食欲の天井が低い</h3>
+        <p>
+          胃の容量、満腹感の出やすさ、食事にかけられる時間。ここが物理的な制約になります。
+          だから痩せ型の増量は「たくさん食べる」ではなく
+          <strong>「同じ体積でカロリーを増やす」</strong>という技術の問題になります（第3章）。
+        </p>
+
+        <h3>理由③ 食べた分だけ無意識に動いてしまう</h3>
+        <p>
+          運動以外の日常活動による消費（NEAT：貧乏ゆすり、姿勢維持、歩き回りなど）は個人差が大きく、
+          カロリーを増やすと無意識に活動量が上がって余剰が打ち消されることがあります。
+          痩せ型の人はこの反応が強い傾向があります。対策は
+          <strong>余剰を大きめに取る</strong>ことと、<strong>不要な有酸素運動を削る</strong>ことです。
+        </p>
+
+        <h3>理由④ 判定が早すぎて、途中でやめる</h3>
+        <p>
+          3日食べて体重が変わらないから諦める。これが一番もったいない失敗です。
+          体重は塩分・水分・グリコーゲン・便で1日±1kg 動きます。
+          信号として読めるのは<strong>週平均の推移</strong>だけです（第7章）。
+        </p>
+
+        <div class="box trap">
+          <span class="tag">よくあるワナ</span>
+          <p>
+            「今日は食べられそうな気がする日」に大量に食べて、翌日胃がもたれて2食抜く。
+            週合計で見ると増えていない、という往復運動。
+            増量は<strong>1日の最大値ではなく、7日間の合計</strong>で決まります。
+            毎日同じ量を淡々と積む人が勝ちます。
+          </p>
+        </div>
+
+        <h3>その前に：医学的な原因を外しておく</h3>
+        <p>
+          以下に心当たりがあるときは、食事を増やす前に医療機関を受診してください。
+          甲状腺機能亢進症、セリアック病・炎症性腸疾患などの吸収障害、糖尿病などが背景にあると、
+          どれだけ食べても増えないうえに放置が危険です。
+        </p>
+        <ul>
+          <li>ダイエットしていないのに、半年で体重が5%以上減った</li>
+          <li>動悸・手の震え・汗が異常に多い・暑さに弱い</li>
+          <li>慢性的な下痢、腹部膨満、便に脂が浮く</li>
+          <li>のどの渇きと尿の量が明らかに増えた</li>
+          <li>強い倦怠感、微熱、寝汗が続く</li>
+        </ul>
+      </section>
+
+      <!-- ============ 2 ============ -->
+      <section class="ch" id="c2">
+        <div class="ch-head">
+          <span class="ch-no">第 2 章</span>
+          <h2>数字を決める</h2>
+        </div>
+
+        <p>
+          最初にやるのは計算です。感覚で増量を始めると、何が悪かったのか永遠に分かりません。
+          3つの数字——<strong>維持カロリー・目標カロリー・PFC</strong>——を出します。
+        </p>
+
+        <h3>ステップ1：維持カロリー（TDEE）を見積もる</h3>
+        <p>
+          広く使われる Mifflin-St Jeor 式で基礎代謝（BMR）を出し、活動係数を掛けます。
+        </p>
+
+        <div class="formula">
+          <b>BMR（男性）</b> = 10 × 体重kg + 6.25 × 身長cm − 5 × 年齢 + 5<br>
+          <b>BMR（女性）</b> = 10 × 体重kg + 6.25 × 身長cm − 5 × 年齢 − 161<br>
+          <b>TDEE</b> = BMR × 活動係数
+        </div>
+
+        <div class="scroll">
+          <table>
+            <caption>活動係数</caption>
+            <thead>
+              <tr><th>係数</th><th>目安となる生活</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="n">1.2</td><td>ほぼ座り仕事、運動なし</td></tr>
+              <tr><td class="n">1.375</td><td>週1〜3回の軽い運動</td></tr>
+              <tr><td class="n">1.55</td><td>週3〜5回の筋トレ（多くの人はここ）</td></tr>
+              <tr><td class="n">1.725</td><td>週6〜7回の運動、立ち仕事</td></tr>
+              <tr><td class="n">1.9</td><td>肉体労働＋毎日のトレーニング</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="formula">
+          <span class="cmt">// 例：25歳・男性・172cm・55kg・週3で筋トレ</span><br>
+          BMR = 10×55 + 6.25×172 − 5×25 + 5 = <b>1,505 kcal</b><br>
+          TDEE = 1,505 × 1.55 = <b>約 2,330 kcal</b><br>
+          目標 = 2,330 + 400 = <b>約 2,730 kcal/日</b><br><br>
+          <span class="cmt">// 例：28歳・女性・160cm・44kg・週2で筋トレ</span><br>
+          BMR = 10×44 + 6.25×160 − 5×28 − 161 = <b>1,139 kcal</b><br>
+          TDEE = 1,139 × 1.375 = <b>約 1,570 kcal</b><br>
+          目標 = 1,570 + 300 = <b>約 1,870 kcal/日</b>
+        </div>
+
+        <div class="box principle">
+          <span class="tag">原則</span>
+          <p>
+            <strong>計算式は出発点であって、正解ではありません。</strong>
+            個人差は±15%ほどあります。2週間実行して週平均体重が動かなければ、
+            その式が自分に対して過小評価だったというだけのこと。数字を足して進みます。
+          </p>
+        </div>
+
+        <h3>ステップ2：余剰とペースを決める</h3>
+        <p>
+          余剰は大きければいいものではありません。増やしすぎた分は脂肪になり、
+          後で落とす手間が増えるだけです。目安は<strong>1週間で体重の 0.25〜0.5%</strong>。
+        </p>
+
+        <div class="scroll">
+          <table>
+            <caption>増量ペースの目安</caption>
+            <thead>
+              <tr><th>タイプ</th><th class="n">週あたり</th><th class="n">体重55kgなら</th><th>余剰の目安</th></tr>
+            </thead>
+            <tbody>
+              <tr><th>トレ経験1年未満</th><td class="n">0.4–0.5%</td><td class="n">+0.22–0.28 kg</td><td class="n">+400–500 kcal</td></tr>
+              <tr><th>1–3年</th><td class="n">0.25–0.4%</td><td class="n">+0.14–0.22 kg</td><td class="n">+300–400 kcal</td></tr>
+              <tr><th>3年以上</th><td class="n">0.1–0.25%</td><td class="n">+0.05–0.14 kg</td><td class="n">+150–300 kcal</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          初心者ほど速いペースでも筋肉の割合が高くなります。
+          逆に経験者が月に3kg増やしても、増えたものの大半は脂肪です。
+        </p>
+
+        <h3>ステップ3：PFC を割り振る</h3>
+        <p>
+          総カロリーが8割、内訳が2割の重要度です。それでも配分を決めておくと、
+          「何を足せばいいか」に迷わなくなります。
+        </p>
+        <ul>
+          <li><strong>タンパク質（P）</strong>：体重×1.6〜2.2g。これ以上増やしても筋肥大の上乗せはほぼありません。増量中は胃の容量を食う要素なので、下限寄り（1.6〜1.8g）で十分です。</li>
+          <li><strong>脂質（F）</strong>：体重×0.8〜1.0g。ホルモンの材料であり、何より<strong>1gあたり9kcalとカロリー密度が高い</strong>ので、痩せ型の味方です。</li>
+          <li><strong>炭水化物（C）</strong>：残り全部。トレーニングの燃料であり、増量の主役です。</li>
+        </ul>
+
+        <div class="formula">
+          <span class="cmt">// 体重55kg・目標2,730kcal の場合</span><br>
+          P = 55 × 1.8 = <b>99 g</b> → 396 kcal<br>
+          F = 55 × 1.0 = <b>55 g</b> → 495 kcal<br>
+          C = (2,730 − 396 − 495) ÷ 4 = <b>460 g</b> → 1,839 kcal
+        </div>
+
+        <div class="box trap">
+          <span class="tag">よくあるワナ</span>
+          <p>
+            炭水化物460gという数字に驚いて減らしてしまう人がいます。
+            減らせば総カロリーが落ち、増量は止まります。
+            <strong>タンパク質を増やして炭水化物を削るのは、増量では悪手</strong>です。
+            満腹感が強い栄養素にカロリー枠を明け渡すことになります。
+          </p>
+        </div>
+      </section>
+
+      <!-- ============ 3 ============ -->
+      <section class="ch" id="c3">
+        <div class="ch-head">
+          <span class="ch-no">第 3 章</span>
+          <h2>食欲の天井を上げる</h2>
+        </div>
+
+        <p>
+          ここが痩せ型の人にとっての本丸です。目標カロリーが出ても、
+          物理的に入らなければ意味がない。胃の容量は変えられませんが、
+          <strong>同じ容量に入るカロリーは変えられます</strong>。
+        </p>
+
+        <h3>技術1：カロリー密度で選ぶ</h3>
+        <p>
+          「体積あたりのカロリー」で食品を見直します。同じ満腹感で倍のカロリーが入ります。
+        </p>
+
+        <div class="scroll">
+          <table>
+            <caption>置き換えの例</caption>
+            <thead>
+              <tr><th>やめる／減らす</th><th class="n">kcal</th><th>置き換える</th><th class="n">kcal</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>生野菜サラダ 大盛り</td><td class="n">50</td><td>アボカド半分＋オリーブ油</td><td class="n">220</td></tr>
+              <tr><td>水 500ml</td><td class="n">0</td><td>牛乳 500ml</td><td class="n">340</td></tr>
+              <tr><td>ささみ 100g</td><td class="n">105</td><td>鶏もも（皮付き）100g</td><td class="n">200</td></tr>
+              <tr><td>そば 1玉</td><td class="n">300</td><td>パスタ（乾100g）＋油</td><td class="n">480</td></tr>
+              <tr><td>ゼロカロリー飲料</td><td class="n">0</td><td>オレンジジュース 300ml</td><td class="n">135</td></tr>
+              <tr><td>おにぎり1個</td><td class="n">180</td><td>ピーナッツバタートースト</td><td class="n">280</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          常備しておくと強い食材：<strong>オリーブ油・米・パスタ・全卵・ピーナッツバター・ナッツ・チーズ・牛乳・アボカド・鮭やサバ・ドライフルーツ・はちみつ</strong>。
+          油は「大さじ1で110kcal」を覚えておくと、どの料理にも静かに追加できます。
+        </p>
+
+        <h3>技術2：噛まずに飲む</h3>
+        <p>
+          液体は満腹感が出にくく、胃を速く通過します。固形で900kcal を食べるのは苦行ですが、
+          飲むだけなら5分で終わります。<strong>市販のウェイトゲイナーは高いだけ</strong>なので、自作します。
+        </p>
+
+        <div class="scroll">
+          <table>
+            <caption>自作ゲイナーシェイク（ミキサーで30秒）</caption>
+            <thead>
+              <tr><th>材料</th><th class="n">量</th><th class="n">kcal</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>オートミール</td><td class="n">80 g</td><td class="n">300</td></tr>
+              <tr><td>牛乳</td><td class="n">400 ml</td><td class="n">272</td></tr>
+              <tr><td>バナナ</td><td class="n">1 本</td><td class="n">90</td></tr>
+              <tr><td>ピーナッツバター</td><td class="n">30 g</td><td class="n">180</td></tr>
+              <tr><td>プロテインパウダー</td><td class="n">30 g</td><td class="n">115</td></tr>
+            </tbody>
+            <tfoot>
+              <tr><td>合計</td><td class="n">—</td><td class="n">約 957</td></tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <p>
+          きつければ半量を2回に分けます。牛乳が合わない人は豆乳やラクトースフリー牛乳へ。
+        </p>
+
+        <h3>技術3：食事の回数を増やし、時間を固定する</h3>
+        <p>
+          1食あたりの量が減れば、無理なく総量が積み上がります。
+          3食＋間食2回で<strong>1日5回</strong>が基本形。
+          そして<strong>空腹を待たないこと</strong>。痩せ型の人の空腹感は当てになりません。
+          「12時／15時／19時／22時」のように時計で食べます。
+        </p>
+
+        <h3>技術4：満腹感を作る要素を、食事の前後から外す</h3>
+        <ul>
+          <li>食前30分の水・お茶・炭酸をやめる（飲むなら食後）</li>
+          <li>食物繊維の多い大量の葉物・きのこ・スープは主食の後に回す（ゼロにはしない。便通が崩れると全部止まります）</li>
+          <li>トレーニング直後に食欲が落ちるタイプは、その時間帯だけ液体にする</li>
+          <li>就寝1時間前に一食足す（ヨーグルト＋はちみつ＋ナッツ、牛乳、チーズなど。300kcalの上乗せは寝る前が一番ラク）</li>
+        </ul>
+
+        <h3>技術5：消費を減らす</h3>
+        <p>
+          増量期は有酸素運動を<strong>週2回20分まで</strong>に抑えます。
+          健康のための最低限は必要ですが、ランニングを日課にしたまま増量するのは、
+          穴の空いたバケツに水を注ぐ作業です。歩数や立ち仕事が多い人は、そのぶん摂取を上乗せします。
+        </p>
+
+        <div class="box todo">
+          <span class="tag">今日やること</span>
+          <ul>
+            <li>油・ナッツ・ピーナッツバター・牛乳・オートミールを買う</li>
+            <li>1日5回の食事時刻をカレンダーに登録する</li>
+            <li>今夜、寝る前の一食を追加する</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ============ 4 ============ -->
+      <section class="ch" id="c4">
+        <div class="ch-head">
+          <span class="ch-no">第 4 章</span>
+          <h2>1日の食事モデル</h2>
+        </div>
+
+        <p>
+          考える回数を減らすほど続きます。以下をそのまま採用し、
+          飽きたら同カロリーの範囲で1品ずつ入れ替えてください。
+          <span class="num">kcal</span> は目安（切りのいい概数）です。
+        </p>
+
+        <h3>自炊モデル</h3>
+
+        <div class="scroll">
+          <table>
+            <caption>自炊 — 2,700kcal 版と 3,200kcal 版</caption>
+            <thead>
+              <tr><th>タイミング</th><th>2,700 kcal 版</th><th class="n">kcal</th><th>3,200 kcal 版の追加</th><th class="n">kcal</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>朝 7:00</th>
+                <td>ごはん200g／卵2個／納豆1P／牛乳200ml</td><td class="n">720</td>
+                <td>ごはんを250gに</td><td class="n">+85</td>
+              </tr>
+              <tr>
+                <th>昼 12:00</th>
+                <td>ごはん250g／鶏むね150g／油小さじ2／副菜</td><td class="n">705</td>
+                <td>ごはんを300gに</td><td class="n">+85</td>
+              </tr>
+              <tr>
+                <th>間食 15:30</th>
+                <td>プロテイン＋牛乳300ml／バナナ／ナッツ20g</td><td class="n">530</td>
+                <td>食パン1枚＋PB20g</td><td class="n">+280</td>
+              </tr>
+              <tr>
+                <th>夕 19:30</th>
+                <td>ごはん250g／鮭1切／豆腐1/2丁／味噌汁</td><td class="n">750</td>
+                <td>チーズ1個＋油大さじ1</td><td class="n">+170</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr><th>合計</th><td>—</td><td class="n">2,705</td><td>—</td><td class="n">3,325</td></tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <h3>コンビニモデル</h3>
+
+        <div class="scroll">
+          <table>
+            <caption>コンビニ — 約 2,800kcal</caption>
+            <thead>
+              <tr><th>タイミング</th><th>内容</th><th class="n">kcal</th></tr>
+            </thead>
+            <tbody>
+              <tr><th>朝</th><td>おにぎり2個／ゆで卵／牛乳200ml</td><td class="n">590</td></tr>
+              <tr><th>昼</th><td>パスタ弁当／サラダチキン／おにぎり1個</td><td class="n">900</td></tr>
+              <tr><th>間食</th><td>プロテイン飲料／バナナ／ミックスナッツ小袋</td><td class="n">470</td></tr>
+              <tr><th>夕</th><td>幕の内弁当／納豆巻き</td><td class="n">880</td></tr>
+            </tbody>
+            <tfoot>
+              <tr><th>合計</th><td>—</td><td class="n">2,840</td></tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="box principle">
+          <span class="tag">原則</span>
+          <p>
+            カロリーを足すときは<strong>「新しい食事を作る」のではなく「今ある食事を厚くする」</strong>。
+            ごはん50g（+85kcal）、油大さじ1（+110kcal）、ナッツ20g（+120kcal）、牛乳200ml（+135kcal）——
+            この4枚のカードで、+200kcal も +400kcal も自由に作れます。
+          </p>
+        </div>
+
+        <h4>買い物リスト（1週間・1人分の骨格）</h4>
+        <ul>
+          <li>米5kg／パスタ／オートミール／食パン</li>
+          <li>卵2パック／鶏むね・鶏もも各1kg／鮭or サバ／豆腐・納豆</li>
+          <li>牛乳2L×2／ヨーグルト／チーズ</li>
+          <li>オリーブ油／ピーナッツバター／ミックスナッツ／はちみつ</li>
+          <li>バナナ1房／冷凍野菜（調理の手間を減らすため）</li>
+        </ul>
+      </section>
+
+      <!-- ============ 5 ============ -->
+      <section class="ch" id="c5">
+        <div class="ch-head">
+          <span class="ch-no">第 5 章</span>
+          <h2>トレーニング設計</h2>
+        </div>
+
+        <p>
+          食事だけを増やせば体重は増えますが、増えるのは脂肪です。
+          <strong>筋トレは「増えた分の行き先を筋肉に指定する」ための作業</strong>です。
+          痩せ型の人ほど、ここで得られるリターンは大きくなります。
+        </p>
+
+        <h3>守るべき5原則</h3>
+        <ol class="steps">
+          <li><strong>漸進性過負荷</strong>：前回より重く、または回数を多く。記録がなければ実行できません。</li>
+          <li><strong>週10〜20セット／筋群</strong>：これが筋肥大の主要な用量。少なすぎても多すぎても効率が落ちます。</li>
+          <li><strong>週2回の頻度</strong>：同じ部位を週2回刺激するのが、週1回より優位です。</li>
+          <li><strong>5〜12回、限界の1〜3回手前で止める</strong>：毎セット限界まで追い込む必要はありません。</li>
+          <li><strong>種目を変えない</strong>：同じ種目を12週続けるから、伸びが数字で見えます。</li>
+        </ol>
+
+        <h3>12週プログラム（週4回・上下2分割）</h3>
+        <p>
+          月・火・木・金など、連続2日＋休み1日のリズムで。
+          週3回しか取れない場合は、上A → 下A → 上B → 下B → 上A…とローテーションします。
+        </p>
+
+        <div class="scroll">
+          <table>
+            <caption>Day A — 上半身</caption>
+            <thead>
+              <tr><th>種目</th><th class="n">セット×レップ</th><th>備考</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>ベンチプレス</td><td class="n">3 × 6–8</td><td>主力種目。最優先で重量を伸ばす</td></tr>
+              <tr><td>ラットプルダウン（or 懸垂）</td><td class="n">3 × 8–10</td><td>懸垂ができれば懸垂を</td></tr>
+              <tr><td>ダンベルショルダープレス</td><td class="n">3 × 8–12</td><td>座って行う</td></tr>
+              <tr><td>シーテッドロウ</td><td class="n">3 × 10–12</td><td>背中の厚み</td></tr>
+              <tr><td>アームカール</td><td class="n">2 × 10–12</td><td>—</td></tr>
+              <tr><td>トライセプスプレスダウン</td><td class="n">2 × 10–12</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="scroll">
+          <table>
+            <caption>Day B — 下半身</caption>
+            <thead>
+              <tr><th>種目</th><th class="n">セット×レップ</th><th>備考</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>スクワット</td><td class="n">3 × 6–8</td><td>主力種目</td></tr>
+              <tr><td>ルーマニアンデッドリフト</td><td class="n">3 × 8–10</td><td>ハムストリングス・臀部</td></tr>
+              <tr><td>レッグプレス</td><td class="n">3 × 10–12</td><td>—</td></tr>
+              <tr><td>レッグカール</td><td class="n">3 × 10–12</td><td>—</td></tr>
+              <tr><td>カーフレイズ</td><td class="n">3 × 12–15</td><td>—</td></tr>
+              <tr><td>アブローラー or クランチ</td><td class="n">2 × 10–15</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Day C（上半身2回目）はインクラインダンベルプレス／ベントオーバーロウ／
+          ディップス／サイドレイズ／フェイスプル／カール。
+          Day D（下半身2回目）はデッドリフト 3×5／ブルガリアンスクワット／
+          レッグエクステンション／ヒップスラスト／カーフレイズ。
+        </p>
+
+        <h3>重量の伸ばし方：ダブルプログレッション</h3>
+        <div class="formula">
+          <span class="cmt">// 例：ベンチプレス 3×6–8、40kgでスタート</span><br>
+          全セットで <b>8回</b> できた → 次回 <b>+2.5kg</b><br>
+          まだ 6–7回 → 同じ重量で、回数を増やすことを狙う<br>
+          6回に届かない → その重量は早い。5%落として再挑戦
+        </div>
+
+        <div class="box trap">
+          <span class="tag">よくあるワナ</span>
+          <ul>
+            <li><strong>毎回メニューを変える。</strong>比較対象がなくなり、伸びているのか分からなくなります。</li>
+            <li><strong>毎セット限界まで追い込む。</strong>疲労が回復を超え、週の頻度が落ちて総量が減ります。</li>
+            <li><strong>上級者のプログラムを真似る。</strong>週6分割は、回復力と食事が完成してからの話です。</li>
+            <li><strong>体重が増えないのにトレ量だけ増やす。</strong>消費が増えて逆効果。増えないときは食事を足す。</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ============ 6 ============ -->
+      <section class="ch" id="c6">
+        <div class="ch-head">
+          <span class="ch-no">第 6 章</span>
+          <h2>回復と消化</h2>
+        </div>
+
+        <h3>睡眠は増量の「配分」を決める</h3>
+        <p>
+          睡眠不足の状態で増量すると、増えた体重に占める脂肪の割合が高くなり、
+          トレーニングの出力も落ちます。<strong>7〜9時間</strong>を確保してください。
+          これは食事管理と同じくらい実利のある投資です。
+        </p>
+
+        <h3>胃腸を「増量仕様」に慣らす</h3>
+        <p>
+          いきなり目標カロリーに飛ぶと、たいてい2〜3日で胃がもたれて破綻します。
+          <strong>2週間かけて段階的に上げる</strong>のが正解です。
+        </p>
+        <div class="formula">
+          第1週：維持 +200 kcal<br>
+          第2週：維持 +350 kcal<br>
+          第3週〜：維持 +400〜500 kcal <span class="cmt">// 目標値へ</span>
+        </div>
+        <p>
+          消化がきついときの逃げ道：白米・うどん・おかゆ・脂の少ない肉・バナナ・
+          ヨーグルトなど、消化の速いものへ一時的に寄せる。
+          乳製品でお腹が緩む人は豆乳やラクトースフリーへ切り替えてください。
+        </p>
+
+        <h3>ストレスと生活</h3>
+        <p>
+          強いストレス下では食欲が落ち、増量は止まります。
+          仕事が最も忙しい週は「増やす」ではなく「維持する」に目標を下げてかまいません。
+          <strong>止まっても、落とさない</strong>。それだけで12週後の結果は変わります。
+        </p>
+      </section>
+
+      <!-- ============ 7 ============ -->
+      <section class="ch" id="c7">
+        <div class="ch-head">
+          <span class="ch-no">第 7 章</span>
+          <h2>記録と修正</h2>
+        </div>
+
+        <p>
+          増量の成否は、実は<strong>この章のループを回せるかどうか</strong>だけで決まります。
+          測る → 週平均を出す → 足りなければカロリーを足す。この繰り返しです。
+        </p>
+
+        <h3>測り方</h3>
+        <ul>
+          <li><strong>毎朝、起床直後・トイレの後・同じ服装</strong>で体重を測る</li>
+          <li>日々の数値は無視する。<strong>7日分の平均</strong>だけを記録する</li>
+          <li>ウエスト（へその高さ）を週1回。増量が脂肪に偏っていないかの指標</li>
+          <li>主要種目の重量×回数を毎回記録する</li>
+          <li>正面・横の写真を4週ごと。体重より雄弁です</li>
+        </ul>
+
+        <figure>
+          <svg viewBox="0 0 640 220" role="img" aria-label="日々の体重は上下に大きくばらつくが、週平均をつなぐと右肩上がりの直線になることを示すグラフ">
+            <!-- grid -->
+            <g stroke="var(--rule)" stroke-width="1">
+              <line x1="30" y1="40" x2="620" y2="40"/>
+              <line x1="30" y1="80" x2="620" y2="80"/>
+              <line x1="30" y1="120" x2="620" y2="120"/>
+              <line x1="30" y1="160" x2="620" y2="160"/>
+              <line x1="30" y1="196" x2="620" y2="196"/>
+            </g>
+            <!-- week separators -->
+            <g stroke="var(--rule)" stroke-width="1" stroke-dasharray="3 4">
+              <line x1="177" y1="24" x2="177" y2="196"/>
+              <line x1="325" y1="24" x2="325" y2="196"/>
+              <line x1="472" y1="24" x2="472" y2="196"/>
+            </g>
+            <!-- daily dots -->
+            <g fill="var(--ink-3)">
+              <circle cx="40" cy="176" r="3"/><circle cx="61" cy="159" r="3"/><circle cx="82" cy="164" r="3"/>
+              <circle cx="103" cy="147" r="3"/><circle cx="124" cy="160" r="3"/><circle cx="146" cy="150" r="3"/>
+              <circle cx="167" cy="140" r="3"/><circle cx="188" cy="147" r="3"/><circle cx="209" cy="137" r="3"/>
+              <circle cx="230" cy="147" r="3"/><circle cx="251" cy="126" r="3"/><circle cx="272" cy="131" r="3"/>
+              <circle cx="293" cy="130" r="3"/><circle cx="314" cy="113" r="3"/><circle cx="335" cy="125" r="3"/>
+              <circle cx="357" cy="111" r="3"/><circle cx="378" cy="113" r="3"/><circle cx="399" cy="100" r="3"/>
+              <circle cx="420" cy="109" r="3"/><circle cx="441" cy="101" r="3"/><circle cx="462" cy="91" r="3"/>
+              <circle cx="483" cy="96" r="3"/><circle cx="504" cy="88" r="3"/><circle cx="525" cy="96" r="3"/>
+              <circle cx="546" cy="78" r="3"/><circle cx="568" cy="80" r="3"/><circle cx="589" cy="80" r="3"/>
+              <circle cx="610" cy="65" r="3"/>
+            </g>
+            <!-- weekly average line -->
+            <polyline points="103,157 251,133 399,107 547,83"
+              fill="none" stroke="var(--accent-mark)" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+            <g fill="var(--paper)" stroke="var(--accent-mark)" stroke-width="2.5">
+              <circle cx="103" cy="157" r="4.5"/><circle cx="251" cy="133" r="4.5"/>
+              <circle cx="399" cy="107" r="4.5"/>
+            </g>
+            <circle cx="547" cy="83" r="5.5" fill="var(--accent-mark)"/>
+            <!-- labels -->
+            <g font-family="ui-monospace, monospace" font-size="11" fill="var(--ink-3)">
+              <text x="103" y="212" text-anchor="middle">W1</text>
+              <text x="251" y="212" text-anchor="middle">W2</text>
+              <text x="399" y="212" text-anchor="middle">W3</text>
+              <text x="547" y="212" text-anchor="middle">W4</text>
+            </g>
+            <text x="40" y="30" font-family="ui-monospace, monospace" font-size="11" fill="var(--ink-3)">● 毎日の実測</text>
+            <text x="150" y="30" font-family="ui-monospace, monospace" font-size="11" fill="var(--accent)">— 週平均</text>
+          </svg>
+          <figcaption>
+            日々の体重は ±1kg 前後で暴れます（灰色の点）。
+            この一つひとつに反応すると、増えているのに「増えていない」と判断してしまう。
+            読むべき信号は週平均をつないだ線（琥珀）だけです。
+          </figcaption>
+        </figure>
+
+        <h3>2週間ごとの判定ルール</h3>
+
+        <div class="scroll">
+          <table>
+            <caption>週平均体重の変化 → 次の2週間の指示</caption>
+            <thead>
+              <tr><th>2週間の変化</th><th>判定</th><th>アクション</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="n">変化なし / 減った</td><td>余剰が足りない</td><td><strong>+200 kcal</strong> して継続</td></tr>
+              <tr><td class="n">週 0.25–0.5%</td><td>理想的</td><td>そのまま継続</td></tr>
+              <tr><td class="n">週 0.5–0.7%</td><td>やや速い</td><td>様子見。ウエストが増えるなら −150</td></tr>
+              <tr><td class="n">週 0.7% 超</td><td>速すぎる</td><td><strong>−150〜200 kcal</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="box principle">
+          <span class="tag">原則</span>
+          <p>
+            変更は<strong>一度に一つ、2週間おき</strong>。
+            カロリーもトレーニングも同時に変えると、何が効いたのか分からなくなります。
+            増量は実験であり、変数は1つずつ動かします。
+          </p>
+        </div>
+
+        <h3>いつ増量を止めるか</h3>
+        <p>
+          永久には続けません。以下のどれかに当たったら、
+          1〜2か月「維持カロリー」に戻して体を落ち着かせ、その後また増量に戻ります。
+        </p>
+        <ul>
+          <li>ウエストが開始時より +5cm を超えた</li>
+          <li>見た目・体調に自分が納得できなくなった</li>
+          <li>体重は増えているのに、主要種目の重量が4週間伸びていない</li>
+        </ul>
+      </section>
+
+      <!-- ============ 8 ============ -->
+      <section class="ch" id="c8">
+        <div class="ch-head">
+          <span class="ch-no">第 8 章</span>
+          <h2>12週ロードマップ</h2>
+        </div>
+
+        <div class="scroll">
+          <table>
+            <caption>12週間の進行</caption>
+            <thead>
+              <tr><th class="n">週</th><th>フェーズ</th><th>食事</th><th>トレーニング</th><th>判定</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th class="n">1–2</th><td>準備</td>
+                <td>維持 +200 kcal。1週間だけ実測して記録の精度を作る</td>
+                <td>全種目でフォームを固め、その重量を記録</td>
+                <td>体重の基準値（週平均）を確定</td>
+              </tr>
+              <tr>
+                <th class="n">3–6</th><td>積み上げ</td>
+                <td>目標カロリーに到達。5回食を固定化</td>
+                <td>ダブルプログレッションを開始</td>
+                <td>2週ごとに判定 → 止まれば +200</td>
+              </tr>
+              <tr>
+                <th class="n">7–10</th><td>加速</td>
+                <td>停滞したら間食を1つ追加（+300前後）</td>
+                <td>主力種目の重量更新を最優先</td>
+                <td>ウエストと写真もあわせて確認</td>
+              </tr>
+              <tr>
+                <th class="n">11–12</th><td>評価</td>
+                <td>維持したまま数字を整理</td>
+                <td>記録を見返し、伸びた種目／伸びない種目を仕分け</td>
+                <td>次の12週へ進むか、維持期に入るか決定</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          12週で体重の3〜6%（55kgなら約1.7〜3.3kg）増えていれば、順調です。
+          派手さはありませんが、これを4サイクル続けた1年後の差は、
+          「一気に増やそうとして3週間で挫折する」を4回繰り返した場合とは比べものになりません。
+        </p>
+
+        <div class="box todo">
+          <span class="tag">今日やること</span>
+          <ul>
+            <li>体重・ウエスト・正面／横の写真を記録する（開始時のデータは二度と取れません）</li>
+            <li>第2章の計算をして、自分の目標kcalを紙に書く</li>
+            <li>今週の買い物を済ませる</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ============ 付録A ============ -->
+      <section class="ch" id="a1">
+        <div class="ch-head">
+          <span class="ch-no">付 録 A</span>
+          <h2>よくある質問</h2>
+        </div>
+
+        <details>
+          <summary>お腹だけ出るのが怖いのですが</summary>
+          <p>
+            ペースを守り（週0.25〜0.5%）、筋トレを並行していれば、増加分のかなりの部分は筋肉になります。
+            特にトレーニング経験の浅い人はこの比率が有利です。腹だけ出るのは、ペースが速すぎるか、
+            トレーニングをしていないかのどちらかです。ウエストの推移が早期警報になります。
+          </p>
+        </details>
+
+        <details>
+          <summary>プロテインパウダーは必要ですか</summary>
+          <p>
+            必須ではありません。食事で体重×1.6g のタンパク質が取れているなら不要です。
+            ただし痩せ型の人にとっては「噛まずにカロリーとタンパク質を入れられる」道具として便利で、
+            食品より安上がりでもあります。
+          </p>
+        </details>
+
+        <details>
+          <summary>市販のウェイトゲイナーは買うべき？</summary>
+          <p>
+            費用対効果は良くありません。中身はほぼ「糖質＋プロテイン」で、
+            第3章の自作シェイクなら同等以上のものが数分の一のコストで作れ、量も自由に調整できます。
+          </p>
+        </details>
+
+        <details>
+          <summary>サプリで効果があるものは</summary>
+          <p>
+            増量まわりでエビデンスが厚いのは<strong>クレアチン・モノハイドレート（1日3〜5g、時間帯は問わない）</strong>です。
+            除脂肪体重とトレーニングパフォーマンスへの効果が繰り返し確認されています。
+            それ以外の「増量サプリ」の大半は、カロリーの高い粉です。
+          </p>
+        </details>
+
+        <details>
+          <summary>本当に食べているのに増えません</summary>
+          <p>
+            3週間、目標kcal を<strong>実測で</strong>毎日達成して、それでも週平均が動かない場合は、
+            まず記録漏れ（調味料・油・飲み物）を疑ってください。それも潰したうえで増えない、
+            あるいは意図せず減っている場合は、第1章末尾の症状に当てはまらないか確認し、
+            医療機関を受診してください。
+          </p>
+        </details>
+
+        <details>
+          <summary>お酒は飲んでいい？</summary>
+          <p>
+            増量の足を引っ張ります。筋タンパク合成を下げ、睡眠の質を落とし、翌日の食事量も減らします。
+            付き合いの範囲に留め、飲んだ日は「その分ごはんを減らす」のではなく通常どおり食べてください。
+          </p>
+        </details>
+
+        <details>
+          <summary>女性でも同じやり方でいいですか</summary>
+          <p>
+            原則は同じです。この本の数値はすべて体重比（体重×○g、週○%）で書かれているため、
+            体格に応じて自動的にスケールします。BMR の計算式だけ女性用（−161）を使ってください。
+          </p>
+        </details>
+
+        <details>
+          <summary>停滞したとき、トレーニングを増やすべき？</summary>
+          <p>
+            逆です。体重が増えていない停滞は、ほぼ常に<strong>カロリー不足</strong>です。
+            トレーニング量を増やすと消費が増え、さらに増えにくくなります。まず食事を +200kcal。
+          </p>
+        </details>
+      </section>
+
+      <!-- ============ 付録B ============ -->
+      <section class="ch" id="a2">
+        <div class="ch-head">
+          <span class="ch-no">付 録 B</span>
+          <h2>記入シート</h2>
+        </div>
+
+        <h3>自分の数字</h3>
+        <div class="formula">
+          身長 <span class="blank"></span> cm ／ 体重 <span class="blank"></span> kg ／ 年齢 <span class="blank"></span><br>
+          BMR = <span class="blank"></span> kcal<br>
+          活動係数 = <span class="blank"></span> → TDEE = <span class="blank"></span> kcal<br>
+          <b>目標カロリー</b> = <span class="blank"></span> kcal/日<br>
+          P <span class="blank"></span> g ／ F <span class="blank"></span> g ／ C <span class="blank"></span> g<br>
+          目標ペース = 週 <span class="blank"></span> kg
+        </div>
+
+        <h3>毎日のチェックリスト</h3>
+        <ul class="check">
+          <li>朝、同じ条件で体重を測って記録した</li>
+          <li>5回の食事をすべて食べた（空腹を待たなかった）</li>
+          <li>タンパク質が目標に届いた</li>
+          <li>油・ナッツ・牛乳のいずれかでカロリーを上乗せした</li>
+          <li>寝る前の一食を入れた</li>
+          <li>7時間以上眠った</li>
+          <li>トレーニング日は、前回の記録を見てから始めた</li>
+        </ul>
+
+        <h3>週1回のチェックリスト</h3>
+        <ul class="check">
+          <li>週平均体重を計算した</li>
+          <li>ウエストを測った</li>
+          <li>主要種目の重量が前週より伸びたか確認した</li>
+          <li>（2週目ごと）第7章の判定表でカロリーを調整した</li>
+        </ul>
+
+        <div class="box principle">
+          <span class="tag">最後に</span>
+          <p>
+            痩せ型の人の増量で最も効くのは、劇的な方法ではなく
+            <strong>「毎日ほんの少し多めに、退屈なほど同じことを続ける」</strong>ことです。
+            12週間後に振り返ったとき、効いていたのは牛乳を1杯足した習慣と、
+            ベンチプレスに 2.5kg ずつ足し続けた記録用紙のほうだった——だいたい、そうなります。
+          </p>
+        </div>
+
+        <p class="colophon">
+          本書は健康な成人が体重・筋量を増やすための一般的な情報をまとめたものであり、
+          医学的な診断・治療・個別の栄養指導に代わるものではありません。
+          持病・服薬・妊娠中の方、意図しない体重減少がある方、未成年の方は、
+          開始前に医師または管理栄養士にご相談ください。
+          記載のカロリー値は市販品・調理法により変動する概数です。
+        </p>
+      </section>
+
+    </main>
+  </div>
+</div>
